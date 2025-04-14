@@ -1,0 +1,29 @@
+security:
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+        App\Entity\User: 'auto'
+
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: email
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        main:
+            lazy: true
+            provider: app_user_provider
+            custom_authenticator: App\Security\AppAuthAuthenticator
+            form_login: false  # Explicitly disable if not using
+            logout:
+                path: app_logout
+                target: app_login
+            entry_point: App\Security\AppAuthAuthenticator
+
+    access_control:
+#        - { path: ^/login, roles: PUBLIC_ACCESS }
+#        - { path: ^/register, roles: PUBLIC_ACCESS }

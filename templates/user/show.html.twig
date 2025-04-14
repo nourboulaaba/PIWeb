@@ -1,0 +1,364 @@
+{% extends 'indexback.html.twig' %}
+
+{% block title %}Détails de l'utilisateur{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  <style>
+    .profile-container {
+      background-color: #f8f9fc;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      padding: 1.5rem;
+    }
+    
+    .profile-header {
+      border-bottom: 1px solid #e3e6f0;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+    }
+    
+    .profile-photo-container {
+      position: relative;
+      padding: 1rem;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
+    }
+    
+    .profile-photo {
+      width: 100%;
+      max-width: 250px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 3px solid white;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .profile-photo-placeholder {
+      width: 100%;
+      max-width: 250px;
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #f2f2f2;
+      border-radius: 8px;
+      color: #b0b0b0;
+    }
+    
+    .info-card {
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
+      padding: 0;
+      overflow: hidden;
+    }
+    
+    .info-card-header {
+      background: linear-gradient(to right, #4e73df, #224abe);
+      color: white;
+      padding: 1rem 1.5rem;
+      font-weight: 500;
+    }
+    
+    .info-item {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #f2f4f8;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .info-item:last-child {
+      border-bottom: none;
+    }
+    
+    .info-label {
+      color: #5a5c69;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+    }
+    
+    .info-label i {
+      margin-right: 0.5rem;
+      color: #4e73df;
+      width: 20px;
+      text-align: center;
+    }
+    
+    .info-value {
+      font-weight: 400;
+      text-align: right;
+    }
+    
+    .badge-role {
+      padding: 0.35em 0.8em;
+      font-size: 0.75em;
+      text-transform: uppercase;
+      border-radius: 30px;
+      letter-spacing: 0.03em;
+      font-weight: 600;
+    }
+    
+    .badge-role.rh {
+      background-color: #4e73df;
+      color: white;
+    }
+    
+    .badge-role.employe {
+      background-color: #1cc88a;
+      color: white;
+    }
+    
+    .badge-role.admin {
+      background-color: #f6c23e;
+      color: #333;
+    }
+    
+    .empty-field {
+      color: #b7b9cc;
+      font-style: italic;
+      font-size: 0.85rem;
+    }
+    
+    .action-buttons {
+      margin-top: 2rem;
+    }
+    
+    .btn-back {
+      border-radius: 50px;
+      padding: 0.5rem 1.5rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-edit {
+      border-radius: 50px;
+      padding: 0.5rem 1.5rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-back:hover, .btn-edit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .cv-button {
+      padding: 0.4rem 1rem;
+      border-radius: 6px;
+      background-color: #4e73df;
+      color: white;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+    }
+    
+    .cv-button:hover {
+      background-color: #224abe;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(78, 115, 223, 0.3);
+    }
+    
+    .cv-button i {
+      margin-right: 0.5rem;
+    }
+    
+    @media (max-width: 768px) {
+      .profile-photo-container {
+        margin-bottom: 1.5rem;
+      }
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+  <div class="container-fluid">
+    <div class="profile-container animate__animated animate__fadeIn">
+      <div class="profile-header d-flex justify-content-between align-items-center">
+        <div>
+          <h1 class="h3 mb-0 text-gray-800">Détails de l'utilisateur</h1>
+          <p class="text-muted small">Informations complètes sur le profil</p>
+        </div>
+        <div>
+          <span class="small text-muted me-2">ID:</span>
+          <span class="fw-medium">#{{ user.id }}</span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-lg-4 mb-4">
+          <div class="profile-photo-container animate__animated animate__fadeInLeft">
+            <div class="text-center">
+              {% if user.profilePhoto %}
+                <img src="{{ asset('uploads/profile_photos/' ~ user.profilePhoto) }}" 
+                     class="profile-photo mb-3" 
+                     alt="Photo de profil">
+              {% else %}
+                <div class="profile-photo-placeholder mb-3">
+                  <i class="fas fa-user fa-4x"></i>
+                </div>
+              {% endif %}
+              
+              <h5 class="mb-1">{{ user.firstName|default('') }} {{ user.lastName|default('Utilisateur') }}</h5>
+              
+              {% if user.role %}
+                <span class="badge-role {% if user.role == 'RH' %}rh{% elseif user.role == 'EMPLOYE' %}employe{% else %}admin{% endif %}">
+                  {{ user.role }}
+                </span>
+              {% else %}
+                <span class="empty-field">Rôle non défini</span>
+              {% endif %}
+            </div>
+            
+            <div class="mt-4">
+              {% if user.cv %}
+                <div class="d-grid">
+                  <a href="{{ asset('uploads/cvs/' ~ user.cv) }}" target="_blank" class="cv-button">
+                    <i class="fas fa-file-pdf"></i> Consulter le CV
+                  </a>
+                </div>
+              {% else %}
+                <div class="alert alert-secondary text-center mb-0">
+                  <i class="fas fa-file-alt me-2"></i> Aucun CV disponible
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-lg-8">
+          <div class="info-card animate__animated animate__fadeInRight">
+            <div class="info-card-header">
+              <i class="fas fa-user-circle me-2"></i> Informations personnelles
+            </div>
+            
+            <div class="info-item">
+              <div class="info-label">
+                <i class="fas fa-id-card"></i> CIN
+              </div>
+              <div class="info-value">
+                {{ user.cin ?: '<span class="empty-field">Non renseigné</span>'|raw }}
+              </div>
+            </div>
+            
+            <div class="info-item">
+              <div class="info-label">
+                <i class="fas fa-envelope"></i> Email
+              </div>
+              <div class="info-value">
+                {{ user.email ?: '<span class="empty-field">Non renseigné</span>'|raw }}
+              </div>
+            </div>
+            
+            <div class="info-item">
+              <div class="info-label">
+                <i class="fas fa-user"></i> Nom
+              </div>
+              <div class="info-value">
+                {{ user.lastName ?: '<span class="empty-field">Non renseigné</span>'|raw }}
+              </div>
+            </div>
+            
+            <div class="info-item">
+              <div class="info-label">
+                <i class="fas fa-user-tag"></i> Prénom
+              </div>
+              <div class="info-value">
+                {{ user.firstName ?: '<span class="empty-field">Non renseigné</span>'|raw }}
+              </div>
+            </div>
+            
+            <div class="info-item">
+              <div class="info-label">
+                <i class="fas fa-phone-alt"></i> Téléphone
+              </div>
+              <div class="info-value">
+                {{ user.phoneNumber ?: '<span class="empty-field">Non renseigné</span>'|raw }}
+              </div>
+            </div>
+            
+            <div class="info-item">
+              <div class="info-label">
+                <i class="fas fa-calendar-alt"></i> Date d'embauche
+              </div>
+              <div class="info-value">
+                {{ user.hireDate ? user.hireDate|date('d/m/Y') : '<span class="empty-field">Non renseigné</span>'|raw }}
+              </div>
+            </div>
+            
+            <div class="info-item">
+              <div class="info-label">
+                <i class="fas fa-money-bill-wave"></i> Salaire
+              </div>
+              <div class="info-value">
+                {{ user.salary ? user.salary ~ ' €' : '<span class="empty-field">Non renseigné</span>'|raw }}
+              </div>
+            </div>
+            
+            <div class="info-item">
+              <div class="info-label">
+                <i class="fas fa-toggle-on"></i> Statut du compte
+              </div>
+              <div class="info-value">
+                {% if user.isVerified %}
+                  <span class="badge bg-success rounded-pill">
+                    <i class="fas fa-check-circle me-1"></i> Activé
+                  </span>
+                {% else %}
+                  <span class="badge bg-danger rounded-pill">
+                    <i class="fas fa-times-circle me-1"></i> Désactivé
+                  </span>
+                {% endif %}
+              </div>
+            </div>
+            
+            {% if user.faceId %}
+            <div class="info-item">
+              <div class="info-label">
+                <i class="fas fa-fingerprint"></i> Face ID
+              </div>
+              <div class="info-value">
+                {{ user.faceId }}
+              </div>
+            </div>
+            {% endif %}
+          </div>
+          
+          <div class="action-buttons d-flex justify-content-between">
+            <a href="{{ path('app_user_list') }}" class="btn btn-outline-secondary btn-back">
+              <i class="fas fa-arrow-left me-2"></i> Retour à la liste
+            </a>
+            <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-warning btn-edit">
+              <i class="fas fa-edit me-2"></i> Modifier
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+  <script>
+    // Animation pour les éléments quand la page se charge
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('.info-item').forEach((item, index) => {
+        item.style.opacity = '0';
+        item.style.transform = 'translateX(20px)';
+        setTimeout(() => {
+          item.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+          item.style.opacity = '1';
+          item.style.transform = 'translateX(0)';
+        }, 100 + (index * 50));
+      });
+    });
+  </script>
+{% endblock %}
