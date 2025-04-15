@@ -1,0 +1,19 @@
+{# templates/reclamation/edit.html.twig #}
+{% extends 'basefront.html.twig' %}
+
+{% block title %}Modifier le statut de la réclamation{% endblock %}
+
+{% block body %}
+    <h1>Détails de la réclamation</h1>
+    
+    <p><strong>Sujet :</strong> {{ reclamation.sujet }}</p>
+    <p><strong>Description :</strong> {{ reclamation.description }}</p>
+    <p><strong>Statut :</strong> {{ reclamation.statut }}</p>
+    
+    <form method="POST">
+        <button type="submit" name="statut" value="Traité" class="btn btn-success">Traité</button>
+        <button type="submit" name="statut" value="En cours" class="btn btn-warning">En cours</button>
+    </form>
+
+    <a href="{{ path('app_reclamation_index') }}" class="btn btn-secondary">Retour à la liste</a>
+{% endblock %}

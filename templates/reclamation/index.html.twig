@@ -1,0 +1,50 @@
+{% extends 'basefront.html.twig' %}
+
+{% block title %}Liste des réclamations{% endblock %}
+
+{% block body %}
+    <h1>Liste des réclamations</h1>
+
+    <a href="{{ path('app_reclamation_new') }}" class="btn btn-primary mb-3">Nouvelle réclamation</a>
+
+    {% if app.flashes('success') %}
+        <div class="alert alert-success">
+            {% for message in app.flashes('success') %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Sujet</th>
+                <th>Description</th>
+                <th>Utilisateur</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for reclamation in reclamations %}
+                <tr>
+                    <td>{{ reclamation.sujet }}</td>
+                    <td>{{ reclamation.description }}</td>
+                    <td>{{ reclamation.user.firstName }} {{ reclamation.user.lastName }}</td>
+                    <td>{{ reclamation.date ? reclamation.date|date('d/m/Y') : 'Non spécifiée' }}</td>
+                    <td>
+                        <a href="{{ path('app_reclamation_edit', {'id': reclamation.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                        <form action="{{ path('app_reclamation_delete', {'id': reclamation.id}) }}" method="POST" style="display:inline;">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reclamation.id) }}">
+                            <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5">Aucune réclamation trouvée.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'basefront.html.twig' %}
+
+{% block title %}Détails de la réclamation{% endblock %}
+
+{% block body %}
+    <h1>Détails de la réclamation</h1>
+
+    <ul class="list-group">
+        <li class="list-group-item"><strong>ID :</strong> {{ reclamation.id }}</li>
+        <li class="list-group-item"><strong>Sujet :</strong> {{ reclamation.sujet }}</li>
+        <li class="list-group-item"><strong>Description :</strong> {{ reclamation.description }}</li>
+        <li class="list-group-item"><strong>Utilisateur :</strong> 
+            {{ reclamation.user ? reclamation.user.firstName ~ ' ' ~ reclamation.user.lastName : 'Non assigné' }}
+        </li>
+        <li class="list-group-item"><strong>Date :</strong> {{ reclamation.date ? reclamation.date|date('d/m/Y') : 'Non définie' }}</li>
+        <li class="list-group-item"><strong>Classification :</strong> {{ reclamation.classification }}</li>
+        {% if reclamation.imagePath %}
+            <li class="list-group-item">
+                <strong>Image :</strong><br>
+                <img src="{{ asset('uploads/' ~ reclamation.imagePath) }}" alt="Image" class="img-fluid mt-2" style="max-width: 300px;">
+            </li>
+        {% endif %}
+    </ul>
+
+    <a href="{{ path('app_reclamation_edit', { id: reclamation.id }) }}" class="btn btn-warning mt-3">Modifier</a>
+    <a href="{{ path('app_reclamation_index') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
+{% endblock %}

@@ -1,17 +1,105 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        {% block stylesheets %}
-        {% endblock %}
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Dashboard{% endblock %}</title>
 
-        {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
-        {% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-    </body>
+    <link rel="shortcut icon" href="{{ asset('img/icons/icon-48x48.png') }}" />
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="wrapper">
+        <nav id="sidebar" class="sidebar js-sidebar">
+            <div class="sidebar-content js-simplebar">
+                <a class="sidebar-brand" href="{{ path('dashboard') }}">
+                    <span class="align-middle">CongéServices</span>
+                </a>
+
+                <ul class="sidebar-nav">
+                    <li class="sidebar-header">Menu</li>
+
+                    <li class="sidebar-item {% if app.request.attributes.get('_route') == 'dashboard' %}active{% endif %}">
+                        <a class="sidebar-link" href="{{ path('dashboard') }}">
+                            <i class="align-middle" data-feather="sliders"></i> 
+                            <span class="align-middle">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-header">Gestion des congés</li>
+
+                    <li class="sidebar-item {% if app.request.attributes.get('_route') == 'app_conge_index' %}active{% endif %}">
+                        <a class="sidebar-link" href="{{ path('app_conge_index') }}">
+                            <i class="align-middle" data-feather="clock"></i>
+                            <span class="align-middle">Congés en attente</span>
+                        </a>
+                    </li>
+
+                    <li class="sidebar-item {% if app.request.attributes.get('_route') == 'app_conge_new' %}active{% endif %}">
+                        <a class="sidebar-link" href="{{ path('app_conge_new') }}">
+                            <i class="align-middle" data-feather="plus-circle"></i>
+                            <span class="align-middle">Nouvelle demande</span>
+                        </a>
+                    </li>
+
+                    <li class="sidebar-item {% if app.request.attributes.get('_route') == 'app_conge_index_tous' %}active{% endif %}">
+                        <a class="sidebar-link" href="{{ path('app_conge_index_tous') }}">
+                            <i class="align-middle" data-feather="list"></i>
+                            <span class="align-middle">Tous les congés</span>
+                        </a>
+                    </li>
+
+                    <li class="sidebar-item {% if app.request.attributes.get('_route') == 'app_conge_search' %}active{% endif %}">
+                        <a class="sidebar-link" href="{{ path('app_conge_search') }}">
+                            <i class="align-middle" data-feather="search"></i>
+                            <span class="align-middle">Recherche employé</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-header">Gestion des réclamations</li>
+
+                    <li class="sidebar-item {% if app.request.attributes.get('_route') == 'app_reclamation_index' %}active{% endif %}">
+                        <a class="sidebar-link" href="{{ path('app_reclamation_index') }}">
+                            <i class="align-middle" data-feather="message-square"></i>
+                            <span class="align-middle">Toutes les réclamations</span>
+                        </a>
+                    </li>
+
+                    <li class="sidebar-item {% if app.request.attributes.get('_route') == 'app_reclamation_new' %}active{% endif %}">
+                        <a class="sidebar-link" href="{{ path('app_reclamation_new') }}">
+                            <i class="align-middle" data-feather="plus"></i>
+                            <span class="align-middle">Nouvelle réclamation</span>
+                        </a>
+                    </li>
+
+                    <li class="sidebar-item {% if app.request.attributes.get('_route') == 'app_reclamation_traites' %}active{% endif %}">
+                        <a class="sidebar-link" href="{{ path('app_reclamation_traites') }}">
+                            <i class="align-middle" data-feather="check-circle"></i>
+                            <span class="align-middle">Réclamations traitées</span>
+                        </a>
+                    </li>
+
+                    
+
+                    <!-- Ajoute ici d'autres menus si besoin -->
+                </ul>
+            </div>
+        </nav>
+
+        <div class="main">
+            <main class="content">
+                <div class="container-fluid p-0">
+                    {% block body %}{% endblock %}
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="{{ asset('js/app.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script>
+        feather.replace()
+    </script>
+
+</body>
 </html>

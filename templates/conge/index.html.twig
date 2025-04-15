@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des congés en attente{% endblock %}
+
+{% block body %}
+<h1>Congés en attente</h1>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Employé</th>
+        <th>Date de début</th>
+        <th>Date de fin</th>
+        <th>Statut</th>
+        <th>Actions</th>
+    </tr>
+    {% for conge in conges %}
+        <tr>
+            <td>{{ conge.idConges }}</td>
+            <td>{{ conge.dateDebut|date('Y-m-d') }}</td>
+            <td>{{ conge.dateFin|date('Y-m-d') }}</td>
+            <td>{{ conge.statut }}</td>
+            <td>{{ conge.employe.id }}</td>
+
+            <td>
+                <form method="post" action="{{ path('app_conge_update_statut', {id: conge.idConges}) }}">
+                    <button type="submit" name="action" value="accept">Accepter</button>
+                    <button type="submit" name="action" value="reject">Refuser</button>
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+{% endblock %}
