@@ -1,0 +1,96 @@
+{% extends 'indexback.html.twig' %}
+
+{% block title %}Liste des Missions{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <style>
+    .table-responsive {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .action-btns .btn {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.8rem;
+    }
+    @media (max-width: 992px) {
+      .compact-column {
+        max-width: 100px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+  <div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1>Liste des Missions</h1>
+      <a href="{{ path('app_mission_new') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Ajouter une mission
+      </a>
+    </div>
+
+    <div class="card shadow-sm">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-striped table-hover mb-0">
+            <thead class="thead-dark">
+              <tr>
+                <th>ID</th>
+                <th>Titre</th>
+                <th>Date</th>
+                <th>Destination</th>
+                <th>Employé</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for mission in missions %}
+                <tr>
+                  <td>{{ mission.idMission }}</td>
+                  <td>{{ mission.titre }}</td>
+                  <td>{{ mission.date ? mission.date|date('d/m/Y') : 'N/A' }}</td>
+                  <td>{{ mission.destination }}</td>
+                  <td>
+                    {% if mission.utilisateur %}
+                    {{ mission.utilisateur.lastName }} {{ mission.utilisateur.firstName }}
+                    {% else %}
+                      Non assigné
+                    {% endif %}
+                  </td>
+                  <td class="action-btns">
+                    <div class="d-flex">
+                      <a href="{{ path('app_mission_show', {'idMission': mission.idMission}) }}"
+                         class="btn btn-sm btn-info me-1">
+                        <i class="fas fa-eye"></i> Afficher
+                      </a>
+                      <a href="{{ path('app_mission_edit', {'idMission': mission.idMission}) }}"
+                         class="btn btn-sm btn-warning me-1">
+                        <i class="fas fa-edit"></i> Modifier
+                      </a>
+                      <form method="post"
+                            action="{{ path('app_mission_delete', {'idMission': mission.idMission}) }}"
+                            onsubmit="return confirm('Confirmer la suppression de cette mission ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ mission.idMission) }}">
+                        <button class="btn btn-sm btn-danger">
+                          <i class="fas fa-trash"></i> Supprimer
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              {% else %}
+                <tr>
+                  <td colspan="6" class="text-center py-4">Aucune mission trouvée</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

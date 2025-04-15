@@ -1,0 +1,64 @@
+{% extends 'indexback.html.twig' %}
+
+{% block title %}User Details{% endblock %}
+
+{% block body %}
+  <div class="container">
+    <h1>User Details</h1>
+
+    <table class="table">
+      <tbody>
+      <tr>
+        <th>Id</th>
+        <td>{{ user.id }}</td>
+      </tr>
+      <tr>
+        <th>Email</th>
+        <td>{{ user.email }}</td>
+      </tr>
+      <tr>
+        <th>First Name</th>
+        <td>{{ user.firstName }}</td>
+      </tr>
+      <tr>
+        <th>Last Name</th>
+        <td>{{ user.lastName }}</td>
+      </tr>
+      <tr>
+        <th>CIN</th>
+        <td>{{ user.cin }}</td>
+      </tr>
+      <tr>
+        <th>Phone Number</th>
+        <td>{{ user.phoneNumber }}</td>
+      </tr>
+      <tr>
+        <th>Role</th>
+        <td>{{ user.role }}</td>
+      </tr>
+      <tr>
+        <th>Profile Photo</th>
+        <td>
+          {% if user.profilePhoto %}
+            <img src="{{ asset('uploads/profile_photos/' ~ user.profilePhoto) }}" width="100" class="img-thumbnail">
+          {% else %}
+            N/A
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <th>CV</th>
+        <td>
+          {% if user.cv %}
+            <a href="{{ asset('uploads/cvs/' ~ user.cv) }}" target="_blank" class="btn btn-primary">View CV</a>
+          {% else %}
+            N/A
+          {% endif %}
+        </td>
+      </tr>
+      </tbody>
+    </table>
+
+    <a href="{{ path('app_user_list') }}" class="btn btn-secondary">Back to list</a>
+  </div>
+{% endblock %}

@@ -1,0 +1,105 @@
+<!-- templates/backoffice/includes/sidebar.html.twig -->
+<nav id="sidebar" class="sidebar js-sidebar">
+    <div class="sidebar-content js-simplebar">
+        <a class="sidebar-brand" href="index.html">
+            <span class="align-middle">Ressources Humaines</span>
+        </a>
+
+        <ul class="sidebar-nav">
+            <li class="sidebar-header">
+                 GESTION PERSONNELLE
+            </li>
+
+            <li class="sidebar-item active">
+                <a class="sidebar-link" href="index.html">
+                
+                    <i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Dashboard</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item">
+                <a class="sidebar-link" href="pages-profile.html">
+                    <i class="align-middle" data-feather="user"></i> <span class="align-middle">Profile</span>
+                </a>
+            </li>
+             <li class="sidebar-item">
+                <a class="sidebar-link">
+                    <i class="align-middle" data-feather="calendar"></i> 
+                    <span class="align-middle">Congé</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a class="sidebar-link" >
+                    <i class="align-middle" data-feather="alert-circle"></i> 
+                    <span class="align-middle">Réclamations</span>
+                </a>
+            </li>
+<li class="sidebar-item">
+                <a class="sidebar-link" >
+                    <i class="align-middle" data-feather="file-text"></i> 
+                    <span class="align-middle">Certificats</span>
+                </a>
+            </li>
+          
+
+            
+
+            <li class="sidebar-header">
+                GESTION RH
+            </li>
+
+            <li class="sidebar-item">
+                <a class="sidebar-link" >
+                    <i class="align-middle" data-feather="users"></i> 
+                    <span class="align-middle">Employés</span>
+                </a>
+            </li>
+<li class="sidebar-item">
+    <a class="sidebar-link" href="{{ path('app_contrat_index') }}">
+        <i class="align-middle" data-feather="file-text"></i> 
+        <span class="align-middle">Contrats</span>
+    </a>
+</li>
+
+            <li class="sidebar-item">
+                <a class="sidebar-link" href="{{ path('app_mission_index') }}">
+                    <i class="align-middle" data-feather="briefcase"></i> 
+                    <span class="align-middle">Missions</span>
+                </a>
+            </li>
+             <li class="sidebar-item">
+                <a class="sidebar-link" >
+                    <i class="align-middle" data-feather="clipboard"></i> 
+                    <span class="align-middle">Offres d'emploi</span>
+                </a>
+            </li>
+             <li class="sidebar-item">
+                <a class="sidebar-link" >
+                    <i class="align-middle" data-feather="award"></i> 
+                    <span class="align-middle">Recrutement</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item">
+                <a class="sidebar-link" >
+                    <i class="align-middle" data-feather="book-open"></i> 
+                    <span class="align-middle">Formations</span>
+                </a>
+            </li>
+        </ul>
+
+            
+
+            
+         <div class="sidebar-cta">
+            <div class="sidebar-cta-content">
+                <a href="{{ path('app_logout') }}" class="btn btn-link">
+                    <i class="align-middle" data-feather="log-out"></i> 
+                    <span class="align-middle">Déconnexion</span>
+                </a>
+            </div>
+        </div>
+
+       
+    </div>
+</nav>

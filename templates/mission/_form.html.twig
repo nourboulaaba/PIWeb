@@ -1,0 +1,29 @@
+{{ form_start(form) }}
+
+    <div>
+        {{ form_label(form.titre) }}
+        {{ form_widget(form.titre) }}
+        {{ form_errors(form.titre) }}
+    </div>
+
+    <div>
+        {{ form_label(form.date) }}
+        {{ form_widget(form.date) }}
+        {{ form_errors(form.date) }}
+    </div>
+
+    <div>
+        {{ form_label(form.destination) }}
+        {{ form_widget(form.destination) }}
+        {{ form_errors(form.destination) }}
+    </div>
+
+    <div>
+        {{ form_label(form.utilisateur) }}
+        {{ form_widget(form.utilisateur) }}
+        {{ form_errors(form.utilisateur) }}
+    </div>
+
+    <button class="btn">{{ button_label|default('Save') }}</button>
+
+{{ form_end(form) }}
