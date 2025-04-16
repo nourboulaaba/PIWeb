@@ -222,13 +222,15 @@
                         <a class="nav-link">Contact</a>
                     </li>
                 </ul>
-                <div class="ms-3">
-                    {% if app.user %}
-                        <a class="btn btn-primary">Mon Profil</a>
-                    {% else %}
-                        <a  href="{{ path('app_login') }}" class="btn btn-primary">Connexion</a>
-                    {% endif %}
-                </div>
+                
+                  <div class="ms-3">
+                {% if app.user %}
+                    <a href="{{ path('frontoffice_profile') }}" class="btn btn-primary">Mon Profil</a>
+                    <a href="{{ path('app_logout') }}" class="btn btn-outline">Déconnexion</a>
+                {% else %}
+                    <a href="{{ path('app_login') }}" class="btn btn-primary">Connexion</a>
+                {% endif %}
+            </div>
             </div>
         </div>
     </nav>

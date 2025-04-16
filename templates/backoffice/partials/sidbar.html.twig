@@ -61,28 +61,28 @@
             </li>
             
             <li class="sidebar-item {{ app.request.get('_route') starts with 'app_contrat' ? 'active' : '' }}">
-                <a class="sidebar-link" href="{{ path('app_contrat_list') }}">
+                <a class="sidebar-link" >
                     <i data-feather="file"></i>
                     <span class="align-middle">Contrats</span>
                 </a>
             </li>
             
             <li class="sidebar-item {{ app.request.get('_route') starts with 'app_mission' ? 'active' : '' }}">
-                <a class="sidebar-link" href="{{ path('app_mission_list') }}">
+                <a class="sidebar-link" href="#">
                     <i data-feather="briefcase"></i>
                     <span class="align-middle">Missions</span>
                 </a>
             </li>
             
             <li class="sidebar-item {{ app.request.get('_route') starts with 'app_emploi' ? 'active' : '' }}">
-                <a class="sidebar-link" href="{{ path('app_emploi_list') }}">
+                <a class="sidebar-link" href="#">
                     <i data-feather="clipboard"></i>
                     <span class="align-middle">Offres d'emploi</span>
                 </a>
             </li>
             
             <li class="sidebar-item {{ app.request.get('_route') starts with 'app_recrutement' ? 'active' : '' }}">
-                <a class="sidebar-link" href="{{ path('app_recrutement_list') }}">
+                <a class="sidebar-link" href="#">
                     <i data-feather="award"></i>
                     <span class="align-middle">Recrutement</span>
                     <span class="sidebar-badge badge bg-success rounded-pill ms-2">Nouveau</span>
@@ -90,7 +90,7 @@
             </li>
             
             <li class="sidebar-item {{ app.request.get('_route') starts with 'app_formation' ? 'active' : '' }}">
-                <a class="sidebar-link" href="{{ path('app_formation_list') }}">
+                <a class="sidebar-link" href="#">
                     <i data-feather="book-open"></i>
                     <span class="align-middle">Formations</span>
                 </a>
@@ -103,7 +103,7 @@
             </li>
             
             <li class="sidebar-item {{ app.request.get('_route') starts with 'app_settings' ? 'active' : '' }}">
-                <a class="sidebar-link" href="{{ path('app_settings') }}">
+                <a class="sidebar-link">
                     <i data-feather="settings"></i>
                     <span class="align-middle">Paramètres</span>
                 </a>

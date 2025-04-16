@@ -71,7 +71,9 @@ public function signup(Request $request, UserPasswordHasherInterface $passwordHa
 
         $this->addFlash('success', 'Compte créé avec succès !');
 
-        return $this->redirectToRoute('app_user_list');
+        return $this->redirectToRoute('app_signup');
+    } elseif ($form->isSubmitted()) {
+        $this->addFlash('error', 'Erreur lors de la création du compte. Vérifiez vos informations.');
     }
 
     return $this->render('registration/signup.html.twig', [

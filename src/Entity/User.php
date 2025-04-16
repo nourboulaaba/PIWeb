@@ -232,9 +232,11 @@ private ?string $password = null;
     }
 
     public function getRoles(): array
-    {
-        return [$this->role ?? 'ROLE_USER'];
-    }
+{
+    $role = strtoupper($this->role);
+
+    return ['ROLE_' . $role];
+}
 
     public function getSalary(): ?float
     {

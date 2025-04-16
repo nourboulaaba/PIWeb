@@ -29,8 +29,8 @@ class UserType extends AbstractType
         $builder
             ->add('email', EmailType::class, [
                 'constraints' => [
-                    new NotBlank(['message' => 'L\'email est requis.']),
-                    new Email(['message' => 'Adresse email invalide.']),
+                    
+            
                 ]
             ])
             ->add('first_name', TextType::class, [
@@ -54,7 +54,7 @@ class UserType extends AbstractType
                 'mapped' => true,
                 'required' => true,
                 'constraints' => [
-                    new NotBlank(['message' => 'Veuillez entrer un mot de passe.']),
+                
                     new Length([
                         'min' => 6,
                         'minMessage' => 'Le mot de passe doit contenir au moins {{ limit }} caractères.',
