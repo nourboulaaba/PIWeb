@@ -1,29 +1,37 @@
-{{ form_start(form) }}
+{{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
 
-    <div>
-        {{ form_label(form.titre) }}
-        {{ form_widget(form.titre) }}
-        {{ form_errors(form.titre) }}
+    <div class="mb-3">
+        {{ form_label(form.titre, 'Titre', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.titre, {'attr': {'class': 'form-control' ~ (form.titre.vars.valid ? '' : ' is-invalid')}}) }}
+        <div class="invalid-feedback">
+            {{ form_errors(form.titre) }}
+        </div>
     </div>
 
-    <div>
-        {{ form_label(form.date) }}
-        {{ form_widget(form.date) }}
-        {{ form_errors(form.date) }}
+    <div class="mb-3">
+        {{ form_label(form.date, 'Date', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.date, {'attr': {'class': 'form-control' ~ (form.date.vars.valid ? '' : ' is-invalid')}}) }}
+        <div class="invalid-feedback">
+            {{ form_errors(form.date) }}
+        </div>
     </div>
 
-    <div>
-        {{ form_label(form.destination) }}
-        {{ form_widget(form.destination) }}
-        {{ form_errors(form.destination) }}
+    <div class="mb-3">
+        {{ form_label(form.destination, 'Destination', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.destination, {'attr': {'class': 'form-control' ~ (form.destination.vars.valid ? '' : ' is-invalid')}}) }}
+        <div class="invalid-feedback">
+            {{ form_errors(form.destination) }}
+        </div>
     </div>
 
-    <div>
-        {{ form_label(form.utilisateur) }}
-        {{ form_widget(form.utilisateur) }}
-        {{ form_errors(form.utilisateur) }}
+    <div class="mb-3">
+        {{ form_label(form.utilisateur, 'Utilisateur', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.utilisateur, {'attr': {'class': 'form-control' ~ (form.utilisateur.vars.valid ? '' : ' is-invalid')}}) }}
+        <div class="invalid-feedback">
+            {{ form_errors(form.utilisateur) }}
+        </div>
     </div>
 
-    <button class="btn">{{ button_label|default('Save') }}</button>
+    <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
 
 {{ form_end(form) }}

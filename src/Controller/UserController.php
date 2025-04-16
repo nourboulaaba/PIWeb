@@ -39,7 +39,7 @@ class UserController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            $this->addFlash('success', 'User created successfully!');
+            $this->addFlash('success', 'Utilisateur inscrit avec succès !');
 
             return $this->redirectToRoute('app_user_list');
         }
@@ -48,6 +48,37 @@ class UserController extends AbstractController
             'registrationForm' => $form->createView(),
         ]);
     }
+    #[Route('/signup', name: 'app_signup')]
+public function signup(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager): Response
+{
+    $user = new User();
+    $form = $this->createForm(UserType::class, $user, ['is_edit' => false]);
+
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        $this->handleFileUploads($form, $user);
+
+        $user->setPassword(
+            $passwordHasher->hashPassword(
+                $user,
+                $form->get('password')->getData()
+            )
+        );
+
+        $entityManager->persist($user);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Compte créé avec succès !');
+
+        return $this->redirectToRoute('app_user_list');
+    }
+
+    return $this->render('registration/signup.html.twig', [
+        'registrationForm' => $form->createView(),
+    ]);
+}
+
 
     #[Route('/users', name: 'app_user_list')]
     public function list(EntityManagerInterface $entityManager, Request $request, PaginatorInterface $paginator): Response
@@ -84,15 +115,7 @@ class UserController extends AbstractController
             $this->handleFileUploads($form, $user);
 
             // Update password if changed
-            if ($form->get('password')->getData()) {
-                $user->setPassword(
-                    $passwordHasher->hashPassword(
-                        $user,
-                        $form->get('password')->getData()
-                    )
-                );
-            }
-
+          
             $entityManager->flush();
 
             $this->addFlash('success', 'User updated successfully!');

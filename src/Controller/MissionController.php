@@ -20,8 +20,7 @@ final class MissionController extends AbstractController
             'missions' => $missionRepository->findAll(),
         ]);
     }
-
-    #[Route('/new', name: 'app_mission_new', methods: ['GET', 'POST'])]
+ #[Route('/new', name: 'app_mission_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $mission = new Mission();
@@ -40,8 +39,7 @@ final class MissionController extends AbstractController
             'form' => $form,
         ]);
     }
-
-    #[Route('/{idMission}', name: 'app_mission_show', methods: ['GET'])]
+#[Route('/{idMission}', name: 'app_mission_show', methods: ['GET'])]
     public function show(Mission $mission): Response
     {
         return $this->render('mission/show.html.twig', [

@@ -3,6 +3,21 @@
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ asset('backoffice/css/app.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        .social-login {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+        }
+        .btn-google {
+            background-color: #DB4437;
+            color: white;
+        }
+        .btn-google:hover {
+            background-color: #C53929;
+            color: white;
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
@@ -23,14 +38,14 @@
                             <div class="card-body">
                                 <div class="m-sm-4">
                                     <div class="text-center">
-                                        <img src="{{ asset('backoffice/img/avatars/avatar.jpg') }}"
+                                        <img src="{{ asset('backoffice/img/avatars/default.jpg') }}"
                                              alt="Utilisateur"
                                              class="img-fluid rounded-circle"
                                              width="132"
                                              height="132">
                                     </div>
 
-                                    <form method="post">
+                                    <form method="post" novalidate id="loginForm">
                                         {% if error %}
                                             <div class="alert alert-danger">
                                                 {{ error.messageKey|trans(error.messageData, 'security') }}
@@ -40,31 +55,25 @@
                                         <div class="mb-3">
                                             <label class="form-label">Email</label>
                                             <input type="email"
-                                                   class="form-control form-control-lg {% if error and 'email' in error.messageKey %}is-invalid{% endif %}"
+                                                   id="email"
+                                                   class="form-control form-control-lg"
                                                    name="email"
                                                    value="{{ last_username }}"
                                                    placeholder="Votre email"
                                                    required
                                                    autofocus>
-                                            {% if error and 'email' in error.messageKey %}
-                                                <div class="invalid-feedback">
-                                                    {{ error.messageKey|trans(error.messageData, 'security') }}
-                                                </div>
-                                            {% endif %}
+                                            <div id="emailError" class="invalid-feedback"></div>
                                         </div>
 
                                         <div class="mb-3">
                                             <label class="form-label">Mot de passe</label>
                                             <input type="password"
-                                                   class="form-control form-control-lg {% if error and 'password' in error.messageKey %}is-invalid{% endif %}"
+                                                   id="password"
+                                                   class="form-control form-control-lg"
                                                    name="password"
                                                    placeholder="Votre mot de passe"
                                                    required>
-                                            {% if error and 'password' in error.messageKey %}
-                                                <div class="invalid-feedback">
-                                                    {{ error.messageKey|trans(error.messageData, 'security') }}
-                                                </div>
-                                            {% endif %}
+                                            <div id="passwordError" class="invalid-feedback"></div>
                                             <small>
                                                 <a href="#">Mot de passe oublié ?</a>
                                             </small>
@@ -74,8 +83,8 @@
                                             <label class="form-check">
                                                 <input class="form-check-input" type="checkbox" name="_remember_me">
                                                 <span class="form-check-label">
-                                                Se souvenir de moi
-                                            </span>
+                                                    Se souvenir de moi
+                                                </span>
                                             </label>
                                         </div>
 
@@ -85,6 +94,19 @@
                                             <button type="submit" class="btn btn-lg btn-primary w-100">
                                                 Connexion
                                             </button>
+                                        </div>
+                                        
+                                        <div class="text-center mt-3">
+                                            <a href="{{ path('app_signup') }}" class="btn btn-lg btn-outline-secondary w-100">
+                                                Inscrivez-vous
+                                            </a>
+                                        </div>
+                                        
+                                        <div class="social-login text-center">
+                                            <p class="mb-2">Ou connectez-vous avec</p>
+                                          
+                                                <i class="align-middle me-1" data-feather="mail"></i> Google
+                                            </a>
                                         </div>
                                     </form>
                                 </div>
@@ -100,4 +122,80 @@
 
 {% block javascripts %}
     <script src="{{ asset('backoffice/js/app.js') }}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById('loginForm');
+            const emailField = document.getElementById('email');
+            const passwordField = document.getElementById('password');
+            const emailError = document.getElementById('emailError');
+            const passwordError = document.getElementById('passwordError');
+
+            function validateEmail(email) {
+                if (!email.trim()) return { isValid: false, message: "L'email est requis" };
+                const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return { 
+                    isValid: re.test(String(email).toLowerCase()), 
+                    message: "Format d'adresse email invalide" 
+                };
+            }
+
+            function validatePassword(password) {
+                if (!password.trim()) return { isValid: false, message: "Le mot de passe est requis" };
+                return { 
+                    isValid: password.length >= 9, 
+                    message: "Le mot de passe doit contenir au moins 9 caractères" 
+                };
+            }
+
+            function setValidationState(element, errorElement, validation) {
+                if (validation.isValid) {
+                    element.classList.remove('is-invalid');
+                    element.classList.add('is-valid');
+                    errorElement.textContent = "";
+                } else {
+                    element.classList.remove('is-valid');
+                    element.classList.add('is-invalid');
+                    errorElement.textContent = validation.message;
+                }
+                return validation.isValid;
+            }
+
+            // Validation lors de la saisie
+            emailField.addEventListener('input', function () {
+                const validation = validateEmail(emailField.value);
+                setValidationState(emailField, emailError, validation);
+            });
+
+            passwordField.addEventListener('input', function () {
+                const validation = validatePassword(passwordField.value);
+                setValidationState(passwordField, passwordError, validation);
+            });
+
+            // Validation lors de la perte de focus
+            emailField.addEventListener('blur', function() {
+                const validation = validateEmail(emailField.value);
+                setValidationState(emailField, emailError, validation);
+            });
+
+            passwordField.addEventListener('blur', function() {
+                const validation = validatePassword(passwordField.value);
+                setValidationState(passwordField, passwordError, validation);
+            });
+
+            // Validation du formulaire à la soumission
+            form.addEventListener('submit', function(event) {
+                let isFormValid = true;
+                
+                const emailValidation = validateEmail(emailField.value);
+                isFormValid = setValidationState(emailField, emailError, emailValidation) && isFormValid;
+                
+                const passwordValidation = validatePassword(passwordField.value);
+                isFormValid = setValidationState(passwordField, passwordError, passwordValidation) && isFormValid;
+                
+                if (!isFormValid) {
+                    event.preventDefault();
+                }
+            });
+        });
+    </script>
 {% endblock %}

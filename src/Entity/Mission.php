@@ -4,10 +4,7 @@ namespace App\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
-
 use App\Repository\MissionRepository;
 
 #[ORM\Entity(repositoryClass: MissionRepository::class)]
@@ -19,22 +16,60 @@ class Mission
     #[ORM\Column(name: 'idMission', type: 'integer')]
     private ?int $idMission = null;
 
+    #[ORM\Column(type: 'string', length: 100, nullable: false)]
+    #[Assert\NotBlank(message: "Le titre est obligatoire.")]
+    #[Assert\Length(
+        min: 3, 
+        max: 100,
+        minMessage: "Le titre doit contenir au moins {{ limit }} caractères.",
+        maxMessage: "Le titre ne peut pas dépasser {{ limit }} caractères."
+    )]
+    #[Assert\Regex(
+        pattern: "/^[a-zA-Z0-9éèêëàâäôöûüçÉÈÊËÀÂÄÔÖÛÜÇ\s\-_,.!?]+$/",
+        message: "Le titre contient des caractères non autorisés."
+    )]
+    private ?string $titre = null;
+
+    #[ORM\Column(type: 'date', nullable: false)]
+    #[Assert\NotNull(message: "La date est requise.")]
+    #[Assert\Type("\DateTimeInterface", message: "La date doit être au format valide.")]
+    #[Assert\GreaterThanOrEqual(
+        "today", 
+        message: "La date de mission ne peut pas être antérieure à aujourd'hui."
+    )]
+    #[Assert\LessThanOrEqual(
+        "+1 year", 
+        message: "La mission ne peut pas être planifiée plus d'un an à l'avance."
+    )]
+    private ?\DateTimeInterface $date = null;
+
+    #[ORM\Column(type: 'string', length: 100, nullable: false)]
+    #[Assert\NotBlank(message: "La destination est obligatoire.")]
+    #[Assert\Length(
+        min: 2,
+        max: 100,
+        minMessage: "La destination doit contenir au moins {{ limit }} caractères.",
+        maxMessage: "La destination ne peut pas dépasser {{ limit }} caractères."
+    )]
+    #[Assert\Regex(
+        pattern: "/^[a-zA-Z\s\-']+$/",
+        message: "Seules les lettres, espaces et traits d'union sont autorisés."
+    )]
+    private ?string $destination = null;
+
+    #[ORM\ManyToOne(targetEntity: Utilisateur::class)]
+    #[ORM\JoinColumn(name: 'idEmploye', referencedColumnName: 'id', nullable: false)]
+    #[Assert\NotNull(message: "Vous devez attribuer la mission à un employé.")]
+    #[Assert\Valid]
+    private ?Utilisateur $utilisateur = null;
+
+    // Getters et Setters
+
     public function getIdMission(): ?int
     {
         return $this->idMission;
     }
 
-    public function setIdMission(int $idMission): self
-    {
-        $this->idMission = $idMission;
-        return $this;
-    }
-
-    #[ORM\Column(type: 'string', nullable: false)]
-
-    #[Assert\NotBlank(message: "Le titre est obligatoire.")]
-    #[Assert\Length(min: 3, max: 100, minMessage: "Le titre doit contenir au moins {{ limit }} caractères.")]
-    private ?string $titre = null;
     public function getTitre(): ?string
     {
         return $this->titre;
@@ -45,12 +80,6 @@ class Mission
         $this->titre = $titre;
         return $this;
     }
-
-    #[ORM\Column(type: 'date', nullable: false)]
-    #[Assert\NotNull(message: "La date est requise.")]
-    #[Assert\Type("\DateTimeInterface", message: "Format de date invalide.")]
-    #[Assert\GreaterThanOrEqual("today", message: "La date ne peut pas être dans le passé.")]
-    private ?\DateTimeInterface $date = null;
 
     public function getDate(): ?\DateTimeInterface
     {
@@ -63,11 +92,6 @@ class Mission
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: false)]
-    #[Assert\NotBlank(message: "La destination est obligatoire.")]
-    #[Assert\Length(min: 2, max: 100, minMessage: "La destination doit contenir au moins {{ limit }} caractères.")]
-    private ?string $destination = null;
-
     public function getDestination(): ?string
     {
         return $this->destination;
@@ -79,12 +103,6 @@ class Mission
         return $this;
     }
 
-    #[ORM\ManyToOne(targetEntity: Utilisateur::class, inversedBy: 'missions')]
-    #[ORM\JoinColumn(name: 'idEmploye', referencedColumnName: 'id')]
-    #[Assert\NotNull(message: "Veuillez choisir un utilisateur.")]
-
-    private ?Utilisateur $utilisateur = null;
-
     public function getUtilisateur(): ?Utilisateur
     {
         return $this->utilisateur;
@@ -95,5 +113,4 @@ class Mission
         $this->utilisateur = $utilisateur;
         return $this;
     }
-
 }

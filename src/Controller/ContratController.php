@@ -23,24 +23,38 @@ final class ContratController extends AbstractController
     }
 
     #[Route('/new', name: 'app_contrat_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $contrat = new Contrat();
-        $form = $this->createForm(ContratType::class, $contrat);
-        $form->handleRequest($request);
+public function new(Request $request, EntityManagerInterface $entityManager): Response
+{
+    $contrat = new Contrat();
+    $form = $this->createForm(ContratType::class, $contrat);
+    $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+    if ($form->isSubmitted()) {
+        if ($form->isValid()) {
             $entityManager->persist($contrat);
             $entityManager->flush();
-
+            
+            // Ajout d'un message flash pour confirmer la création
+            $this->addFlash('success', 'Le contrat a été créé avec succès.');
+            
             return $this->redirectToRoute('app_contrat_index', [], Response::HTTP_SEE_OTHER);
+        } else {
+            // Ajout d'un message flash général en cas d'erreur
+            $this->addFlash('error', 'Veuillez corriger les erreurs dans le formulaire.');
+            
+            // Optionnel : Log des erreurs pour le débogage
+            foreach ($form->getErrors(true) as $error) {
+                // Vous pouvez logger les erreurs si nécessaire
+                // $this->logger->error('Erreur de validation: '.$error->getMessage());
+            }
         }
-
-        return $this->render('contrat/new.html.twig', [
-            'contrat' => $contrat,
-            'form' => $form,
-        ]);
     }
+
+    return $this->render('contrat/new.html.twig', [
+        'contrat' => $contrat,
+        'form' => $form->createView(), // Notez le createView() ici
+    ]);
+}
 
     #[Route('/{IdContrat}', name: 'app_contrat_show', methods: ['GET'])]
 public function show(int $IdContrat, ContratRepository $contratRepository): Response
