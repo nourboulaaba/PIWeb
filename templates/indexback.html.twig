@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Système de Gestion des Ressources Humaines">
+    <meta name="author" content="RH Admin">
+    <meta name="keywords" content="rh, ressources humaines, gestion, administration, dashboard">
+    
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{{ asset('backoffice/img/icons/icon-48x48.png') }}" />
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <title>{% block title %}Gestion RH{% endblock %}</title>
+    
+    <!-- Core CSS -->
+    <link href="{{ asset('backoffice/css/app.css') }}" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --primary-light: #4895ef;
+            --primary-dark: #3a0ca3;
+            --secondary-color: #4cc9f0;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --gray-color: #6c757d;
+            --white-color: #ffffff;
+            --body-bg: #f5f7fb;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--body-bg);
+            color: #495057;
+        }
+        
+        /* Sidebar styling */
+        .sidebar {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+            box-shadow: 0 0.15rem 1.75rem rgba(0, 0, 0, 0.15);
+        }
+        
+        .sidebar-content {
+            padding-top: 1rem;
+        }
+        
+        .sidebar-brand {
+            padding: 1.15rem 1.5rem;
+            display: flex;
+            align-items: center;
+            color: var(--white-color);
+        }
+        
+        .sidebar-brand img {
+            height: 32px;
+            margin-right: 0.75rem;
+        }
+        
+        .sidebar-header {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.75rem;
+            padding: 1.5rem 1.5rem 0.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        
+        .sidebar-item {
+            padding: 0.1rem 1.5rem;
+            position: relative;
+        }
+        
+        .sidebar-link {
+            padding: 0.5rem 0.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            border-radius: 0.375rem;
+            display: flex;
+            align-items: center;
+            position: relative;
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .sidebar-link:hover {
+            color: var(--white-color);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-item.active .sidebar-link {
+            color: var(--white-color);
+            background-color: rgba(255, 255, 255, 0.2);
+            font-weight: 500;
+        }
+        
+        .sidebar-link i, .sidebar-link svg {
+            margin-right: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.1rem;
+            width: 1.2rem;
+            height: 1.2rem;
+            text-align: center;
+        }
+        
+        .sidebar-item.active .sidebar-link i,
+        .sidebar-item.active .sidebar-link svg {
+            color: var(--white-color);
+        }
+        
+        .sidebar-cta {
+            margin: 1.5rem;
+            padding: 1.25rem;
+            border-radius: 0.5rem;
+            background-color: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Navbar styling */
+        .navbar {
+            background-color: var(--white-color);
+            border-bottom: 1px solid #e9ecef;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            padding: 0.5rem 1.5rem;
+        }
+        
+        .navbar-nav {
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-flag, .nav-icon {
+            padding: 0.5rem;
+            display: block;
+            font-size: 1.2rem;
+            color: #6c757d;
+            transition: color 0.15s ease-in-out;
+        }
+        
+        .nav-flag:hover, .nav-icon:hover {
+            color: var(--primary-color);
+        }
+        
+        .nav-item .badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            transform: translate(25%, -25%);
+            font-size: 0.6rem;
+        }
+        
+        /* Content styling */
+        .content {
+            padding: 2rem 2rem;
+        }
+        
+        /* Footer styling */
+        .footer {
+            background-color: var(--white-color);
+            border-top: 1px solid #e9ecef;
+            padding: 1rem 1.5rem;
+        }
+        
+        /* Card styling */
+        .card {
+            border: none;
+            border-radius: 0.75rem;
+            box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            background-color: var(--white-color);
+            border-bottom: 1px solid #e9ecef;
+            padding: 1.25rem 1.5rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-header-icon {
+            margin-right: 0.75rem;
+            font-size: 1.25rem;
+            color: var(--primary-color);
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        /* Button styling */
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: var(--white-color);
+        }
+        
+        /* Avatar styling */
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 0.75rem;
+        }
+        
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* Utilities */
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            border-radius: 0.5rem;
+            padding: 0.5rem 0;
+        }
+        
+        .dropdown-menu-lg {
+            min-width: 20rem;
+        }
+        
+        .dropdown-item {
+            padding: 0.5rem 1.25rem;
+            font-weight: 400;
+        }
+        
+        .dropdown-item:active {
+            background-color: var(--primary-color);
+        }
+        
+        /* Responsive */
+        @media (max-width: 991.98px) {
+            .sidebar {
+                margin-left: -264px;
+            }
+            
+            .sidebar.toggled {
+                margin-left: 0;
+            }
+            
+            .content {
+                padding: 1.5rem 1rem;
+            }
+        }
+    </style>
+    
+    {% block stylesheets %}{% endblock %}
+</head>
+
+<body>
+    <div class="wrapper">
+        {% include 'backoffice/partials/sidbar.html.twig' %}
+        
+        <div class="main">
+            {% include 'backoffice/partials/navbar.html.twig' %}
+            
+            <main class="content">
+                <div class="container-fluid p-0">
+                    {% block body %}{% endblock %}
+                </div>
+            </main>
+            
+            {% include 'backoffice/partials/footer.html.twig' %}
+        </div>
+    </div>
+    
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ asset('backoffice/js/app.js') }}"></script>
+    
+    <script>
+        // Initialize feather icons
+        document.addEventListener('DOMContentLoaded', function() {
+            feather.replace();
+        });
+        
+        // Confirmation de suppression
+        function confirmDelete(url, csrfToken) {
+            Swal.fire({
+                title: 'Êtes-vous sûr ?',
+                text: "Cette action est irréversible.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#4361ee',
+                cancelButtonColor: '#e74c3c',
+                confirmButtonText: 'Oui, supprimer',
+                cancelButtonText: 'Annuler'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = url;
+                    
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = '_token';
+                    input.value = csrfToken;
+                    
+                    form.appendChild(input);
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
+    </script>
+    
+    {% block javascripts %}{% endblock %}
+    
+    <!-- Flash Messages -->
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <script>
+                Swal.fire({
+                    icon: '{{ label == 'success' ? 'success' : 'error' }}',
+                    title: '{{ label|capitalize }}',
+                    text: '{{ message }}',
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'top-end'
+                });
+            </script>
+        {% endfor %}
+    {% endfor %}
+</body>
+
+</html>

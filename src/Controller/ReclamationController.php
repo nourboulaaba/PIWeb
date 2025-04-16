@@ -14,7 +14,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-#[Route('/reclamation')]
 final class ReclamationController extends AbstractController
 {
     private EntityManagerInterface $entityManager;
@@ -24,7 +23,7 @@ final class ReclamationController extends AbstractController
         $this->entityManager = $entityManager;
     }
 
-    #[Route('/', name: 'app_reclamation_index', methods: ['GET'])]
+    #[Route('dashboard/reclamation/encours', name: 'app_reclamation_index', methods: ['GET'])]
     public function index(ReclamationRepository $reclamationRepository): Response
     {
         // Récupérer toutes les réclamations sauf celles ayant le statut "traité"
@@ -37,7 +36,7 @@ final class ReclamationController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'app_reclamation_new', methods: ['GET', 'POST'])]
+    #[Route('profile/reclamation/new', name: 'app_reclamation_new', methods: ['GET', 'POST'])]
     public function new(Request $request): Response
     {
         $reclamation = new Reclamation();
@@ -79,16 +78,20 @@ final class ReclamationController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_reclamation_show', methods: ['GET'])]
-    public function show(Reclamation $reclamation): Response
+    #[Route('/dashboard/reclamation/traites', name: 'app_reclamation_traites')]
+    public function showTraites(): Response
     {
-        return $this->render('reclamation/show.html.twig', [
-            'reclamation' => $reclamation,
+        $reclamations = $this->entityManager->getRepository(Reclamation::class)->findBy([
+            'statut' => 'traité'
+        ]);
+    
+        return $this->render('reclamation/traites.html.twig', [
+            'reclamations' => $reclamations,
         ]);
     }
+    
 
-
-    #[Route('/reclamation/{id}/edit', name: 'app_reclamation_edit', methods: ['GET', 'POST'])]
+    #[Route('dashboard/reclamation/{id}/edit', name: 'app_reclamation_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Reclamation $reclamation): Response
     {
         // Vérifiez si l'utilisateur souhaite changer le statut
@@ -120,51 +123,50 @@ final class ReclamationController extends AbstractController
         return $this->redirectToRoute('app_reclamation_index');
     }
 
-    #[Route('/user/{userId}', name: 'app_reclamation_by_user', methods: ['GET'])]
-    public function getByUser(
-        int $userId,
-        ReclamationRepository $reclamationRepository,
-        ValidatorInterface $validator
-    ): Response {
+    #[Route('profile/reclamation/search', name: 'app_reclamation_search', methods: ['GET'])]
+    public function searchReclamationsByUser(Request $request, ReclamationRepository $reclamationRepository): Response
+    {
+        $userId = $request->query->get('userId');
         $errorMessage = '';
         $reclamations = [];
-
-        $idConstraint = new Assert\Positive(['message' => 'L\'ID utilisateur doit être un nombre positif.']);
-        $violations = $validator->validate($userId, $idConstraint);
-
-        if (count($violations) > 0) {
-            $errorMessage = 'ID utilisateur invalide.';
+        
+        if (!$userId) {
+            $errorMessage = 'L\'ID de l\'utilisateur est requis.';
         } else {
             $user = $this->entityManager->getRepository(User::class)->find($userId);
-
+        
             if (!$user) {
-                $errorMessage = 'Utilisateur non trouvé.';
+                $errorMessage = 'L\'utilisateur avec cet ID n\'existe pas.';
             } else {
-                $reclamations = $reclamationRepository->findBy(['user' => $userId]);
-
+                $reclamations = $reclamationRepository->findBy(['user' => $user]);
+        
                 if (empty($reclamations)) {
                     $errorMessage = 'Aucune réclamation trouvée pour cet utilisateur.';
                 }
             }
         }
-
-        return $this->render('reclamation/user_reclamations.html.twig', [
+    
+        return $this->render('reclamation/search.html.twig', [
             'reclamations' => $reclamations,
-            'userId' => $userId,
             'errorMessage' => $errorMessage,
+            'userId' => $userId,
         ]);
     }
-    #[Route('/reclamation/traites', name: 'app_reclamation_traites')]
-    public function showTraites(): Response
+    
+    
+    
+    #[Route('/dashboard/reclamation/{id}', name: 'app_reclamation_show', methods: ['GET'])]
+    public function show(int $id, ReclamationRepository $reclamationRepository): Response
     {
-        // Récupérer toutes les réclamations avec le statut "traité"
-        $reclamations = $this->entityManager->getRepository(Reclamation::class)->findBy([
-            'statut' => 'traité'
-        ]);
-
-        // Renvoyer la liste des réclamations traitées dans la vue
-        return $this->render('reclamation/traites.html.twig', [
-            'reclamations' => $reclamations,
+        $reclamation = $reclamationRepository->find($id);
+    
+        if (!$reclamation) {
+            throw $this->createNotFoundException('Réclamation introuvable.');
+        }
+    
+        return $this->render('reclamation/show.html.twig', [
+            'reclamation' => $reclamation,
         ]);
     }
+    
 }

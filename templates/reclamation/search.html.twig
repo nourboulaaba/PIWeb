@@ -1,0 +1,26 @@
+{% extends 'basefront.html.twig' %}
+
+{% block body %}
+    <h1>Recherche des réclamations par ID utilisateur</h1>
+
+    <form method="get" action="{{ path('app_reclamation_search') }}">
+        <label for="userId">ID Utilisateur :</label>
+        <input type="text" name="userId" id="userId" value="{{ userId }}">
+        <button type="submit">Voir</button>
+    </form>
+
+    {% if errorMessage %}
+        <div style="color: red;">{{ errorMessage }}</div>
+    {% endif %}
+
+    {% if reclamations is not empty %}
+        <h2>Vos réclamations :</h2>
+        <ul>
+            {% for reclamation in reclamations %}
+                <li>
+                    {{ reclamation.sujet }} -{{ reclamation.description }} - {{ reclamation.statut }} ({{ reclamation.date ? reclamation.date|date('d/m/Y') : 'Pas de date' }})
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}

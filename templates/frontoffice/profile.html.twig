@@ -1,0 +1,49 @@
+
+{% extends 'basefront.html.twig' %}
+
+{% block title %}Mon Profil - Portail RH{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Sidebar de navigation -->
+        <div class="col-lg-3 mb-4">
+            <div class="card border-0 shadow">
+                <div class="card-body">
+                    <h5 class="mb-3 text-center">Mes Accès</h5>
+                    <nav class="nav flex-column">
+                        <a class="nav-link" href="{{ path('app_conge_search') }}">
+                            <i class="fas fa-search me-2"></i> Recherche de congés
+                        </a>
+                        <a class="nav-link" href="{{ path('app_reclamation_search')}}">
+
+                            <i class="fas fa-user-tag me-2"></i> Réclamations par utilisateur
+                        </a>
+                        <a class="nav-link" href="{{ path('app_reclamation_new') }}">
+                            <i class="fas fa-plus-circle me-2"></i> Nouvelle réclamation
+                        </a>
+                        <a class="nav-link" href="{{ path('app_conge_new') }}">
+                            <i class="fas fa-calendar-plus me-2"></i> Nouveau congé
+                        </a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenu principal -->
+        <div class="col-lg-9">
+            <div class="card border-0 shadow mb-4">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0">Informations personnelles</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Nom :</strong> </p>
+                    <p><strong>Email :</strong> </p>
+                    <p><strong>Matricule :</strong> </p>
+                    <p><strong>Téléphone :</strong> </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -16,7 +16,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/conge')]
 final class CongeController extends AbstractController
 {
     private EntityManagerInterface $entityManager;
@@ -26,7 +25,7 @@ final class CongeController extends AbstractController
     {
         $this->entityManager = $entityManager;
     }
-    #[Route('/conge', name: 'app_conge_index', methods: ['GET'])]
+    #[Route('/dashboard/conge', name: 'app_conge_index', methods: ['GET'])]
     public function index(CongeRepository $congeRepository): Response
     {
         // Récupérer tous les congés avec le statut 'En attente'
@@ -107,7 +106,7 @@ final class CongeController extends AbstractController
 
         return $this->redirectToRoute('app_conge_index');
     }
-    #[Route('/all', name: 'app_conge_index_tous', methods: ['GET'])]
+    #[Route('/dashboard/all', name: 'app_conge_index_tous', methods: ['GET'])]
     public function indexTous(CongeRepository $congeRepository): Response
     {
         $conges = $congeRepository->findAll();

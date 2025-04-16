@@ -27,19 +27,13 @@
                             <span class="align-middle">Dashboard</span>
                         </a>
                     </li>
+
                     <li class="sidebar-header">Gestion des congés</li>
 
                     <li class="sidebar-item {% if app.request.attributes.get('_route') == 'app_conge_index' %}active{% endif %}">
                         <a class="sidebar-link" href="{{ path('app_conge_index') }}">
                             <i class="align-middle" data-feather="clock"></i>
                             <span class="align-middle">Congés en attente</span>
-                        </a>
-                    </li>
-
-                    <li class="sidebar-item {% if app.request.attributes.get('_route') == 'app_conge_new' %}active{% endif %}">
-                        <a class="sidebar-link" href="{{ path('app_conge_new') }}">
-                            <i class="align-middle" data-feather="plus-circle"></i>
-                            <span class="align-middle">Nouvelle demande</span>
                         </a>
                     </li>
 
@@ -50,12 +44,6 @@
                         </a>
                     </li>
 
-                    <li class="sidebar-item {% if app.request.attributes.get('_route') == 'app_conge_search' %}active{% endif %}">
-                        <a class="sidebar-link" href="{{ path('app_conge_search') }}">
-                            <i class="align-middle" data-feather="search"></i>
-                            <span class="align-middle">Recherche employé</span>
-                        </a>
-                    </li>
                     <li class="sidebar-header">Gestion des réclamations</li>
 
                     <li class="sidebar-item {% if app.request.attributes.get('_route') == 'app_reclamation_index' %}active{% endif %}">
@@ -65,21 +53,12 @@
                         </a>
                     </li>
 
-                    <li class="sidebar-item {% if app.request.attributes.get('_route') == 'app_reclamation_new' %}active{% endif %}">
-                        <a class="sidebar-link" href="{{ path('app_reclamation_new') }}">
-                            <i class="align-middle" data-feather="plus"></i>
-                            <span class="align-middle">Nouvelle réclamation</span>
-                        </a>
-                    </li>
-
                     <li class="sidebar-item {% if app.request.attributes.get('_route') == 'app_reclamation_traites' %}active{% endif %}">
                         <a class="sidebar-link" href="{{ path('app_reclamation_traites') }}">
                             <i class="align-middle" data-feather="check-circle"></i>
                             <span class="align-middle">Réclamations traitées</span>
                         </a>
                     </li>
-
-                    
 
                     <!-- Ajoute ici d'autres menus si besoin -->
                 </ul>
