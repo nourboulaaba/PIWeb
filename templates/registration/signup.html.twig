@@ -1,239 +1,182 @@
-{% block title %}Inscription{% endblock %}
-
 {% block stylesheets %}
-    <link rel="stylesheet" href="{{ asset('backoffice/css/app.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        .social-login {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #ddd;
+        body {
+            background: url('/frontoffice/img/background-1.jpg') no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Inter', sans-serif;
         }
-        .btn-google {
-            background-color: #DB4437;
-            color: white;
+        .card {
+            border: none;
+            border-radius: 1.2rem;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.85);
         }
-        .btn-google:hover {
-            background-color: #C53929;
-            color: white;
+        .form-control.is-invalid {
+            border-color: #dc3545;
+            background-image: none;
         }
-        .form-row {
-            display: flex;
-            flex-wrap: wrap;
-            margin-right: -5px;
-            margin-left: -5px;
+        .btn-primary {
+            background-color: #0061f2;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            font-weight: 600;
         }
-        .form-row > div {
-            padding-left: 5px;
-            padding-right: 5px;
+        .btn-primary:hover {
+            background-color: #004bb5;
+        }
+        .small-text {
+            font-size: 0.9rem;
+        }
+        .alert-danger {
+            color: #842029;
+        }
+        .logo {
+            width: 180px; /* Agrandi le logo */
+            margin-bottom: 20px;
         }
     </style>
 {% endblock %}
 
 {% block body %}
-    <main class="d-flex w-100">
-        <div class="container d-flex flex-column">
-            <div class="row vh-100">
-                <div class="col-sm-10 col-md-8 col-lg-6 mx-auto d-table h-100">
-                    <div class="d-table-cell align-middle">
+<div class="container d-flex align-items-center justify-content-center vh-100">
+    <div class="col-md-6 col-lg-5">
+        <div class="text-center mb-4">
+            <img src="/frontoffice/img/logoTrueMAtch.png" alt="TRUEMATCH Logo" class="logo">
+            <h1 class="h4 fw-bold text-white">Rejoignez l’aventure TrueMatch</h1>
+            <p class="text-light">Créez votre espace personnel et accédez à nos services RH</p>
+        </div>
 
-                        <div class="text-center mt-4">
-                            <h1 class="h2">Créer un compte</h1>
-                            <p class="lead">Inscrivez-vous pour accéder à notre plateforme</p>
-                        </div>
+        <div class="card p-4">
+            <div class="card-body">
 
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="m-sm-4">
-                                    <div class="text-center">
-                                        <img src="{{ asset('backoffice/img/avatars/default.jpg') }}"
-                                             alt="Utilisateur"
-                                             class="img-fluid rounded-circle"
-                                             width="132" height="132">
-                                    </div>
-
-                                    {% if errors is defined and errors|length > 0 %}
-                                        <div class="alert alert-danger">
-                                            <ul class="mb-0">
-                                                {% for error in errors %}
-                                                    <li>{{ error.message }}</li>
-                                                {% endfor %}
-                                            </ul>
-                                        </div>
-                                    {% endif %}
-
-                                    {{ form_start(registrationForm, {'attr': {'novalidate': 'novalidate', 'id': 'signupForm'}}) }}
-                                        {{ form_errors(registrationForm) }}
-
-                                        <div class="form-row">
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label">Nom</label>
-                                                <input type="text" id="lastname" name="registration_form[lastname]" class="form-control form-control-lg" placeholder="Votre nom" required>
-                                                <div id="lastnameError" class="invalid-feedback"></div>
-                                            </div>
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label">Prénom</label>
-                                                <input type="text" id="firstname" name="registration_form[firstname]" class="form-control form-control-lg" placeholder="Votre prénom" required>
-                                                <div id="firstnameError" class="invalid-feedback"></div>
-                                            </div>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label class="form-label">CIN</label>
-                                            <input type="text" id="cin" name="registration_form[cin]" class="form-control form-control-lg" placeholder="Votre numéro de CIN" required>
-                                            <div id="cinError" class="invalid-feedback"></div>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label class="form-label">Email</label>
-                                            <input type="email" id="email" name="registration_form[email]" class="form-control form-control-lg" placeholder="Votre email" required>
-                                            <div id="emailError" class="invalid-feedback"></div>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label class="form-label">Numéro de téléphone</label>
-                                            <input type="tel" id="phone" name="registration_form[phone]" class="form-control form-control-lg" placeholder="Votre numéro de téléphone" required>
-                                            <div id="phoneError" class="invalid-feedback"></div>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label class="form-label">Mot de passe</label>
-                                            <input type="password" id="password" name="registration_form[password]" class="form-control form-control-lg" placeholder="Créer un mot de passe" required>
-                                            <div id="passwordError" class="invalid-feedback"></div>
-                                        </div>
-
-                                        <div class="mb-3">
-                                            <label class="form-label">Confirmer le mot de passe</label>
-                                            <input type="password" id="confirmPassword" name="registration_form[confirmPassword]" class="form-control form-control-lg" placeholder="Confirmer votre mot de passe" required>
-                                            <div id="confirmPasswordError" class="invalid-feedback"></div>
-                                        </div>
-
-                                        {{ form_row(registrationForm._token) }}
-
-                                        <div class="text-center mt-3">
-                                            <button type="submit" class="btn btn-lg btn-primary w-100">Créer un compte</button>
-                                        </div>
-
-                                        <div class="social-login text-center">
-                                            <p class="mb-2">Ou inscrivez-vous avec</p>
-                                            <a class="btn btn-google w-100" href="#">
-                                                <i class="align-middle me-1" data-feather="mail"></i> Google
-                                            </a>
-                                        </div>
-
-                                        <div class="text-center mt-3">
-                                            <small>Vous avez déjà un compte ? <a href="{{ path('app_login') }}">Connexion</a></small>
-                                        </div>
-                                    {{ form_end(registrationForm, {'render_rest': false}) }}
-                                </div>
-                            </div>
-                        </div>
+                {% for label, messages in app.flashes %}
+                    <div class="alert alert-{{ label == 'success' ? 'success' : 'danger' }} alert-dismissible fade show" role="alert">
+                        {% for message in messages %}
+                            {{ message }}
+                        {% endfor %}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
-                </div>
+                {% endfor %}
+
+                {{ form_start(registrationForm, {'attr': {'novalidate': 'novalidate'}}) }}
+
+                    <div class="mb-3">
+                        {{ form_label(registrationForm.first_name) }}
+                        {{ form_widget(registrationForm.first_name, {
+                            'attr': {'class': 'form-control' ~ (registrationForm.first_name.vars.valid == false ? ' is-invalid' : '')}
+                        }) }}
+                        {% for error in registrationForm.first_name.vars.errors %}
+                            <div class="text-danger">{{ error.message }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(registrationForm.last_name) }}
+                        {{ form_widget(registrationForm.last_name, {
+                            'attr': {'class': 'form-control' ~ (registrationForm.last_name.vars.valid == false ? ' is-invalid' : '')}
+                        }) }}
+                        {% for error in registrationForm.last_name.vars.errors %}
+                            <div class="text-danger">{{ error.message }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(registrationForm.email) }}
+                        {{ form_widget(registrationForm.email, {
+                            'attr': {'class': 'form-control' ~ (registrationForm.email.vars.valid == false ? ' is-invalid' : '')}
+                        }) }}
+                        {% for error in registrationForm.email.vars.errors %}
+                            <div class="text-danger">{{ error.message }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(registrationForm.password.first) }}
+                        {{ form_widget(registrationForm.password.first, {
+                            'attr': {'class': 'form-control' ~ (registrationForm.password.first.vars.valid == false ? ' is-invalid' : '')}
+                        }) }}
+                        {% for error in registrationForm.password.first.vars.errors %}
+                            <div class="text-danger">{{ error.message }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(registrationForm.password.second) }}
+                        {{ form_widget(registrationForm.password.second, {
+                            'attr': {'class': 'form-control' ~ (registrationForm.password.second.vars.valid == false ? ' is-invalid' : '')}
+                        }) }}
+                        {% for error in registrationForm.password.second.vars.errors %}
+                            <div class="text-danger">{{ error.message }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Créer mon espace</button>
+                    </div>
+
+                    <div class="text-center mt-3 small-text">
+                        Déjà inscrit ? <a href="{{ path('app_login') }}">Connexion</a>
+                    </div>
+
+                {{ form_end(registrationForm) }}
+
             </div>
         </div>
-    </main>
+    </div>
+</div>
 {% endblock %}
 
 {% block javascripts %}
-    <script src="{{ asset('backoffice/js/app.js') }}"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const form = document.getElementById('signupForm');
-            const fields = {
-                lastname: { input: document.getElementById('lastname'), error: document.getElementById('lastnameError'), label: "Nom" },
-                firstname: { input: document.getElementById('firstname'), error: document.getElementById('firstnameError'), label: "Prénom" },
-                cin: { input: document.getElementById('cin'), error: document.getElementById('cinError'), label: "CIN" },
-                email: { input: document.getElementById('email'), error: document.getElementById('emailError'), label: "Email" },
-                phone: { input: document.getElementById('phone'), error: document.getElementById('phoneError'), label: "Numéro de téléphone" },
-                password: { input: document.getElementById('password'), error: document.getElementById('passwordError'), label: "Mot de passe" },
-                confirmPassword: { input: document.getElementById('confirmPassword'), error: document.getElementById('confirmPasswordError'), label: "Confirmation du mot de passe" }
-            };
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const firstName = document.querySelector('input[name$="[first_name]"]');
+        const lastName = document.querySelector('input[name$="[last_name]"]');
+        const email = document.querySelector('input[name$="[email]"]');
+        const password1 = document.querySelector('input[name$="[password][first]"]');
+        const password2 = document.querySelector('input[name$="[password][second]"]');
 
-            function validateRequired(value, fieldName) {
-                return value.trim() ? { isValid: true, message: "" } : { isValid: false, message: `Le champ ${fieldName} est requis` };
+        const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+
+        function validateInput(input, condition) {
+            if (!condition) {
+                input.classList.add('is-invalid');
+            } else {
+                input.classList.remove('is-invalid');
             }
+        }
 
-            function validateName(value, fieldName) {
-                let result = validateRequired(value, fieldName);
-                if (!result.isValid) return result;
-                return value.length >= 2 ? { isValid: true, message: "" } : { isValid: false, message: `${fieldName} doit contenir au moins 2 caractères` };
-            }
-
-            function validateCIN(value) {
-                let result = validateRequired(value, "CIN");
-                if (!result.isValid) return result;
-                return /^\d{8}$/.test(value) ? { isValid: true, message: "" } : { isValid: false, message: "Le CIN doit contenir 8 chiffres" };
-            }
-
-            function validateEmail(value) {
-                let result = validateRequired(value, "Email");
-                if (!result.isValid) return result;
-                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ? { isValid: true, message: "" } : { isValid: false, message: "Format d'adresse email invalide" };
-            }
-
-            function validatePhone(value) {
-                let result = validateRequired(value, "Numéro de téléphone");
-                if (!result.isValid) return result;
-                return /^[2459]\d{7}$/.test(value) ? { isValid: true, message: "" } : { isValid: false, message: "Le numéro doit commencer par 2, 4, 5 ou 9 et avoir 8 chiffres" };
-            }
-
-            function validatePassword(value) {
-                let result = validateRequired(value, "Mot de passe");
-                if (!result.isValid) return result;
-                return value.length >= 9 ? { isValid: true, message: "" } : { isValid: false, message: "Le mot de passe doit contenir au moins 9 caractères" };
-            }
-
-            function validateConfirmPassword(confirmValue, passwordValue) {
-                let result = validateRequired(confirmValue, "Confirmation du mot de passe");
-                if (!result.isValid) return result;
-                return confirmValue === passwordValue ? { isValid: true, message: "" } : { isValid: false, message: "Les mots de passe ne correspondent pas" };
-            }
-
-            function setValidationState(input, errorElement, validation) {
-                input.classList.toggle('is-valid', validation.isValid);
-                input.classList.toggle('is-invalid', !validation.isValid);
-                errorElement.textContent = validation.message;
-                return validation.isValid;
-            }
-
-            function validateField(fieldKey) {
-                const { input, error, label } = fields[fieldKey];
-                let validation;
-
-                switch (fieldKey) {
-                    case 'lastname':
-                    case 'firstname':
-                        validation = validateName(input.value, label);
-                        break;
-                    case 'cin':
-                        validation = validateCIN(input.value);
-                        break;
-                    case 'email':
-                        validation = validateEmail(input.value);
-                        break;
-                    case 'phone':
-                        validation = validatePhone(input.value);
-                        break;
-                    case 'password':
-                        validation = validatePassword(input.value);
-                        break;
-                    case 'confirmPassword':
-                        validation = validateConfirmPassword(input.value, fields.password.input.value);
-                        break;
-                }
-                return setValidationState(input, error, validation);
-            }
-
-            Object.keys(fields).forEach(key => {
-                fields[key].input.addEventListener('input', () => validateField(key));
-                fields[key].input.addEventListener('blur', () => validateField(key));
-            });
-
-            form.addEventListener('submit', function(event) {
-                let isFormValid = Object.keys(fields).every(validateField);
-                if (!isFormValid) event.preventDefault();
-            });
+        firstName.addEventListener('input', function() {
+            validateInput(firstName, firstName.value.trim().length >= 2);
         });
-    </script>
+
+        lastName.addEventListener('input', function() {
+            validateInput(lastName, lastName.value.trim().length >= 2);
+        });
+
+        email.addEventListener('input', function() {
+            validateInput(email, emailRegex.test(email.value.trim()));
+        });
+
+        password1.addEventListener('input', function() {
+            validateInput(password1, password1.value.length >= 6);
+            validatePasswordMatch();
+        });
+
+        password2.addEventListener('input', function() {
+            validatePasswordMatch();
+        });
+
+        function validatePasswordMatch() {
+            if (password2.value !== "" && password1.value !== password2.value) {
+                password2.classList.add('is-invalid');
+            } else {
+                password2.classList.remove('is-invalid');
+            }
+        }
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 {% endblock %}

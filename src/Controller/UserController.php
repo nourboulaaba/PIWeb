@@ -4,6 +4,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Form\RegistrationType;
 use App\Form\UserType;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -51,14 +52,17 @@ class UserController extends AbstractController
     #[Route('/signup', name: 'app_signup')]
 public function signup(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager): Response
 {
+    // Création d'un nouvel utilisateur
     $user = new User();
-    $form = $this->createForm(UserType::class, $user, ['is_edit' => false]);
 
+    // Création du formulaire d'inscription en passant l'option 'is_edit' à false
+    $form = $this->createForm(RegistrationType::class, $user, ['is_edit' => false]);
+
+    // Traitement du formulaire
     $form->handleRequest($request);
 
     if ($form->isSubmitted() && $form->isValid()) {
-        $this->handleFileUploads($form, $user);
-
+        // Hash du mot de passe avant l'enregistrement
         $user->setPassword(
             $passwordHasher->hashPassword(
                 $user,
@@ -66,20 +70,23 @@ public function signup(Request $request, UserPasswordHasherInterface $passwordHa
             )
         );
 
+        // Sauvegarde de l'utilisateur dans la base de données
         $entityManager->persist($user);
         $entityManager->flush();
 
+        // Flash message de succès
         $this->addFlash('success', 'Compte créé avec succès !');
 
-        return $this->redirectToRoute('app_signup');
-    } elseif ($form->isSubmitted()) {
-        $this->addFlash('error', 'Erreur lors de la création du compte. Vérifiez vos informations.');
+        // Rediriger vers la page de connexion après inscription
+        return $this->redirectToRoute('app_login');
     }
 
+    // Si le formulaire n'est pas validé ou soumis, on le renvoie à la vue
     return $this->render('registration/signup.html.twig', [
         'registrationForm' => $form->createView(),
     ]);
 }
+
 
 
     #[Route('/users', name: 'app_user_list')]

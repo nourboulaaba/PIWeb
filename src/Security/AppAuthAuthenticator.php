@@ -47,9 +47,21 @@ class AppAuthAuthenticator extends AbstractLoginFormAuthenticator
         if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
             return new RedirectResponse($targetPath);
         }
-
+    
         $user = $token->getUser();
 
+        // Sécurisation du typage
+        if (!$user instanceof \App\Entity\User) {
+            throw new \LogicException('L\'utilisateur doit être une instance de App\Entity\User.');
+        }
+
+        // Vérification de l'état du compte (activation/désactivation)
+        if (!$user->isVerified()) {
+            $this->addFlashIfSessionActive($request, 'danger', 'Votre compte est désactivé. Veuillez contacter l\'administrateur.');
+            return new RedirectResponse($this->urlGenerator->generate('app_login'));
+        }
+
+        // Redirection selon le rôle
         if (in_array('ROLE_RH', $user->getRoles())) {
             return new RedirectResponse($this->urlGenerator->generate('app_user_list'));
         } elseif (in_array('ROLE_EMPLOYE', $user->getRoles())) {
@@ -65,5 +77,16 @@ class AppAuthAuthenticator extends AbstractLoginFormAuthenticator
     protected function getLoginUrl(Request $request): string
     {
         return $this->urlGenerator->generate(self::LOGIN_ROUTE);
+    }
+
+    /**
+     * Méthode utilitaire pour ajouter un message flash si la session est active.
+     */
+    private function addFlashIfSessionActive(Request $request, string $type, string $message): void
+    {
+        $session = $request->getSession();
+        if ($session && $session->isStarted()) {
+            $session->getFlashBag()->add($type, $message);
+        }
     }
 }
