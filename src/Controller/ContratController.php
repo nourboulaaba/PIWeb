@@ -10,7 +10,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-    
+use Symfony\Bundle\SecurityBundle\Security; 
+use App\Entity\Utilisateur;  
+
+
+
 #[Route('/contrat')]
 final class ContratController extends AbstractController
 {
@@ -53,6 +57,25 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
     return $this->render('contrat/new.html.twig', [
         'contrat' => $contrat,
         'form' => $form->createView(), // Notez le createView() ici
+    ]);
+}
+#[Route('/mon-contrat', name: 'app_mon_contrat', methods: ['GET'])]
+public function monContrat(EntityManagerInterface $em): Response
+{
+    // Vérification plus robuste de l'authentification
+    $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+    
+    /** @var Utilisateur $user */
+    $user = $this->getUser();
+    
+    // Option B - Utilisation de idEmploye
+    $contrat = $em->getRepository(Contrat::class)->findOneBy([
+        'idEmploye' => $user->getId()
+    ]);
+
+    return $this->render('contrat/mon_contrat.html.twig', [
+        'contrat' => $contrat,
+        'user' => $user
     ]);
 }
 
@@ -120,4 +143,9 @@ public function show(int $IdContrat, ContratRepository $contratRepository): Resp
     
         return $this->redirectToRoute('app_contrat_index');
     }
+
+
+   
+    
+    
 }

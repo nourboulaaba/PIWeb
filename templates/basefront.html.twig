@@ -239,6 +239,15 @@
                     <li class="nav-item">
                         <a class="nav-link active" href="{{ path('app_front_index') }}">Accueil</a>
                     </li>
+                     <!-- Ajoutez ici le nouveau menu item -->
+                {% if app.user %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('app_mon_contrat') }}">
+                            <i class="fas fa-file-contract me-1"></i> Mon Contrat
+                        </a>
+                    </li>
+                {% endif %}
+                <!-- Fin de l'ajout -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                             Services RH
@@ -264,7 +273,9 @@
                     {% else %}
                         <a  href="{{ path('app_login') }}" class="btn btn-primary">Connexion</a>
                     {% endif %}
+                    
                 </div>
+
             </div>
         </div>
     </nav>
@@ -333,16 +344,18 @@
             </div>
             
             <div class="row g-4 mt-3">
-                <div class="col-md-4">
-                    <div class="feature-box">
-                        <div class="feature-icon">
-                            <i class="fas fa-chart-bar"></i>
-                        </div>
-                        <h3 class="feature-title">Rapports et analyses</h3>
-                        <p>Obtenez des rapports détaillés et des analyses pertinentes pour piloter votre stratégie RH.</p>
-                        <a class="btn btn-sm btn-outline mt-3">En savoir plus</a>
-                    </div>
-                </div>
+               <div class="col-md-4">
+    <div class="feature-box">
+        {% if app.user %}
+            <div class="feature-icon">
+                <i class="fas fa-chart-bar"></i>
+            </div>
+            <h3 class="feature-title">Mon Contrat</h3>
+            <p>Détails</p>
+            <a class="btn btn-sm btn-outline mt-3" href="{{ path('app_mon_contrat') }}">En savoir plus</a>
+        {% endif %}
+    </div>
+</div>
                 
                 <div class="col-md-4">
                     <div class="feature-box">
