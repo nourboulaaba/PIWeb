@@ -267,6 +267,6 @@ private ?string $password = null;
 
     public function getUserIdentifier(): string
     {
-        return (string)$this->email; // Symfony recommande d’utiliser l’email comme identifiant
+        return (string)$this->email; // Symfony recommande d'utiliser l'email comme identifiant
     }
 }

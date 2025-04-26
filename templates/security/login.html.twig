@@ -73,14 +73,7 @@
                             <p class="lead">Connectez-vous à votre compte pour continuer</p>
                         </div>
 
-                        {% for label, messages in app.flashes %}
-                            {% for message in messages %}
-                                <div class="alert alert-{{ label == 'danger' ? 'danger' : (label == 'success' ? 'success' : 'info') }} alert-dismissible fade show" role="alert">
-                                    {{ message }}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
-                                </div>
-                            {% endfor %}
-                        {% endfor %}
+                        {# Les messages flash seront affichés via SweetAlert dans le bloc javascripts #}
 
                         <!-- Formulaire de connexion avec le design -->
                         <div class="card login-container">
@@ -163,9 +156,44 @@
 
 {% block javascripts %}
     <script src="{{ asset('backoffice/js/app.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // Validations JavaScript
+        // Affichage des messages flash avec SweetAlert
         document.addEventListener("DOMContentLoaded", function () {
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    Swal.fire({
+                        title: '{{ label == "success" ? "Succès" : (label == "warning" ? "Attention" : (label == "info" ? "Information" : "Erreur")) }}',
+                        html: '{{ message|raw|escape('js') }}',
+                        icon: '{{ label == "success" ? "success" : (label == "warning" ? "warning" : (label == "info" ? "info" : "error")) }}',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '{{ label == "success" ? "#28a745" : (label == "warning" ? "#ffc107" : (label == "info" ? "#17a2b8" : "#dc3545")) }}'
+                    });
+                {% endfor %}
+            {% endfor %}
+
+            {% for message in app.flashes('verify_email_error') %}
+                Swal.fire({
+                    title: 'Erreur de vérification',
+                    html: '{{ message|escape('js') }}',
+                    icon: 'error',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#dc3545'
+                });
+            {% endfor %}
+
+            {% if app.session.get('flash_warning') %}
+                Swal.fire({
+                    title: 'Attention',
+                    html: '{{ app.session.get('flash_warning')|raw|escape('js') }}',
+                    icon: 'warning',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#ffc107'
+                });
+                {% set _ = app.session.remove('flash_warning') %}
+            {% endif %}
+
+            // Validations JavaScript
             const form = document.getElementById('loginForm');
             const emailField = document.getElementById('email');
             const passwordField = document.getElementById('password');
@@ -175,17 +203,17 @@
             function validateEmail(email) {
                 if (!email.trim()) return { isValid: false, message: "L'email est requis" };
                 const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                return { 
-                    isValid: re.test(String(email).toLowerCase()), 
-                    message: "Format d'adresse email invalide" 
+                return {
+                    isValid: re.test(String(email).toLowerCase()),
+                    message: "Format d'adresse email invalide"
                 };
             }
 
             function validatePassword(password) {
                 if (!password.trim()) return { isValid: false, message: "Le mot de passe est requis" };
-                return { 
-                    isValid: password.length >= 9, 
-                    message: "Le mot de passe doit contenir au moins 9 caractères" 
+                return {
+                    isValid: password.length >= 9,
+                    message: "Le mot de passe doit contenir au moins 9 caractères"
                 };
             }
 
@@ -227,13 +255,13 @@
             // Validation du formulaire à la soumission
             form.addEventListener('submit', function(event) {
                 let isFormValid = true;
-                
+
                 const emailValidation = validateEmail(emailField.value);
                 isFormValid = setValidationState(emailField, emailError, emailValidation) && isFormValid;
-                
+
                 const passwordValidation = validatePassword(passwordField.value);
                 isFormValid = setValidationState(passwordField, passwordError, passwordValidation) && isFormValid;
-                
+
                 if (!isFormValid) {
                     event.preventDefault();
                 }

@@ -1,0 +1,81 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des utilisateurs{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Gestion des utilisateurs</h1>
+    
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }}" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+    
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Liste des utilisateurs</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Email</th>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Rôle</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <td>{{ user.id }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.lastName|default('Non renseigné') }}</td>
+                            <td>{{ user.firstName|default('Non renseigné') }}</td>
+                            <td>
+                                {% if user.role %}
+                                    <span class="badge bg-primary">{{ user.role }}</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Non défini</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user.isVerified %}
+                                    <span class="badge bg-success">Actif</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Inactif</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="{{ path('app_user_show', {'id': user.id}) }}" class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-sm btn-warning">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    {% if user.isVerified %}
+                                        <a href="{{ path('app_admin_deactivate_user', {'id': user.id}) }}" class="btn btn-sm btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir désactiver cet utilisateur ?')">
+                                            <i class="fas fa-user-times"></i>
+                                        </a>
+                                    {% else %}
+                                        <a href="{{ path('app_admin_activate_user', {'id': user.id}) }}" class="btn btn-sm btn-success" onclick="return confirm('Êtes-vous sûr de vouloir activer cet utilisateur ?')">
+                                            <i class="fas fa-user-check"></i>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

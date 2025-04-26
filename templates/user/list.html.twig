@@ -13,20 +13,20 @@
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
       padding: 1.5rem;
     }
-    
+
     .dashboard-header {
       border-bottom: 1px solid #e3e6f0;
       margin-bottom: 1.5rem;
       padding-bottom: 1rem;
     }
-    
+
     /* Tableau des utilisateurs */
     .users-table {
       border-radius: 8px;
       overflow: hidden;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
     }
-    
+
     .users-table thead th {
       background: linear-gradient(to right, #4e73df, #224abe);
       color: #fff;
@@ -38,16 +38,16 @@
       border-bottom: none;
       white-space: nowrap;
     }
-    
+
     .users-table tbody tr {
       transition: all 0.2s ease;
     }
-    
+
     .users-table tbody tr:hover {
       background-color: rgba(78, 115, 223, 0.05);
       transform: translateY(-1px);
     }
-    
+
     /* Images & Photos */
     .user-photo {
       width: 45px;
@@ -58,11 +58,11 @@
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       transition: transform 0.2s ease;
     }
-    
+
     .user-photo:hover {
       transform: scale(1.1);
     }
-    
+
     .photo-placeholder {
       width: 45px;
       height: 45px;
@@ -74,7 +74,7 @@
       color: #b0b0b0;
       font-size: 1.2rem;
     }
-    
+
     /* Badges & Status */
     .badge-role {
       padding: 0.35em 0.8em;
@@ -84,39 +84,39 @@
       letter-spacing: 0.03em;
       font-weight: 600;
     }
-    
+
     .badge-role.rh {
       background-color: #4e73df;
       color: white;
     }
-    
+
     .badge-role.employe {
       background-color: #1cc88a;
       color: white;
     }
-    
+
     .badge-role.admin {
       background-color: #f6c23e;
       color: #333;
     }
-    
+
     .status-badge {
       padding: 0.35em 0.8em;
       font-size: 0.75em;
       border-radius: 30px;
       font-weight: 600;
     }
-    
+
     .status-badge.active {
       background-color: #1cc88a;
       color: white;
     }
-    
+
     .status-badge.inactive {
       background-color: #e74a3b;
       color: white;
     }
-    
+
     /* Boutons & Actions */
     .action-btn {
       padding: 0.4rem;
@@ -132,24 +132,24 @@
       transition: all 0.2s ease;
       border: none;
     }
-    
+
     .action-btn:hover {
       transform: translateY(-2px);
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
-    
+
     .action-btn.view {
       background-color: #4e73df;
     }
-    
+
     .action-btn.edit {
       background-color: #f6c23e;
     }
-    
+
     .action-btn.delete {
       background-color: #e74a3b;
     }
-    
+
     .cv-link {
       padding: 0.35em 0.6em;
       background: #f8f9fc;
@@ -160,12 +160,12 @@
       border: 1px solid #e3e6f0;
       font-size: 0.8rem;
     }
-    
+
     .cv-link:hover {
       background: #4e73df;
       color: white;
     }
-    
+
     /* Recherche & Filtres */
     .search-container {
       background-color: white;
@@ -174,7 +174,7 @@
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
       margin-bottom: 1.5rem;
     }
-    
+
     .search-input {
       border-radius: 50px;
       padding-left: 1rem;
@@ -182,17 +182,17 @@
       box-shadow: none;
       transition: all 0.2s ease;
     }
-    
+
     .search-input:focus {
       border-color: #4e73df;
       box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
     }
-    
+
     .search-btn {
       border-radius: 50px;
       padding: 0.375rem 1.2rem;
     }
-    
+
     .filter-select {
       border-radius: 50px;
       padding: 0.375rem 1.2rem;
@@ -200,19 +200,19 @@
       background-color: white;
       transition: all 0.2s ease;
     }
-    
+
     .filter-select:focus {
       border-color: #4e73df;
       box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
     }
-    
+
     /* Pagination */
     .pagination-container {
       display: flex;
       justify-content: center;
       margin: 1.5rem 0;
     }
-    
+
     .pagination .page-link {
       border-radius: 50px;
       margin: 0 0.2rem;
@@ -225,24 +225,24 @@
       color: #5a5c69;
       border: none;
     }
-    
+
     .pagination .page-link:hover {
       background-color: #eaecf4;
       color: #3a3b45;
     }
-    
+
     .pagination .active .page-link {
       background-color: #4e73df;
       color: white;
     }
-    
+
     /* Styles pour les champs vides */
     .empty-field {
       color: #b7b9cc;
       font-style: italic;
       font-size: 0.85rem;
     }
-    
+
     /* Responsive design */
     @media (max-width: 992px) {
       .compact-column {
@@ -251,22 +251,22 @@
         overflow: hidden;
         text-overflow: ellipsis;
       }
-      
+
       .dashboard-container {
         padding: 1rem;
       }
     }
-    
+
     @media (max-width: 768px) {
       .users-table {
         display: block;
         overflow-x: auto;
       }
-      
+
       .search-container {
         flex-direction: column;
       }
-      
+
       .filter-form {
         margin-top: 1rem;
       }
@@ -387,11 +387,20 @@
                         <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="action-btn edit" title="Modifier">
                           <i class="fas fa-edit"></i>
                         </a>
-          <a href="#" 
-   onclick="confirmDelete('{{ path('app_user_delete', {'id': user.id}) }}', '{{ csrf_token('delete' ~ user.id) }}')" 
-   class="action-btn delete" title="Supprimer">
-    <i class="fas fa-trash"></i>
-</a>
+                        {% if user.isVerified %}
+                          <a href="javascript:void(0)" class="action-btn delete" title="Désactiver" onclick="confirmUserAction('{{ path('app_admin_deactivate_user', {'id': user.id}) }}', 'Désactiver', 'Êtes-vous sûr de vouloir désactiver cet utilisateur ?', 'Cette action empêchera l\'utilisateur de se connecter.')">
+                            <i class="fas fa-user-times"></i>
+                          </a>
+                        {% else %}
+                          <a href="javascript:void(0)" class="action-btn view" title="Activer" onclick="confirmUserAction('{{ path('app_admin_activate_user', {'id': user.id}) }}', 'Activer', 'Êtes-vous sûr de vouloir activer cet utilisateur ?', 'Cette action permettra à l\'utilisateur de se connecter.')">
+                            <i class="fas fa-user-check"></i>
+                          </a>
+                        {% endif %}
+                        <a href="#"
+                          onclick="confirmDelete('{{ path('app_user_delete', {'id': user.id}) }}', '{{ csrf_token('delete' ~ user.id) }}')"
+                          class="action-btn delete" title="Supprimer">
+                          <i class="fas fa-trash"></i>
+                        </a>
 
 
                       </div>
@@ -437,5 +446,53 @@
         }, 100 + (index * 50));
       });
     });
+
+    // Fonction pour confirmer la suppression d'un utilisateur
+    function confirmDelete(url, token) {
+      Swal.fire({
+        title: 'Êtes-vous sûr ?',
+        text: "Cette action est irréversible et supprimera définitivement l'utilisateur.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#e74a3b',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Oui, supprimer',
+        cancelButtonText: 'Annuler'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = url;
+          form.style.display = 'none';
+
+          const csrfInput = document.createElement('input');
+          csrfInput.type = 'hidden';
+          csrfInput.name = '_token';
+          csrfInput.value = token;
+
+          form.appendChild(csrfInput);
+          document.body.appendChild(form);
+          form.submit();
+        }
+      });
+    }
+
+    // Fonction pour confirmer l'activation/désactivation d'un utilisateur
+    function confirmUserAction(url, action, title, text) {
+      Swal.fire({
+        title: title,
+        text: text,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: action === 'Activer' ? '#1cc88a' : '#e74a3b',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Oui, ' + action.toLowerCase(),
+        cancelButtonText: 'Annuler'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = url;
+        }
+      });
+    }
   </script>
 {% endblock %}

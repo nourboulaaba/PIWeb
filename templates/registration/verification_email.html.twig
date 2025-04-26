@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vérification d'email{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">Vérification d'email</h2>
+                </div>
+                <div class="card-body">
+                    {% for flash_error in app.flashes('verify_email_error') %}
+                        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
+                    {% endfor %}
+                    
+                    {% for message in app.flashes('success') %}
+                        <div class="alert alert-success" role="alert">{{ message }}</div>
+                    {% endfor %}
+                    
+                    <p class="mb-4">
+                        Si vous n'avez pas reçu d'email de vérification ou si le lien a expiré, vous pouvez demander un nouvel email de vérification.
+                    </p>
+                    
+                    <div class="d-grid">
+                        <a href="{{ path('app_verify_resend_email') }}" class="btn btn-primary">Renvoyer l'email de vérification</a>
+                    </div>
+                    
+                    <div class="text-center mt-3">
+                        <a href="{{ path('app_login') }}">Retour à la connexion</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

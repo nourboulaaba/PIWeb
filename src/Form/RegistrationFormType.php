@@ -14,11 +14,13 @@ use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
+
+
 class RegistrationFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        
+
         $builder
             ->add('email', EmailType::class, [
                 'attr' => ['placeholder' => 'Votre adresse email'],
@@ -53,7 +55,10 @@ class RegistrationFormType extends AbstractType
                         'max' => 4096,
                     ]),
                 ],
+
             ]);
+
+            // reCAPTCHA a été supprimé
     }
 
     public function configureOptions(OptionsResolver $resolver): void
@@ -63,3 +68,4 @@ class RegistrationFormType extends AbstractType
         ]);
     }
 }
+

@@ -13,6 +13,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\Email;
 
+
 class RegistrationType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -57,8 +58,10 @@ class RegistrationType extends AbstractType
                     'label' => 'Confirmer le mot de passe',
                     'attr' => ['class' => 'password-field form-control'],
                 ],
+
             ]);
         }
+
 
         // Si tu veux gérer aussi le CV ou d’autres champs
         // tu pourrais ajouter ici : if ($isEdit) { $builder->add('cv', FileType::class, [...]); }

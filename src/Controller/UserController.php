@@ -6,17 +6,26 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\RegistrationType;
 use App\Form\UserType;
+use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class UserController extends AbstractController
 {
+    private EmailVerifier $emailVerifier;
+
+    public function __construct(EmailVerifier $emailVerifier)
+    {
+        $this->emailVerifier = $emailVerifier;
+    }
     #[Route('/register', name: 'app_register')]
     public function register(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager): Response
     {
@@ -61,21 +70,68 @@ public function signup(Request $request, UserPasswordHasherInterface $passwordHa
     // Traitement du formulaire
     $form->handleRequest($request);
 
+    // Déboguer les données du formulaire
+    if ($form->isSubmitted()) {
+        // Vérifier si le formulaire est valide
+        if (!$form->isValid()) {
+            // Afficher les erreurs du formulaire
+            foreach ($form->getErrors(true) as $error) {
+                $this->addFlash('error', $error->getMessage());
+            }
+
+
+        }
+    }
+
     if ($form->isSubmitted() && $form->isValid()) {
-        // Hash du mot de passe avant l'enregistrement
-        $user->setPassword(
-            $passwordHasher->hashPassword(
-                $user,
-                $form->get('password')->getData()
-            )
-        );
+        try {
+            // Hash du mot de passe avant l'enregistrement
+            $user->setPassword(
+                $passwordHasher->hashPassword(
+                    $user,
+                    $form->get('password')->getData()
+                )
+            );
 
-        // Sauvegarde de l'utilisateur dans la base de données
-        $entityManager->persist($user);
-        $entityManager->flush();
+            // Définir l'utilisateur comme non vérifié
+            $user->setIsVerified(false);
 
-        // Flash message de succès
-        $this->addFlash('success', 'Compte créé avec succès !');
+            // Définir le rôle par défaut comme EMPLOYE
+            $user->setRole('EMPLOYE');
+
+            // Définir un salaire par défaut (requis car le champ est non nullable)
+            $user->setSalary(0.0);
+
+            // Nous n'utilisons pas de token de vérification d'email pour le moment
+            // Le token est géré par le service EmailVerifier
+
+            // Sauvegarde de l'utilisateur dans la base de données
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            // Ajouter un message flash pour confirmer l'enregistrement dans la base de données
+            $this->addFlash('info', 'Utilisateur enregistré avec succès dans la base de données. ID: ' . $user->getId());
+
+            // Envoyer l'email de vérification
+            $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
+                (new TemplatedEmail())
+                    ->from(new Address('boulaabanour2020@gmail.com', 'TrueMatch'))
+                    ->to($user->getEmail())
+                    ->subject('Confirmation de votre adresse email')
+                    ->htmlTemplate('registration/confirmation_email.html.twig')
+            );
+        } catch (\Exception $e) {
+            // En cas d'erreur, ajouter un message flash
+            $this->addFlash('error', 'Erreur lors de l\'enregistrement de l\'utilisateur: ' . $e->getMessage());
+
+            // Retourner à la page d'inscription
+            return $this->render('registration/signup.html.twig', [
+                'registrationForm' => $form->createView(),
+            ]);
+        }
+
+        // Flash message de succès avec plus de détails
+        $this->addFlash('success', 'Félicitations ! Votre compte a été créé avec succès. <br><br>Un email de vérification a été envoyé à <strong>' . $user->getEmail() . '</strong>. <br><br>Veuillez cliquer sur le lien dans cet email pour vérifier votre adresse email. Ensuite, un administrateur devra activer votre compte avant que vous puissiez vous connecter.');
 
         // Rediriger vers la page de connexion après inscription
         return $this->redirectToRoute('app_login');
@@ -114,7 +170,7 @@ public function signup(Request $request, UserPasswordHasherInterface $passwordHa
     }
 
     #[Route('/user/{id}/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, User $user, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, User $user, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(UserType::class, $user, ['is_edit' => true]);
         $form->handleRequest($request);
@@ -124,7 +180,7 @@ public function signup(Request $request, UserPasswordHasherInterface $passwordHa
             $this->handleFileUploads($form, $user);
 
             // Update password if changed
-          
+
             $entityManager->flush();
 
             $this->addFlash('success', 'User updated successfully!');

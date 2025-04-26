@@ -22,8 +22,11 @@ class AppAuthAuthenticator extends AbstractLoginFormAuthenticator
 
     public const LOGIN_ROUTE = 'app_login';
 
-    public function __construct(private UrlGeneratorInterface $urlGenerator)
+    private $entityManager;
+
+    public function __construct(private UrlGeneratorInterface $urlGenerator, \Doctrine\ORM\EntityManagerInterface $entityManager = null)
     {
+        $this->entityManager = $entityManager;
     }
 
     public function authenticate(Request $request): Passport
@@ -47,7 +50,7 @@ class AppAuthAuthenticator extends AbstractLoginFormAuthenticator
         if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
             return new RedirectResponse($targetPath);
         }
-    
+
         $user = $token->getUser();
 
         // Sécurisation du typage
@@ -55,10 +58,22 @@ class AppAuthAuthenticator extends AbstractLoginFormAuthenticator
             throw new \LogicException('L\'utilisateur doit être une instance de App\Entity\User.');
         }
 
-        // Vérification de l'état du compte (activation/désactivation)
+        // Vérification de l'état du compte (vérification d'email)
         if (!$user->isVerified()) {
-            $this->addFlashIfSessionActive($request, 'danger', 'Votre compte est désactivé. Veuillez contacter l\'administrateur.');
+            // Utiliser directement le contrôleur pour ajouter un message flash
+            $request->getSession()->set('flash_warning', '<strong>Compte non activé</strong> <br><br>Votre compte n\'est pas encore activé. <br><br>Si vous avez déjà vérifié votre email, veuillez attendre qu\'un administrateur active votre compte. <br><br>Sinon, <a href="' . $this->urlGenerator->generate('app_verify_resend_email') . '">cliquez ici pour renvoyer l\'email de vérification</a>');
             return new RedirectResponse($this->urlGenerator->generate('app_login'));
+        }
+
+        // Vérification que l'utilisateur a un rôle défini
+        if (empty($user->getRole())) {
+            // Définir un rôle par défaut si aucun n'est défini
+            $user->setRole('EMPLOYE');
+            // Persister le changement
+            if ($this->entityManager) {
+                $this->entityManager->persist($user);
+                $this->entityManager->flush();
+            }
         }
 
         // Redirection selon le rôle
@@ -79,14 +94,5 @@ class AppAuthAuthenticator extends AbstractLoginFormAuthenticator
         return $this->urlGenerator->generate(self::LOGIN_ROUTE);
     }
 
-    /**
-     * Méthode utilitaire pour ajouter un message flash si la session est active.
-     */
-    private function addFlashIfSessionActive(Request $request, string $type, string $message): void
-    {
-        $session = $request->getSession();
-        if ($session && $session->isStarted()) {
-            $session->getFlashBag()->add($type, $message);
-        }
-    }
+    // Méthode supprimée car non utilisée
 }

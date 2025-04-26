@@ -282,6 +282,25 @@ Abderahmen Sfexssii
     <script src="vendors/gsap/gsap.js"></script>
     <script src="vendors/gsap/customEase.js"></script>
     <script src="assets/js/theme.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Flash Messages -->
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <script>
+                Swal.fire({
+                    icon: '{{ label == "success" ? "success" : (label == "warning" ? "warning" : (label == "info" ? "info" : "error")) }}',
+                    title: '{{ label|capitalize }}',
+                    text: '{{ message|raw }}',
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'top-end'
+                });
+            </script>
+        {% endfor %}
+    {% endfor %}
   </body>
 
 </html>
