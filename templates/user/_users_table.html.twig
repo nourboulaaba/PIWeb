@@ -1,0 +1,127 @@
+<div class="table-responsive">
+  <table class="table table-hover align-middle mb-0 users-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Photo</th>
+        <th>
+          <a href="javascript:void(0);" class="text-white sort-link" data-sort="name">
+            Nom Complet
+            <i class="fas fa-sort{% if criteria.sort_by == 'name' %}-{% if criteria.sort_dir == 'asc' %}up{% else %}down{% endif %}{% endif %} ms-1"></i>
+          </a>
+        </th>
+        <th>Contact</th>
+        <th>Rôle</th>
+        <th>Statut</th>
+        <th>
+          <a href="javascript:void(0);" class="text-white sort-link" data-sort="salary">
+            Salaire
+            <i class="fas fa-sort{% if criteria.sort_by == 'salary' %}-{% if criteria.sort_dir == 'asc' %}up{% else %}down{% endif %}{% endif %} ms-1"></i>
+          </a>
+        </th>
+        <th>Documents</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in users %}
+        <tr>
+          <td>#{{ user.id }}</td>
+          <td>
+            {% if user.profilePhoto %}
+              <img src="{{ asset('uploads/profile_photos/' ~ user.profilePhoto) }}" class="user-photo" alt="Photo de profil">
+            {% else %}
+              <div class="photo-placeholder">
+                <i class="fas fa-user"></i>
+              </div>
+            {% endif %}
+          </td>
+          <td>
+            <div>
+              <div class="fw-medium">{{ user.lastName|default('N/A') }} {{ user.firstName|default('') }}</div>
+              <div class="text-muted small">{{ user.cin|default('CIN non renseigné') }}</div>
+            </div>
+          </td>
+          <td>
+            <div>
+              <div class="compact-column">{{ user.email|default('Email non renseigné') }}</div>
+              <div class="text-muted small">{{ user.phoneNumber|default('Tél. non renseigné') }}</div>
+            </div>
+          </td>
+          <td>
+            {% if user.role %}
+              <span class="badge-role {% if user.role == 'RH' %}rh{% elseif user.role == 'EMPLOYE' %}employe{% else %}admin{% endif %}">
+                {{ user.role }}
+              </span>
+            {% else %}
+              <span class="empty-field">Non défini</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if user.isVerified %}
+              <span class="status-badge active">
+                <i class="fas fa-check-circle me-1"></i> Actif
+              </span>
+            {% else %}
+              <span class="status-badge inactive">
+                <i class="fas fa-times-circle me-1"></i> Inactif
+              </span>
+            {% endif %}
+          </td>
+          <td>
+            <div class="fw-medium">{{ user.salary|number_format(2, ',', ' ') }} DT</div>
+          </td>
+          <td>
+            <div class="d-flex align-items-center">
+              {% if user.cv %}
+                <a href="{{ asset('uploads/cvs/' ~ user.cv) }}" class="cv-link me-2" target="_blank">
+                  <i class="fas fa-file-pdf"></i> CV
+                </a>
+              {% else %}
+                <span class="empty-field">Aucun CV</span>
+              {% endif %}
+            </div>
+          </td>
+          <td>
+            <div class="d-flex align-items-center">
+              <a href="{{ path('app_user_show', {'id': user.id}) }}" class="action-btn view" title="Voir">
+                <i class="fas fa-eye"></i>
+              </a>
+              <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="action-btn edit" title="Modifier">
+                <i class="fas fa-edit"></i>
+              </a>
+              {% if user.isVerified %}
+                <a href="javascript:void(0)" class="action-btn delete" title="Désactiver" onclick="confirmUserAction('{{ path('app_admin_deactivate_user', {'id': user.id}) }}', 'Désactiver', 'Êtes-vous sûr de vouloir désactiver cet utilisateur ?', 'Cette action empêchera l\'utilisateur de se connecter.')">
+                  <i class="fas fa-user-times"></i>
+                </a>
+              {% else %}
+                <a href="javascript:void(0)" class="action-btn view" title="Activer" onclick="confirmUserAction('{{ path('app_admin_activate_user', {'id': user.id}) }}', 'Activer', 'Êtes-vous sûr de vouloir activer cet utilisateur ?', 'Cette action permettra à l\'utilisateur de se connecter.')">
+                  <i class="fas fa-user-check"></i>
+                </a>
+              {% endif %}
+              <a href="#"
+                onclick="confirmDelete('{{ path('app_user_delete', {'id': user.id}) }}', '{{ csrf_token('delete' ~ user.id) }}')"
+                class="action-btn delete" title="Supprimer">
+                <i class="fas fa-trash"></i>
+              </a>
+            </div>
+          </td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="9" class="text-center py-5">
+            <div class="empty-state">
+              <i class="fas fa-users text-muted fa-3x mb-3"></i>
+              <h5>Aucun utilisateur trouvé</h5>
+              <p class="text-muted">Aucun résultat ne correspond à votre recherche.</p>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="pagination-container">
+  {{ knp_pagination_render(users, 'pagination/custom_pagination.html.twig', {}, {'align': 'center', 'size': 'medium', 'rounded': true}) }}
+</div>

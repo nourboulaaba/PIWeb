@@ -5,6 +5,7 @@
 {% block stylesheets %}
   {{ parent() }}
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  <link rel="stylesheet" href="{{ asset('css/custom-pagination.css') }}">
   <style>
     /* Styles généraux */
     .dashboard-container {
@@ -83,6 +84,13 @@
       border-radius: 30px;
       letter-spacing: 0.03em;
       font-weight: 600;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s ease;
+    }
+
+    .badge-role:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
     }
 
     .badge-role.rh {
@@ -91,7 +99,7 @@
     }
 
     .badge-role.employe {
-      background-color: #1cc88a;
+      background-color: #4895ef;
       color: white;
     }
 
@@ -105,16 +113,25 @@
       font-size: 0.75em;
       border-radius: 30px;
       font-weight: 600;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s ease;
+    }
+
+    .status-badge:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
     }
 
     .status-badge.active {
       background-color: #1cc88a;
       color: white;
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
     .status-badge.inactive {
       background-color: #e74a3b;
       color: white;
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
     /* Boutons & Actions */
@@ -236,6 +253,25 @@
       color: white;
     }
 
+    /* Styles pour les liens de tri */
+    .sort-link {
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .sort-link:hover {
+      opacity: 0.8;
+    }
+
+    .sort-link i {
+      transition: transform 0.2s ease;
+    }
+
+    .sort-link:hover i {
+      transform: translateY(-1px);
+    }
+
     /* Styles pour les champs vides */
     .empty-field {
       color: #b7b9cc;
@@ -287,144 +323,108 @@
         </a>
       </div>
 
-      <div class="search-container d-flex justify-content-between">
-        <form class="d-flex col-md-5" method="get" action="{{ path('app_user_list') }}">
-          <div class="input-group">
-            <input type="text" name="search" class="form-control search-input" placeholder="Rechercher un utilisateur..." value="{{ app.request.get('search') }}">
-            <button class="btn btn-primary search-btn" type="submit">
-              <i class="fas fa-search"></i>
-            </button>
+      <div class="search-container">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <div class="input-group">
+              <input type="text" id="search-input" class="form-control search-input" placeholder="Rechercher un utilisateur..." value="{{ criteria.search|default('') }}">
+              <button class="btn btn-primary search-btn" id="search-btn">
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
           </div>
-        </form>
+          <div class="col-md-6 d-flex justify-content-end">
+            <div class="d-flex gap-2">
+              <select id="role-filter" class="form-select filter-select">
+                <option value="">Tous les rôles</option>
+                <option value="RH" {% if criteria.role == 'RH' %}selected{% endif %}>RH</option>
+                <option value="EMPLOYE" {% if criteria.role == 'EMPLOYE' %}selected{% endif %}>Employé</option>
+                <option value="ADMIN" {% if criteria.role == 'ADMIN' %}selected{% endif %}>Admin</option>
+              </select>
+              <select id="status-filter" class="form-select filter-select">
+                <option value="">Tous les statuts</option>
+                <option value="1" {% if criteria.is_verified == '1' %}selected{% endif %}>Actif</option>
+                <option value="0" {% if criteria.is_verified == '0' %}selected{% endif %}>Inactif</option>
+              </select>
+            </div>
+          </div>
+        </div>
 
-        <form class="filter-form" method="get" action="{{ path('app_user_list') }}">
-          <select name="role" class="form-select filter-select" onchange="this.form.submit()">
-            <option value="">Tous les rôles</option>
-            <option value="RH" {% if app.request.get('role') == 'RH' %}selected{% endif %}>RH</option>
-            <option value="EMPLOYE" {% if app.request.get('role') == 'EMPLOYE' %}selected{% endif %}>Employé</option>
-            <option value="ADMIN" {% if app.request.get('role') == 'ADMIN' %}selected{% endif %}>Admin</option>
-          </select>
-        </form>
-      </div>
-
-      <div class="card shadow-sm mb-4">
-        <div class="card-body p-0">
-          <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0 users-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Photo</th>
-                  <th>Nom Complet</th>
-                  <th>Contact</th>
-                  <th>Rôle</th>
-                  <th>Statut</th>
-                  <th>Documents</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for user in users %}
-                  <tr>
-                    <td>#{{ user.id }}</td>
-                    <td>
-                      {% if user.profilePhoto %}
-                        <img src="{{ asset('uploads/profile_photos/' ~ user.profilePhoto) }}" class="user-photo" alt="Photo de profil">
-                      {% else %}
-                        <div class="photo-placeholder">
-                          <i class="fas fa-user"></i>
-                        </div>
-                      {% endif %}
-                    </td>
-                    <td>
-                      <div>
-                        <div class="fw-medium">{{ user.lastName|default('N/A') }} {{ user.firstName|default('') }}</div>
-                        <div class="text-muted small">{{ user.cin|default('CIN non renseigné') }}</div>
-                      </div>
-                    </td>
-                    <td>
-                      <div>
-                        <div class="compact-column">{{ user.email|default('Email non renseigné') }}</div>
-                        <div class="text-muted small">{{ user.phoneNumber|default('Tél. non renseigné') }}</div>
-                      </div>
-                    </td>
-                    <td>
-                      {% if user.role %}
-                        <span class="badge-role {% if user.role == 'RH' %}rh{% elseif user.role == 'EMPLOYE' %}employe{% else %}admin{% endif %}">
-                          {{ user.role }}
-                        </span>
-                      {% else %}
-                        <span class="empty-field">Non défini</span>
-                      {% endif %}
-                    </td>
-                    <td>
-                      {% if user.isVerified %}
-                        <span class="status-badge active">
-                          <i class="fas fa-check-circle me-1"></i> Actif
-                        </span>
-                      {% else %}
-                        <span class="status-badge inactive">
-                          <i class="fas fa-times-circle me-1"></i> Inactif
-                        </span>
-                      {% endif %}
-                    </td>
-                    <td>
-                      <div class="d-flex align-items-center">
-                        {% if user.cv %}
-                          <a href="{{ asset('uploads/cvs/' ~ user.cv) }}" class="cv-link me-2" target="_blank">
-                            <i class="fas fa-file-pdf"></i> CV
-                          </a>
-                        {% else %}
-                          <span class="empty-field">Aucun CV</span>
-                        {% endif %}
-                      </div>
-                    </td>
-                    <td>
-                      <div class="d-flex align-items-center">
-                        <a href="{{ path('app_user_show', {'id': user.id}) }}" class="action-btn view" title="Voir">
-                          <i class="fas fa-eye"></i>
-                        </a>
-                        <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="action-btn edit" title="Modifier">
-                          <i class="fas fa-edit"></i>
-                        </a>
-                        {% if user.isVerified %}
-                          <a href="javascript:void(0)" class="action-btn delete" title="Désactiver" onclick="confirmUserAction('{{ path('app_admin_deactivate_user', {'id': user.id}) }}', 'Désactiver', 'Êtes-vous sûr de vouloir désactiver cet utilisateur ?', 'Cette action empêchera l\'utilisateur de se connecter.')">
-                            <i class="fas fa-user-times"></i>
-                          </a>
-                        {% else %}
-                          <a href="javascript:void(0)" class="action-btn view" title="Activer" onclick="confirmUserAction('{{ path('app_admin_activate_user', {'id': user.id}) }}', 'Activer', 'Êtes-vous sûr de vouloir activer cet utilisateur ?', 'Cette action permettra à l\'utilisateur de se connecter.')">
-                            <i class="fas fa-user-check"></i>
-                          </a>
-                        {% endif %}
-                        <a href="#"
-                          onclick="confirmDelete('{{ path('app_user_delete', {'id': user.id}) }}', '{{ csrf_token('delete' ~ user.id) }}')"
-                          class="action-btn delete" title="Supprimer">
-                          <i class="fas fa-trash"></i>
-                        </a>
-
-
-                      </div>
-                    </td>
-                  </tr>
-                {% else %}
-                  <tr>
-                    <td colspan="8" class="text-center py-5">
-                      <div class="empty-state">
-                        <i class="fas fa-users text-muted fa-3x mb-3"></i>
-                        <h5>Aucun utilisateur trouvé</h5>
-                        <p class="text-muted">Aucun résultat ne correspond à votre recherche.</p>
-                      </div>
-                    </td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="d-flex gap-2">
+                <button class="btn btn-outline-primary btn-sm" id="sort-salary-asc">
+                  <i class="fas fa-sort-amount-up-alt me-1"></i> Salaire croissant
+                </button>
+                <button class="btn btn-outline-primary btn-sm" id="sort-salary-desc">
+                  <i class="fas fa-sort-amount-down-alt me-1"></i> Salaire décroissant
+                </button>
+                <button class="btn btn-outline-primary btn-sm" id="sort-name-asc">
+                  <i class="fas fa-sort-alpha-up me-1"></i> Nom A-Z
+                </button>
+                <button class="btn btn-outline-primary btn-sm" id="sort-name-desc">
+                  <i class="fas fa-sort-alpha-down me-1"></i> Nom Z-A
+                </button>
+              </div>
+              <div>
+                <button class="btn btn-outline-secondary btn-sm" id="reset-filters">
+                  <i class="fas fa-undo me-1"></i> Réinitialiser
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="pagination-container">
-        {{ knp_pagination_render(users, null, {}, {'align': 'center', 'size': 'medium', 'rounded': true}) }}
+      <!-- Statistiques -->
+      <div class="row mb-4">
+        <div class="col-md-6">
+          <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+              <h5 class="mb-0"><i class="fas fa-users me-2"></i> Répartition par rôle</h5>
+            </div>
+            <div class="card-body">
+              <div class="d-flex justify-content-around">
+                {% for role, count in roleStats %}
+                  <div class="text-center">
+                    <div class="badge-role {% if role == 'RH' %}rh{% elseif role == 'EMPLOYE' %}employe{% else %}admin{% endif %} mb-2">
+                      {{ role }}
+                    </div>
+                    <h4>{{ count }}</h4>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+              <h5 class="mb-0"><i class="fas fa-money-bill-wave me-2"></i> Salaire moyen par rôle</h5>
+            </div>
+            <div class="card-body">
+              <div class="d-flex justify-content-around">
+                {% for role, salary in salaryStats %}
+                  <div class="text-center">
+                    <div class="badge-role {% if role == 'RH' %}rh{% elseif role == 'EMPLOYE' %}employe{% else %}admin{% endif %} mb-2">
+                      {{ role }}
+                    </div>
+                    <h4>{{ salary|number_format(2, ',', ' ') }}DT</h4>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card shadow-sm mb-4">
+        <div class="card-body p-0">
+          <div id="users-table-container">
+            {% include 'user/_users_table.html.twig' with {'users': users} %}
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -434,65 +434,347 @@
   {{ parent() }}
   <script>
     document.addEventListener('DOMContentLoaded', function() {
+      // Variables pour les critères de recherche
+      let searchCriteria = {
+        search: '{{ criteria.search|default('') }}',
+        role: '{{ criteria.role|default('') }}',
+        is_verified: '{{ criteria.is_verified|default('') }}',
+        sort_by: '{{ criteria.sort_by|default('') }}',
+        sort_dir: '{{ criteria.sort_dir|default('') }}',
+        page: 1
+      };
+
       // Animation à l'entrée des lignes du tableau
-      const tableRows = document.querySelectorAll('.users-table tbody tr');
-      tableRows.forEach((row, index) => {
-        row.style.opacity = '0';
-        row.style.transform = 'translateY(10px)';
-        setTimeout(() => {
-          row.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-          row.style.opacity = '1';
-          row.style.transform = 'translateY(0)';
-        }, 100 + (index * 50));
+      animateTableRows();
+
+      // Fonction pour animer les lignes du tableau
+      function animateTableRows() {
+        const tableRows = document.querySelectorAll('.users-table tbody tr');
+        tableRows.forEach((row, index) => {
+          row.style.opacity = '0';
+          row.style.transform = 'translateY(10px)';
+          setTimeout(() => {
+            row.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+            row.style.opacity = '1';
+            row.style.transform = 'translateY(0)';
+          }, 100 + (index * 50));
+        });
+      }
+
+      // Fonction pour confirmer la suppression d'un utilisateur
+      window.confirmDelete = function(url, token) {
+        Swal.fire({
+          title: 'Êtes-vous sûr ?',
+          text: "Cette action est irréversible et supprimera définitivement l'utilisateur.",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#e74a3b',
+          cancelButtonColor: '#6c757d',
+          confirmButtonText: 'Oui, supprimer',
+          cancelButtonText: 'Annuler'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = url;
+            form.style.display = 'none';
+
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_token';
+            csrfInput.value = token;
+
+            form.appendChild(csrfInput);
+            document.body.appendChild(form);
+            form.submit();
+          }
+        });
+      };
+
+      // Fonction pour confirmer l'activation/désactivation d'un utilisateur
+      window.confirmUserAction = function(url, action, title, text) {
+        Swal.fire({
+          title: title,
+          text: text,
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: action === 'Activer' ? '#1cc88a' : '#e74a3b',
+          cancelButtonColor: '#6c757d',
+          confirmButtonText: 'Oui, ' + action.toLowerCase(),
+          cancelButtonText: 'Annuler'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = url;
+          }
+        });
+      };
+
+      // Fonction pour charger les utilisateurs avec AJAX
+      function loadUsers() {
+        // Afficher un indicateur de chargement
+        document.getElementById('users-table-container').innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Chargement...</span></div><p class="mt-2">Chargement des utilisateurs...</p></div>';
+
+        // Construire l'URL avec les critères de recherche
+        const queryParams = new URLSearchParams();
+        for (const key in searchCriteria) {
+          if (searchCriteria[key]) {
+            queryParams.append(key, searchCriteria[key]);
+          }
+        }
+
+        // Faire la requête AJAX
+        fetch(`/ajax/users/search?${queryParams.toString()}`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Erreur réseau: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          // Vérifier si les données contiennent une erreur
+          if (data.error) {
+            throw new Error(data.message || 'Erreur serveur');
+          }
+
+          // Vérifier si les données sont valides
+          if (!data || !data.html) {
+            throw new Error('Données de réponse invalides');
+          }
+
+          // Mettre à jour le tableau des utilisateurs
+          document.getElementById('users-table-container').innerHTML = data.html;
+
+          // Réinitialiser les animations
+          animateTableRows();
+
+          // Mettre à jour les événements de pagination et de tri
+          setTimeout(() => {
+            setupPaginationEvents();
+            setupSortEvents();
+          }, 100);
+        })
+        .catch(error => {
+          console.error('Erreur lors du chargement des utilisateurs:', error);
+
+          // Afficher un message d'erreur dans le conteneur du tableau
+          document.getElementById('users-table-container').innerHTML = `
+            <div class="alert alert-danger text-center my-5">
+              <i class="fas fa-exclamation-triangle me-2"></i>
+              <strong>Erreur lors du chargement des utilisateurs</strong>
+              <p class="mb-0 mt-2">Veuillez réinitialiser les filtres ou rafraîchir la page.</p>
+              <div class="mt-3">
+                <button class="btn btn-outline-danger me-2" onclick="window.location.reload()">
+                  <i class="fas fa-sync-alt me-2"></i>Rafraîchir la page
+                </button>
+                <button class="btn btn-outline-primary" onclick="resetAndReload()">
+                  <i class="fas fa-undo me-2"></i>Réinitialiser les filtres
+                </button>
+              </div>
+            </div>
+          `;
+
+          // Afficher une alerte SweetAlert
+          Swal.fire({
+            title: 'Erreur',
+            text: 'Une erreur est survenue lors du chargement des utilisateurs. Veuillez réinitialiser les filtres ou rafraîchir la page.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
+        });
+      }
+
+      // Fonction pour réinitialiser les filtres et recharger
+      function resetAndReload() {
+        // Réinitialiser les critères de recherche
+        searchCriteria = {
+          search: '',
+          role: '',
+          is_verified: '',
+          sort_by: '',
+          sort_dir: '',
+          page: 1
+        };
+
+        // Réinitialiser les champs de formulaire
+        document.getElementById('search-input').value = '';
+        if (document.getElementById('role-filter')) {
+          document.getElementById('role-filter').value = '';
+        }
+        if (document.getElementById('status-filter')) {
+          document.getElementById('status-filter').value = '';
+        }
+
+        // Charger les utilisateurs
+        loadUsers();
+      }
+
+      // Fonction pour configurer les événements de pagination
+      function setupPaginationEvents() {
+        document.querySelectorAll('.pagination-horizontal a').forEach(link => {
+          link.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            // Extraire le numéro de page de l'URL
+            const url = new URL(this.href, window.location.origin);
+            const page = url.searchParams.get('page') || 1;
+
+            // Mettre à jour le critère de page
+            searchCriteria.page = page;
+
+            // Ajouter une classe pour indiquer la page active visuellement
+            document.querySelectorAll('.pagination-horizontal .page-item').forEach(item => {
+              item.classList.remove('active');
+            });
+            this.closest('.page-item').classList.add('active');
+
+            // Charger les utilisateurs
+            loadUsers();
+
+            // Faire défiler vers le haut du tableau
+            document.querySelector('.card.shadow-sm').scrollIntoView({ behavior: 'smooth' });
+          });
+        });
+      }
+
+      // Événement de recherche
+      document.getElementById('search-btn').addEventListener('click', function() {
+        searchCriteria.search = document.getElementById('search-input').value;
+        searchCriteria.page = 1;
+        loadUsers();
       });
+
+      // Événement de recherche sur la touche Entrée
+      document.getElementById('search-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          searchCriteria.search = this.value;
+          searchCriteria.page = 1;
+          loadUsers();
+        }
+      });
+
+      // Événement de filtre par rôle
+      document.getElementById('role-filter').addEventListener('change', function() {
+        searchCriteria.role = this.value;
+        searchCriteria.page = 1;
+        loadUsers();
+      });
+
+      // Événement de filtre par statut
+      document.getElementById('status-filter').addEventListener('change', function() {
+        searchCriteria.is_verified = this.value;
+        searchCriteria.page = 1;
+        loadUsers();
+      });
+
+      // Événements de tri
+      document.getElementById('sort-salary-asc').addEventListener('click', function() {
+        searchCriteria.sort_by = 'salary';
+        searchCriteria.sort_dir = 'asc';
+        searchCriteria.page = 1;
+        loadUsers();
+      });
+
+      document.getElementById('sort-salary-desc').addEventListener('click', function() {
+        searchCriteria.sort_by = 'salary';
+        searchCriteria.sort_dir = 'desc';
+        searchCriteria.page = 1;
+        loadUsers();
+      });
+
+      document.getElementById('sort-name-asc').addEventListener('click', function() {
+        searchCriteria.sort_by = 'name';
+        searchCriteria.sort_dir = 'asc';
+        searchCriteria.page = 1;
+        loadUsers();
+      });
+
+      document.getElementById('sort-name-desc').addEventListener('click', function() {
+        searchCriteria.sort_by = 'name';
+        searchCriteria.sort_dir = 'desc';
+        searchCriteria.page = 1;
+        loadUsers();
+      });
+
+      // Événement de réinitialisation des filtres
+      document.getElementById('reset-filters').addEventListener('click', function() {
+        // Réinitialiser les critères de recherche
+        searchCriteria = {
+          search: '',
+          role: '',
+          is_verified: '',
+          sort_by: '',
+          sort_dir: '',
+          page: 1
+        };
+
+        // Réinitialiser les champs de formulaire
+        document.getElementById('search-input').value = '';
+        document.getElementById('role-filter').value = '';
+        document.getElementById('status-filter').value = '';
+
+        // Charger les utilisateurs
+        loadUsers();
+      });
+
+      // Fonction pour configurer les événements de tri dans l'en-tête du tableau
+      function setupSortEvents() {
+        const sortLinks = document.querySelectorAll('.sort-link');
+
+        sortLinks.forEach(link => {
+          // Supprimer les anciens écouteurs d'événements pour éviter les doublons
+          link.removeEventListener('click', handleSortClick);
+          // Ajouter le nouvel écouteur d'événements
+          link.addEventListener('click', handleSortClick);
+        });
+      }
+
+      // Fonction de gestion du clic sur un lien de tri
+      function handleSortClick(e) {
+        e.preventDefault();
+
+        const sortField = this.getAttribute('data-sort');
+
+        // Déterminer la direction de tri (inverser si on clique sur le même champ)
+        let sortDir = 'asc';
+        if (searchCriteria.sort_by === sortField && searchCriteria.sort_dir === 'asc') {
+          sortDir = 'desc';
+        }
+
+        // Mettre à jour les critères de recherche
+        searchCriteria.sort_by = sortField;
+        searchCriteria.sort_dir = sortDir;
+        searchCriteria.page = 1;
+
+        // Mettre à jour l'interface utilisateur pour indiquer le tri actif
+        document.querySelectorAll('.sort-link i').forEach(icon => {
+          icon.className = 'fas fa-sort ms-1';
+        });
+
+        const icon = this.querySelector('i');
+        if (sortDir === 'asc') {
+          icon.className = 'fas fa-sort-up ms-1';
+        } else {
+          icon.className = 'fas fa-sort-down ms-1';
+        }
+
+        // Charger les utilisateurs avec les nouveaux critères de tri
+        loadUsers();
+      }
+
+      // Configurer les événements de pagination et de tri initiaux
+      setupPaginationEvents();
+
+      // Attendre que le DOM soit complètement chargé pour configurer les événements de tri
+      setTimeout(() => {
+        setupSortEvents();
+      }, 100);
     });
-
-    // Fonction pour confirmer la suppression d'un utilisateur
-    function confirmDelete(url, token) {
-      Swal.fire({
-        title: 'Êtes-vous sûr ?',
-        text: "Cette action est irréversible et supprimera définitivement l'utilisateur.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#e74a3b',
-        cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Oui, supprimer',
-        cancelButtonText: 'Annuler'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          const form = document.createElement('form');
-          form.method = 'POST';
-          form.action = url;
-          form.style.display = 'none';
-
-          const csrfInput = document.createElement('input');
-          csrfInput.type = 'hidden';
-          csrfInput.name = '_token';
-          csrfInput.value = token;
-
-          form.appendChild(csrfInput);
-          document.body.appendChild(form);
-          form.submit();
-        }
-      });
-    }
-
-    // Fonction pour confirmer l'activation/désactivation d'un utilisateur
-    function confirmUserAction(url, action, title, text) {
-      Swal.fire({
-        title: title,
-        text: text,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonColor: action === 'Activer' ? '#1cc88a' : '#e74a3b',
-        cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Oui, ' + action.toLowerCase(),
-        cancelButtonText: 'Annuler'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          window.location.href = url;
-        }
-      });
-    }
   </script>
 {% endblock %}

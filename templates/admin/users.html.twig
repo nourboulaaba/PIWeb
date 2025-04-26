@@ -2,10 +2,74 @@
 
 {% block title %}Gestion des utilisateurs{% endblock %}
 
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    /* Badges de rôle */
+    .badge-role {
+      padding: 0.35em 0.8em;
+      font-size: 0.75em;
+      text-transform: uppercase;
+      border-radius: 30px;
+      letter-spacing: 0.03em;
+      font-weight: 600;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s ease;
+    }
+
+    .badge-role:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    .badge-role.rh {
+      background-color: #4e73df;
+      color: white;
+    }
+
+    .badge-role.employe {
+      background-color: #4895ef;
+      color: white;
+    }
+
+    .badge-role.admin {
+      background-color: #f6c23e;
+      color: #333;
+    }
+
+    /* Badges de statut */
+    .status-badge {
+      padding: 0.35em 0.8em;
+      font-size: 0.75em;
+      border-radius: 30px;
+      font-weight: 600;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s ease;
+    }
+
+    .status-badge:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    .status-badge.active {
+      background-color: #1cc88a;
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .status-badge.inactive {
+      background-color: #e74a3b;
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+</style>
+{% endblock %}
+
 {% block body %}
 <div class="container mt-4">
     <h1>Gestion des utilisateurs</h1>
-    
+
     {% for label, messages in app.flashes %}
         {% for message in messages %}
             <div class="alert alert-{{ label }}" role="alert">
@@ -13,7 +77,7 @@
             </div>
         {% endfor %}
     {% endfor %}
-    
+
     <div class="card">
         <div class="card-header">
             <h5 class="card-title mb-0">Liste des utilisateurs</h5>
@@ -40,16 +104,22 @@
                             <td>{{ user.firstName|default('Non renseigné') }}</td>
                             <td>
                                 {% if user.role %}
-                                    <span class="badge bg-primary">{{ user.role }}</span>
+                                    <span class="badge-role {% if user.role == 'RH' %}rh{% elseif user.role == 'EMPLOYE' %}employe{% else %}admin{% endif %}">
+                                        {{ user.role }}
+                                    </span>
                                 {% else %}
                                     <span class="badge bg-secondary">Non défini</span>
                                 {% endif %}
                             </td>
                             <td>
                                 {% if user.isVerified %}
-                                    <span class="badge bg-success">Actif</span>
+                                    <span class="status-badge active">
+                                        <i class="fas fa-check-circle me-1"></i> Actif
+                                    </span>
                                 {% else %}
-                                    <span class="badge bg-danger">Inactif</span>
+                                    <span class="status-badge inactive">
+                                        <i class="fas fa-times-circle me-1"></i> Inactif
+                                    </span>
                                 {% endif %}
                             </td>
                             <td>

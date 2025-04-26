@@ -1,0 +1,114 @@
+{# templates/pagination/custom_pagination.html.twig #}
+{% if pageCount > 1 %}
+    <nav aria-label="Pagination" class="custom-pagination">
+        <ul class="pagination pagination-horizontal">
+            {# Première page #}
+            {% if first is defined and current != first %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ path(route, query|merge({(pageParameterName): first})) }}" aria-label="Première page">
+                        <i class="fas fa-angle-double-left"></i>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">
+                        <i class="fas fa-angle-double-left"></i>
+                    </span>
+                </li>
+            {% endif %}
+
+            {# Page précédente #}
+            {% if previous is defined %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ path(route, query|merge({(pageParameterName): previous})) }}" aria-label="Page précédente">
+                        <i class="fas fa-angle-left"></i>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">
+                        <i class="fas fa-angle-left"></i>
+                    </span>
+                </li>
+            {% endif %}
+
+            {# Pages numérotées avec limite de 3 pages #}
+            {% set nearbyPagesLimit = 1 %}
+            {% set startPage = current - nearbyPagesLimit %}
+            {% set endPage = current + nearbyPagesLimit %}
+
+            {% if startPage < 1 %}
+                {% set startPage = 1 %}
+            {% endif %}
+
+            {% if endPage > pageCount %}
+                {% set endPage = pageCount %}
+            {% endif %}
+
+            {# Première page si nécessaire #}
+            {% if startPage > 1 %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ path(route, query|merge({(pageParameterName): 1})) }}">1</a>
+                </li>
+                {% if startPage > 2 %}
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                {% endif %}
+            {% endif %}
+
+            {# Pages autour de la page courante #}
+            {% for page in startPage..endPage %}
+                <li class="page-item {% if page == current %}active{% endif %}">
+                    {% if page == current %}
+                        <span class="page-link">{{ page }}</span>
+                    {% else %}
+                        <a class="page-link" href="{{ path(route, query|merge({(pageParameterName): page})) }}">{{ page }}</a>
+                    {% endif %}
+                </li>
+            {% endfor %}
+
+            {# Dernière page si nécessaire #}
+            {% if endPage < pageCount %}
+                {% if endPage < pageCount - 1 %}
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                {% endif %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ path(route, query|merge({(pageParameterName): pageCount})) }}">{{ pageCount }}</a>
+                </li>
+            {% endif %}
+
+            {# Page suivante #}
+            {% if next is defined %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ path(route, query|merge({(pageParameterName): next})) }}" aria-label="Page suivante">
+                        <i class="fas fa-angle-right"></i>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">
+                        <i class="fas fa-angle-right"></i>
+                    </span>
+                </li>
+            {% endif %}
+
+            {# Dernière page #}
+            {% if last is defined and current != last %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ path(route, query|merge({(pageParameterName): last})) }}" aria-label="Dernière page">
+                        <i class="fas fa-angle-double-right"></i>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link">
+                        <i class="fas fa-angle-double-right"></i>
+                    </span>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endif %}

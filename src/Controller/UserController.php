@@ -6,17 +6,18 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\RegistrationType;
 use App\Form\UserType;
+use App\Repository\UserRepository;
 use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class UserController extends AbstractController
 {
@@ -146,18 +147,36 @@ public function signup(Request $request, UserPasswordHasherInterface $passwordHa
 
 
     #[Route('/users', name: 'app_user_list')]
-    public function list(EntityManagerInterface $entityManager, Request $request, PaginatorInterface $paginator): Response
+    public function list(Request $request, UserRepository $userRepository, PaginatorInterface $paginator): Response
     {
-        $query = $entityManager->getRepository(User::class)->createQueryBuilder('u')->getQuery();
+        // Récupérer les critères de recherche
+        $criteria = [
+            'search' => $request->query->get('search'),
+            'role' => $request->query->get('role'),
+            'is_verified' => $request->query->get('is_verified'),
+            'sort_by' => $request->query->get('sort_by'),
+            'sort_dir' => $request->query->get('sort_dir')
+        ];
 
+        // Obtenir le QueryBuilder avec les critères appliqués
+        $queryBuilder = $userRepository->findBySearchCriteria($criteria);
+
+        // Paginer les résultats
         $users = $paginator->paginate(
-            $query, // Requête à paginer
-            $request->query->getInt('page', 1), // Numéro de page, 1 par défaut
-            5 // Nombre d'éléments par page
+            $queryBuilder,
+            $request->query->getInt('page', 1),
+            $request->query->getInt('limit', 5)
         );
+
+        // Récupérer les statistiques pour le dashboard
+        $roleStats = $userRepository->getUserStatsByRole();
+        $salaryStats = $userRepository->getAverageSalaryByRole();
 
         return $this->render('user/list.html.twig', [
             'users' => $users,
+            'roleStats' => $roleStats,
+            'salaryStats' => $salaryStats,
+            'criteria' => $criteria
         ]);
     }
 
