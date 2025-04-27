@@ -8,6 +8,7 @@ use App\Form\RegistrationType;
 use App\Form\UserType;
 use App\Repository\UserRepository;
 use App\Security\EmailVerifier;
+use App\Service\ExcelExportService;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -224,6 +225,43 @@ public function signup(Request $request, UserPasswordHasherInterface $passwordHa
         }
 
         return $this->redirectToRoute('app_user_list');
+    }
+
+    #[Route('/users/export', name: 'app_user_export_excel')]
+    public function exportToExcel(UserRepository $userRepository, ExcelExportService $excelExportService): Response
+    {
+        // Récupérer tous les utilisateurs sans pagination
+        $users = $userRepository->findAll();
+
+        // Définir les en-têtes du tableau
+        $headers = [
+            'ID',
+            'Nom',
+            'Prénom',
+            'Email',
+            'Rôle',
+            'Salaire',
+            'Statut',
+            'Date de création'
+        ];
+
+        // Préparer les données pour l'export
+        $data = [];
+        foreach ($users as $user) {
+            $data[] = [
+                $user->getId(),
+                $user->getLastName() ?: 'N/A',
+                $user->getFirstName() ?: 'N/A',
+                $user->getEmail() ?: 'N/A',
+                $user->getRole() ?: 'N/A',
+                $user->getSalary() ?: 0,
+                $user->isVerified() ? 'Actif' : 'Inactif',
+                'N/A' // Temporairement remplacé jusqu'à ce que la colonne created_at soit ajoutée
+            ];
+        }
+
+        // Générer et retourner le fichier Excel
+        return $excelExportService->exportToExcel($headers, $data, 'liste_utilisateurs');
     }
 
     private function handleFileUploads($form, User $user): void
