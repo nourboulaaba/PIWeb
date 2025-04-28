@@ -2,34 +2,157 @@
 
 {% block title %}Recherche des congés{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Style général de la page */
+        h1 {
+            text-align: center;
+            margin-top: 50px;
+            font-size: 2rem;
+            color: #333;
+        }
+
+        form {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #007bff;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 1rem;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        table {
+            width: 80%;
+            margin: 40px auto;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .table-container {
+            margin-top: 30px;
+            text-align: center;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
-<h1>Rechercher les congés par ID d'employé</h1>
+    <h1>Rechercher les congés par ID d'employé</h1>
 
-<form method="get" action="{{ path('app_conge_search') }}">
-    <input type="text" name="idEmploye" placeholder="ID Employé" value="{{ idEmploye }}">
-    <button type="submit">Rechercher</button>
-</form>
+    <form method="get" action="{{ path('app_conge_search') }}">
+        <input type="text" name="idEmploye" placeholder="ID Employé" value="{{ idEmploye }}">
+        <button type="submit">Rechercher</button>
+    </form>
 
-{% if errorMessage %}
-    <p style="color:red;">{{ errorMessage }}</p>
-{% endif %}
+    {% if errorMessage %}
+        <p class="error-message">{{ errorMessage }}</p>
+    {% endif %}
 
-{% if conges is not empty %}
-    <table>
-        <tr>
-            <th>ID</th>
-            <th>Date début</th>
-            <th>Date fin</th>
-            <th>Statut</th>
-        </tr>
-        {% for conge in conges %}
-            <tr>
-                <td>{{ conge.id }}</td>
-                <td>{{ conge.dateDebut|date('Y-m-d') }}</td>
-                <td>{{ conge.dateFin|date('Y-m-d') }}</td>
-                <td>{{ conge.statut }}</td>
-            </tr>
-        {% endfor %}
-    </table>
-{% endif %}
+    {% if conges is not empty %}
+        <div class="table-container">
+            <table>
+                <tr>
+                    <th>ID</th>
+                    <th>Date début</th>
+                    <th>Date fin</th>
+                    <th>Statut</th>
+                </tr>
+                {% for conge in conges %}
+                    <tr>
+                        <td>{{ conge.id }}</td>
+                        <td>{{ conge.dateDebut|date('Y-m-d') }}</td>
+                        <td>{{ conge.dateFin|date('Y-m-d') }}</td>
+                        <td>{{ conge.statut }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Ajout de l'animation de focus sur l'input
+        const userInput = document.querySelector('input[name="idEmploye"]');
+        userInput.addEventListener('focus', function() {
+            this.style.borderColor = '#007bff';
+        });
+
+        userInput.addEventListener('blur', function() {
+            if (!this.value) {
+                this.style.borderColor = '#ccc';
+            }
+        });
+
+        // Animation de transition pour la table
+        document.addEventListener("DOMContentLoaded", function() {
+            const tableRows = document.querySelectorAll('table tbody tr');
+            tableRows.forEach((row, index) => {
+                row.style.opacity = 0;
+                row.style.transform = "translateY(20px)";
+                setTimeout(() => {
+                    row.style.transition = "opacity 0.5s ease, transform 0.5s ease";
+                    row.style.opacity = 1;
+                    row.style.transform = "translateY(0)";
+                }, 100 + (index * 100));
+            });
+        });
+    </script>
 {% endblock %}

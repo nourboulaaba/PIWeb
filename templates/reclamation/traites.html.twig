@@ -2,56 +2,134 @@
 
 {% block title %}Réclamations traitées{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        /* Tableau : Couleur de l'entête */
+        .colored-table thead th {
+            background-color: #36b9cc;
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            padding: 1rem;
+        }
+
+        /* Lignes du tableau */
+        .colored-table tbody td {
+            padding: 0.75rem;
+            background-color: #f9f9f9;
+        }
+
+        /* Lignes paires */
+        .colored-table tbody tr:nth-child(even) td {
+            background-color: #eef7f9;
+        }
+
+        /* Survol des lignes */
+        .colored-table tbody tr:hover td {
+            background-color: #d1f2eb;
+        }
+
+        /* Classification : Urgente */
+        .classification.Urgente {
+            background-color: #e74a3b; /* Rouge */
+            color: white;
+            font-weight: bold;
+            padding: 0.3rem 0.6rem;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+
+        /* Classification : Simple */
+        .classification.Simple {
+            background-color: #1cc88a; /* Vert */
+            color: white;
+            font-weight: bold;
+            padding: 0.3rem 0.6rem;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+
+        /* Classification : Moyenne */
+        .classification.Moyenne {
+            background-color: #f6c23e; /* Orange */
+            color: black;
+            font-weight: bold;
+            padding: 0.3rem 0.6rem;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
-    <h1>Réclamations traitées</h1>
-
-    {{ form_start(filter_form, {'method': 'GET'}) }}
-        {{ form_row(filter_form.classification) }}
-        <button class="btn btn-primary">Filtrer</button>
-    {{ form_end(filter_form) }}
-
-    <br>
-
-    {% if pagination|length > 0 %}
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Utilisateur</th>
-                    <th>Sujet</th>
-                    <th>Description</th>
-                    <th>Date</th>
-                    <th>Type de Congé</th>
-                    <th>Statut</th>
-                    <th>Classification</th> 
-                </tr>
-            </thead>
-            <tbody>
-                {% for reclamation in pagination %}
-                    <tr>
-                        <td>{{ reclamation.id }}</td>
-                        <td>{{ reclamation.user.firstName }} {{ reclamation.user.lastName }}</td>
-                        <td>{{ reclamation.sujet }}</td>
-                        <td>{{ reclamation.description }}</td>
-                        <td>{{ reclamation.date ? reclamation.date|date('d/m/Y') : 'Non spécifiée' }}</td>
-                        <td>{{ reclamation.conge ? reclamation.conge.typeConge : 'Non spécifié' }}</td>
-                        <td>{{ reclamation.statut }}</td>
-                        <td>{{ reclamation.classification }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        {% if pagination.pageCount > 1 %}
-            <div class="pagination">
-                {{ knp_pagination_render(pagination) }}
+<div class="container-fluid">
+    <div class="dashboard-container animate__animated animate__fadeIn">
+        <div class="dashboard-header d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h3 mb-0 text-gray-800">Réclamations traitées</h1>
             </div>
-        {% else %}
-            <!-- Message si une seule page -->
-            <p>Il n'y a qu'une seule page de réclamations traitées.</p>
-        {% endif %}
+            <div>
+                {# Formulaire de recherche par mot-clé #}
+                <form method="GET" action="{{ path('app_reclamation_traites') }}" class="d-flex justify-content-between">
+                    <input type="text" name="keyword" class="form-control w-50" placeholder="Rechercher par classification" value="{{ app.request.get('keyword') }}">
+                    <button type="submit" class="btn btn-primary">Rechercher</button>
+                </form>
+            </div>
+        </div>
 
-    {% else %}
-        <p>Aucune réclamation traitée.</p>
-    {% endif %}
+        <br>
+
+        {% if pagination|length > 0 %}
+            <div class="card shadow-sm mb-4">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped colored-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Utilisateur</th>
+                                    <th>Sujet</th>
+                                    <th>Description</th>
+                                    <th>Date</th>
+                                    <th>Classification</th> 
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for reclamation in pagination %}
+                                    <tr>
+                                        <td>{{ reclamation.id }}</td>
+                                        <td>{{ reclamation.user.firstName }} {{ reclamation.user.lastName }}</td>
+                                        <td>{{ reclamation.sujet }}</td>
+                                        <td>{{ reclamation.description }}</td>
+                                        <td>{{ reclamation.date ? reclamation.date|date('d/m/Y') : 'Non spécifiée' }}</td>
+                                        <td class="classification {{ reclamation.classification|replace({' ': ''}) }}">
+                                            {{ reclamation.classification }}
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted">Aucune réclamation traitée.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            {% if pagination.pageCount > 1 %}
+                <div class="pagination">
+                    {{ knp_pagination_render(pagination) }}
+                </div>
+            {% else %}
+                <p>Il n'y a qu'une seule page de réclamations traitées.</p>
+            {% endif %}
+        {% else %}
+            <p>Aucune réclamation traitée.</p>
+        {% endif %}
+    </div>
+</div>
 {% endblock %}

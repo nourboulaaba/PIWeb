@@ -25,14 +25,24 @@ final class CongeController extends AbstractController
     {
         $this->entityManager = $entityManager;
     }
-    #[Route('/dashboard/conge', name: 'app_conge_index', methods: ['GET'])]
-    public function index(CongeRepository $congeRepository): Response
+    #[Route('/dashboard/conge', name: 'app_conge_index', methods: ['GET', 'POST'])]
+    public function index(Request $request, CongeRepository $congeRepository): Response
     {
-        // Récupérer tous les congés avec le statut 'En attente'
-        $congesEnAttente = $congeRepository->findBy(['statut' => 'En attente']);
+        // Récupérer le type de congé depuis le formulaire
+        $typeConge = $request->query->get('typeConge');
 
+        // Si un type de congé est sélectionné, on filtre par ce type
+        if ($typeConge) {
+            $conges = $congeRepository->findBy(['typeConge' => $typeConge]);
+        } else {
+            // Sinon on récupère tous les congés
+            $conges = $congeRepository->findAll();
+        }
+
+        // Transmettre le type de congé à la vue pour préselectionner l'option
         return $this->render('conge/index.html.twig', [
-            'conges' => $congesEnAttente,
+            'conges' => $conges,
+            'typeConge' => $typeConge,  // transmettre le type sélectionné
         ]);
     }
 
@@ -58,8 +68,6 @@ final class CongeController extends AbstractController
             $entityManager->persist($conge);
             $entityManager->flush();
             $this->addFlash('success', 'Votre demande de congé a été envoyée avec succès !');
-
-            return $this->redirectToRoute('app_conge_index');
         }
 
         return $this->render('conge/new.html.twig', [
@@ -123,7 +131,7 @@ final class CongeController extends AbstractController
         $idEmployeConstraints = new Assert\Collection([
             'idEmploye' => $idEmployeConstraint,
         ]);
-        
+
         $violations = $validator->validate(['idEmploye' => $idEmploye], $idEmployeConstraints);
 
         // Si l'ID est vide ou invalide
@@ -151,8 +159,4 @@ final class CongeController extends AbstractController
             'errorMessage' => $errorMessage, // Passe le message d'erreur à la vue
         ]);
     }
-    
-
 }
-
-

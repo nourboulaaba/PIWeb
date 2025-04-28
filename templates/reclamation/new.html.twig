@@ -2,9 +2,85 @@
 
 {% block title %}Nouvelle Réclamation{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Container principal du formulaire */
+        .form-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Titre du formulaire */
+        .form-container h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        /* Formulaire : Marges et espacement */
+        .form-container form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Champs du formulaire */
+        .form-container .form-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .form-container .form-control {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .form-container .form-control:focus {
+            border-color: #36b9cc;
+            outline: none;
+            box-shadow: 0 0 5px rgba(28, 200, 138, 0.5);
+        }
+
+        /* Alertes */
+        .alert {
+            margin-top: 20px;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        /* Bouton soumettre */
+        .form-container button {
+            background-color: #36b9cc;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+            align-self: center;
+        }
+
+        /* Changement de couleur du bouton au survol */
+        .form-container button:hover {
+            background-color: #1cc88a;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
-<div class="container mt-4">
-    <h2>Nouvelle Réclamation Manuelle</h2>
+<div class="form-container">
+    <h2> Nouvelle Réclamation </h2>
 
     {% if error %}
         <div class="alert alert-danger">{{ error }}</div>
@@ -15,11 +91,11 @@
 
     <form action="{{ path('app_reclamation_new') }}" method="post">
         <div class="mb-3">
-            <label for="user_id" class="form-label">ID Utilisateur</label>
+            <label for="user_id" class="form-label">Votre ID</label>
             <input type="number" id="user_id" name="user_id" class="form-control" required>
         </div>
         <div class="mb-3">
-            <label for="conge_id" class="form-label">ID Congé</label>
+            <label for="conge_id" class="form-label">ID De Votre Congé</label>
             <input type="number" id="conge_id" name="conge_id" class="form-control" required>
         </div>
         <div class="mb-3">
@@ -32,17 +108,43 @@
         </div>
         <div class="mb-3">
             <label for="date" class="form-label">Date</label>
-            <input type="date" id="date" name="date" class="form-control" required>
+            <input type="date" id="date" name="date" class="form-control" value="{{ "now"|date("Y-m-d") }}" required>
         </div>
         <div class="mb-3">
             <label for="statut" class="form-label">Statut</label>
-            <select id="statut" name="statut" class="form-control">
-                <option value="Non traité">Non traité</option>
-                <option value="En cours">En cours</option>
-                <option value="Traité">Traité</option>
-            </select>
+            <input type="text" id="statut" name="statut" class="form-control" value="Non traité" disabled>
+            <small>Statut : Non traité (ne peut pas être modifié)</small>
         </div>
-        <button type="submit" class="btn btn-primary">Envoyer</button>
+        <button type="submit" id="submit-btn">Envoyer</button>
     </form>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Effet de soumission de formulaire
+        document.getElementById('submit-btn').addEventListener('click', function(e) {
+            e.preventDefault(); // Empêche la soumission normale du formulaire
+
+            // Afficher un message de confirmation
+            const successMessage = document.createElement('div');
+            successMessage.classList.add('alert', 'alert-success');
+            successMessage.textContent = 'Votre réclamation a bien été envoyée !';
+            document.querySelector('.form-container').appendChild(successMessage);
+
+            // Simuler une soumission après 2 secondes
+            setTimeout(function() {
+                document.querySelector('form').submit();
+            }, 2000);
+        });
+
+        // Amélioration visuelle du bouton de soumission au survol
+        document.getElementById('submit-btn').addEventListener('mouseover', function() {
+            this.style.backgroundColor = '#1cc88a';
+        });
+        document.getElementById('submit-btn').addEventListener('mouseout', function() {
+            this.style.backgroundColor = '#36b9cc';
+        });
+    </script>
 {% endblock %}

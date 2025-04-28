@@ -6,7 +6,6 @@ use App\Entity\Reclamation;
 use App\Entity\User;
 use App\Entity\Conge;
 use App\Form\ReclamationType;
-use App\Form\ReclamationFilterType;
 use App\Repository\ReclamationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -54,16 +53,17 @@ final class ReclamationController extends AbstractController
         $classification = null;
 
         if ($request->isMethod('POST')) {
+            // Récupérer les autres données envoyées par le formulaire
             $userId = $request->request->get('user_id');
             $congeId = $request->request->get('conge_id');
             $sujet = $request->request->get('sujet');
             $description = $request->request->get('description');
-            $date = $request->request->get('date');
-            $statut = $request->request->get('statut');
 
+            // Vérifier si l'ID utilisateur est valide
             if (!$userId) {
                 $error = 'L\'ID utilisateur est requis.';
             } else {
+                // Vérifier si l'utilisateur et le congé existent
                 $user = $this->entityManager->getRepository(User::class)->find($userId);
                 $conge = $this->entityManager->getRepository(Conge::class)->find($congeId);
 
@@ -83,12 +83,13 @@ final class ReclamationController extends AbstractController
                         ->setConge($conge)
                         ->setSujet($sujet)
                         ->setDescription($description)
-                        ->setDate(new \DateTime())
-                        ->setStatut($statut ?: 'Non traité');
+                        ->setDate(new \DateTime())  // Date actuelle
+                        ->setStatut('Non traité');  // Toujours définir le statut sur 'Non traité'
 
                     // Ajouter la classification à la réclamation
                     $reclamation->setClassification($classification);
 
+                    // Persister la réclamation dans la base de données
                     $this->entityManager->persist($reclamation);
                     $this->entityManager->flush();
 
@@ -103,52 +104,40 @@ final class ReclamationController extends AbstractController
             'classification' => $classification,  // Afficher la classification dans la vue
         ]);
     }
+
+
+
     #[Route('/dashboard/reclamation/traites', name: 'app_reclamation_traites')]
     public function showTraites(RequestStack $requestStack, PaginatorInterface $paginator, Request $request): Response
     {
-        // Create the filter form
-        $filterForm = $this->createForm(ReclamationFilterType::class);
+        // Récupérer le mot-clé de la requête GET
+        $keyword = $request->query->get('keyword');
 
-        // Handle form submission
-        $filterForm->handleRequest($request);
-
-        // Get the current page (default to 1 if not set)
-        $page = $request->query->getInt('page', 1);
-
-        // Start building the query to get "Traité" reclamations
+        // Commencez à construire la requête pour obtenir les réclamations traitées
         $queryBuilder = $this->entityManager->getRepository(Reclamation::class)
             ->createQueryBuilder('r')
-            ->where('r.statut = :statut')
-            ->setParameter('statut', 'Traité');  // Only 'Traité' reclamations
+            ->where('r.statut = :statut')  // Seulement les réclamations traitées
+            ->setParameter('statut', 'Traité');
 
-        // Apply filtering if the form is submitted and valid
-        if ($filterForm->isSubmitted() && $filterForm->isValid()) {
-            $data = $filterForm->getData();
-
-            // Debug the form data to check what's being sent
-            dump($data); // This will output the form data in the console (in dev mode)
-
-            // If classification is selected, filter by classification
-            if ($data['classification']) {
-                $queryBuilder->andWhere('r.classification = :classification')
-                    ->setParameter('classification', $data['classification']);
-            }
+        // Si un mot-clé est fourni, filtrez les réclamations qui contiennent ce mot-clé dans leur classification
+        if ($keyword) {
+            $queryBuilder->andWhere('r.classification LIKE :keyword') // Ajout du filtrage par mot-clé dans classification
+                ->setParameter('keyword', '%' . $keyword . '%'); // Recherche du mot-clé dans la classification
         }
 
-        // Get the query with the filters applied
+        // Récupérez la requête avec les filtres appliqués
         $query = $queryBuilder->getQuery();
 
-        // Apply pagination to the query
+        // Pagination des réclamations
         $pagination = $paginator->paginate(
-            $query,  // The query to execute
-            $page,   // Current page
-            10       // Number of items per page
+            $query,  // La requête à exécuter
+            $request->query->getInt('page', 1), // Page actuelle
+            10       // Nombre d'éléments par page
         );
 
-        // Pass data to the template
+        // Passez les données au template
         return $this->render('reclamation/traites.html.twig', [
             'pagination' => $pagination,
-            'filter_form' => $filterForm->createView(),  // Pass form to the template
         ]);
     }
 

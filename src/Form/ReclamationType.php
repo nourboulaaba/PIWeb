@@ -35,7 +35,9 @@ class ReclamationType extends AbstractType
             ->add('date', DateType::class, [
                 'label' => 'Date',
                 'widget' => 'single_text',
-                'attr' => ['class' => 'form-control']
+                'attr' => ['class' => 'form-control', 'readonly' => 'readonly'],  // Date non modifiable
+                'data' => new \DateTime(),  // Date actuelle par défaut
+                'required' => false,  // Permet de ne pas demander la date
             ])
             ->add('statut', ChoiceType::class, [
                 'label' => 'Statut',
@@ -44,7 +46,8 @@ class ReclamationType extends AbstractType
                     'En cours' => 'En cours',
                     'Traité' => 'Traité'
                 ],
-                'attr' => ['class' => 'form-control']
+                'attr' => ['class' => 'form-control', 'disabled' => 'disabled'],  // Statut non modifiable
+                'data' => 'Non traité',  // Statut par défaut "Non traité"
             ]);
     }
 

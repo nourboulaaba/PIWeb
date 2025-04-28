@@ -1,27 +1,133 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Tous les congés{% endblock %}
+{% block title %}Tous les Congés{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+    <style>
+        /* Tableau : Couleur de l'entête */
+        .colored-table thead th {
+            background-color: #36b9cc;
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            padding: 1rem;
+        }
+
+        /* Lignes du tableau */
+        .colored-table tbody td {
+            padding: 0.75rem;
+            background-color: #f9f9f9;
+        }
+
+        /* Lignes paires */
+        .colored-table tbody tr:nth-child(even) td {
+            background-color: #eef7f9;
+        }
+
+        /* Survol des lignes */
+        .colored-table tbody tr:hover td {
+            background-color: #d1f2eb;
+        }
+
+        /* Statut : accepté */
+        .statut.Accepte {
+            background-color: #1cc88a;
+            color: white;
+            font-weight: bold;
+            padding: 0.3rem 0.6rem;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+
+        /* Statut : refusé */
+        .statut.Refuse {
+            background-color: #e74a3b;
+            color: white;
+            font-weight: bold;
+            padding: 0.3rem 0.6rem;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+
+        /* Statut : en attente */
+        .statut.EnAttente {
+            background-color: #f6c23e;
+            color: black;
+            font-weight: bold;
+            padding: 0.3rem 0.6rem;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+    </style>
+{% endblock %}
 
 {% block body %}
-<h1>{{ statut }}</h1>
+<div class="container-fluid">
+    <div class="dashboard-container animate__animated animate__fadeIn">
+        <div class="dashboard-header d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h3 mb-0 text-gray-800">Liste des Congés</h1>
+                <p class="text-muted small">Tous les congés selon le statut : <strong>{{ statut|capitalize }}</strong></p>
+            </div>
+        </div>
 
-<table>
-    <tr>
-        <th>ID</th>
-        <th>Employé</th>
-        <th>Date de début</th>
-        <th>Date de fin</th>
-        <th>Statut</th>
-    </tr>
-    {% for conge in conges %}
-        <tr>
-            <td>{{ conge.id }}</td>
-            <td>{{ conge.employe.id }}</td>
-            <td>{{ conge.dateDebut|date('Y-m-d') }}</td>
-            <td>{{ conge.dateFin|date('Y-m-d') }}</td>
-            <td>{{ conge.statut }}</td>
+        <div class="card shadow-sm mb-4">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped colored-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Employé</th>
+                                <th>Date de début</th>
+                                <th>Date de fin</th>
+                                <th>Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for conge in conges %}
+                                <tr>
+                                    <td>#{{ conge.id }}</td>
+                                    <td>{{ conge.employe.lastName }} {{ conge.employe.firstName }}</td>
+                                    <td>{{ conge.dateDebut|date('Y-m-d') }}</td>
+                                    <td>{{ conge.dateFin|date('Y-m-d') }}</td>
+                                    <td class="statut {{ conge.statut|replace({' ': ''}) }}">
+                                        {{ conge.statut }}
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">Aucun congé trouvé pour ce statut.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
 
-        </tr>
-    {% endfor %}
-</table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tableRows = document.querySelectorAll('.colored-table tbody tr');
+            tableRows.forEach((row, index) => {
+                row.style.opacity = '0';
+                row.style.transform = 'translateY(10px)';
+                setTimeout(() => {
+                    row.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                    row.style.opacity = '1';
+                    row.style.transform = 'translateY(0)';
+                }, 100 + (index * 50));
+            });
+        });
+    </script>
 {% endblock %}

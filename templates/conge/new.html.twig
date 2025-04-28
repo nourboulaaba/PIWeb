@@ -2,11 +2,129 @@
 
 {% block title %}Nouveau congé{% endblock %}
 
-{% block body %}
-<h1>Demander un nouveau congé</h1>
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Container principal du formulaire */
+        .form-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
 
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button type="submit">Envoyer</button>
-{{ form_end(form) }}
+        /* Titre du formulaire */
+        .form-container h1 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        /* Formulaire : Marges et espacement */
+        .form-container form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Champs du formulaire */
+        .form-container .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-container input,
+        .form-container select,
+        .form-container textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .form-container input:focus,
+        .form-container select:focus,
+        .form-container textarea:focus {
+            border-color: #36b9cc;
+            outline: none;
+        }
+
+        /* Bouton soumettre */
+        .form-container button {
+            background-color: #36b9cc;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            margin-top: 20px;
+            align-self: center;
+        }
+
+        /* Changement de couleur du bouton au survol */
+        .form-container button:hover {
+            background-color: #1cc88a;
+        }
+
+        /* Message de confirmation */
+        .form-container .message {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #28a745;
+            margin-top: 20px;
+        }
+
+        /* Ajouter des effets de focus et survol pour les champs */
+        .form-container input:focus, .form-container select:focus, .form-container textarea:focus {
+            border-color: #36b9cc;
+            box-shadow: 0 0 5px rgba(28, 200, 138, 0.5);
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="form-container">
+    <h1>Demander un nouveau congé</h1>
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button type="submit" id="submit-btn">Envoyer</button>
+    {{ form_end(form) }}
+
+    <div id="confirmation-message" class="message" style="display: none;">
+        Votre demande de congé a bien été envoyée !
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Effet de soumission de formulaire
+        document.getElementById('submit-btn').addEventListener('click', function(e) {
+            e.preventDefault(); // Empêche la soumission normale du formulaire
+
+            // Afficher le message de confirmation
+            document.getElementById('confirmation-message').style.display = 'block';
+
+            // Simuler une soumission après 2 secondes
+            setTimeout(function() {
+                // Optionnellement, on pourrait soumettre ici via JavaScript avec AJAX, mais ici on va juste rediriger
+                document.querySelector('form').submit();
+            }, 2000);
+        });
+
+        // Amélioration visuelle du bouton de soumission au survol
+        document.getElementById('submit-btn').addEventListener('mouseover', function() {
+            this.style.backgroundColor = '#1cc88a';
+        });
+        document.getElementById('submit-btn').addEventListener('mouseout', function() {
+            this.style.backgroundColor = '#36b9cc';
+        });
+    </script>
 {% endblock %}

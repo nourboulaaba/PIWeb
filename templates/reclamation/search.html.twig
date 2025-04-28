@@ -1,26 +1,156 @@
 {% extends 'basefront.html.twig' %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Style général de la page */
+        h1 {
+            text-align: center;
+            margin-top: 50px;
+            font-size: 2rem;
+            color: #333;
+        }
+
+        form {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            font-size: 1rem;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #007bff;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 1rem;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .reclamation-list {
+            margin-top: 40px;
+            padding: 10px;
+            background-color: #f6f6f6;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .reclamation-list ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .reclamation-list li {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .reclamation-list li:last-child {
+            border-bottom: none;
+        }
+
+        .reclamation-list li:hover {
+            background-color: #f1f1f1;
+            cursor: pointer;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
     <h1>Recherche des réclamations par ID utilisateur</h1>
 
     <form method="get" action="{{ path('app_reclamation_search') }}">
         <label for="userId">ID Utilisateur :</label>
-        <input type="text" name="userId" id="userId" value="{{ userId }}">
+        <input type="text" name="userId" id="userId" value="{{ userId }}" placeholder="Entrez l'ID utilisateur">
         <button type="submit">Voir</button>
     </form>
 
     {% if errorMessage %}
-        <div style="color: red;">{{ errorMessage }}</div>
+        <div class="error-message">{{ errorMessage }}</div>
     {% endif %}
 
     {% if reclamations is not empty %}
-        <h2>Vos réclamations :</h2>
-        <ul>
-            {% for reclamation in reclamations %}
-                <li>
-                    {{ reclamation.sujet }} -{{ reclamation.description }} - {{ reclamation.statut }} ({{ reclamation.date ? reclamation.date|date('d/m/Y') : 'Pas de date' }})
-                </li>
-            {% endfor %}
-        </ul>
+        <div class="reclamation-list">
+            <h2>Vos réclamations :</h2>
+            <ul>
+                {% for reclamation in reclamations %}
+                    <li>
+                        <strong>{{ reclamation.sujet }}</strong><br>
+                        {{ reclamation.description }}<br>
+                        Statut: {{ reclamation.statut }}<br>
+                        Date: {{ reclamation.date ? reclamation.date|date('d/m/Y') : 'Pas de date' }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
     {% endif %}
 {% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Ajout de l'animation de focus sur l'input
+        const userInput = document.getElementById('userId');
+        userInput.addEventListener('focus', function() {
+            this.style.borderColor = '#007bff';
+        });
+
+        userInput.addEventListener('blur', function() {
+            if (!this.value) {
+                this.style.borderColor = '#ccc';
+            }
+        });
+
+        // Animation de transition pour les éléments de la liste de réclamations
+        document.addEventListener("DOMContentLoaded", function() {
+            const reclamationItems = document.querySelectorAll('.reclamation-list li');
+            reclamationItems.forEach((item, index) => {
+                item.style.opacity = 0;
+                item.style.transform = "translateY(20px)";
+                setTimeout(() => {
+                    item.style.transition = "opacity 0.5s ease, transform 0.5s ease";
+                    item.style.opacity = 1;
+                    item.style.transform = "translateY(0)";
+                }, 100 + (index * 100));
+            });
+        });
+    </script>
+{% endblock %}
+

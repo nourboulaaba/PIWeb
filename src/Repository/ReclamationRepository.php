@@ -15,6 +15,14 @@ class ReclamationRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Reclamation::class);
     }
+    public function findByClassificationKeyword(string $keyword)
+    {
+        return $this->createQueryBuilder('r')
+            ->andWhere('r.classification LIKE :keyword')
+            ->setParameter('keyword', '%' . $keyword . '%')
+            ->getQuery()
+            ->getResult();
+    }
 
     //    /**
     //     * @return Reclamation[] Returns an array of Reclamation objects
