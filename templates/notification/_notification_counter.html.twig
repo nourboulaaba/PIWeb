@@ -1,0 +1,12 @@
+{% if is_granted('ROLE_RH') %}
+    <li class="nav-item">
+        <a class="nav-icon" href="{{ path('app_notifications') }}" id="notificationCounter">
+            <div class="position-relative">
+                <i class="align-middle" data-feather="bell"></i>
+                {% if unreadCount > 0 %}
+                    <span class="indicator notification-badge">{{ unreadCount }}</span>
+                {% endif %}
+            </div>
+        </a>
+    </li>
+{% endif %}

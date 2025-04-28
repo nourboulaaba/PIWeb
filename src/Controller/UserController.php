@@ -9,6 +9,7 @@ use App\Form\UserType;
 use App\Repository\UserRepository;
 use App\Security\EmailVerifier;
 use App\Service\ExcelExportService;
+use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -61,7 +62,12 @@ class UserController extends AbstractController
         ]);
     }
     #[Route('/signup', name: 'app_signup')]
-public function signup(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager): Response
+public function signup(
+    Request $request,
+    UserPasswordHasherInterface $passwordHasher,
+    EntityManagerInterface $entityManager,
+    NotificationService $notificationService
+): Response
 {
     // Création d'un nouvel utilisateur
     $user = new User();
@@ -110,6 +116,9 @@ public function signup(Request $request, UserPasswordHasherInterface $passwordHa
             // Sauvegarde de l'utilisateur dans la base de données
             $entityManager->persist($user);
             $entityManager->flush();
+
+            // Notifier les utilisateurs RH qu'un nouvel utilisateur s'est inscrit
+            $notificationService->notifyRhAboutNewUser($user);
 
             // Ajouter un message flash pour confirmer l'enregistrement dans la base de données
             $this->addFlash('info', 'Utilisateur enregistré avec succès dans la base de données. ID: ' . $user->getId());

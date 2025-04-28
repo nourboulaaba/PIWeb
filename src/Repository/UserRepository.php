@@ -144,4 +144,34 @@ class UserRepository extends ServiceEntityRepository
 
         return $stats;
     }
+
+    /**
+     * Trouve tous les utilisateurs avec un rôle spécifique
+     *
+     * @param string $role Le rôle à rechercher
+     * @return User[] Un tableau d'utilisateurs
+     */
+    public function findByRole(string $role): array
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.role = :role')
+            ->setParameter('role', $role)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Compte le nombre d'utilisateurs en attente d'activation
+     *
+     * @return int Le nombre d'utilisateurs en attente
+     */
+    public function countPendingUsers(): int
+    {
+        return $this->createQueryBuilder('u')
+            ->select('COUNT(u.id)')
+            ->andWhere('u.isVerified = :isVerified')
+            ->setParameter('isVerified', false)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

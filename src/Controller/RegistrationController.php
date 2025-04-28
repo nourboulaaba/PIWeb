@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Security\EmailVerifier;
+use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -23,7 +24,11 @@ class RegistrationController extends AbstractController
     }
 
     #[Route('/verify/email', name: 'app_verify_email')]
-    public function verifyUserEmail(Request $request, EntityManagerInterface $entityManager): Response
+    public function verifyUserEmail(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        NotificationService $notificationService
+    ): Response
     {
         $id = $request->query->get('id');
 
@@ -52,6 +57,9 @@ class RegistrationController extends AbstractController
             // Persister les changements
             $entityManager->persist($user);
             $entityManager->flush();
+
+            // Notifier les utilisateurs RH qu'un nouvel utilisateur a vérifié son email
+            $notificationService->notifyRhAboutNewUser($user);
 
             // Vérifier que les changements ont été appliqués
             $entityManager->refresh($user);
