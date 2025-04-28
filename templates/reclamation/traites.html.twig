@@ -5,29 +5,52 @@
 {% block body %}
     <h1>Réclamations traitées</h1>
 
-    {% if reclamations is not empty %}
+    {{ form_start(filter_form, {'method': 'GET'}) }}
+        {{ form_row(filter_form.classification) }}
+        <button class="btn btn-primary">Filtrer</button>
+    {{ form_end(filter_form) }}
+
+    <br>
+
+    {% if pagination|length > 0 %}
         <table class="table">
             <thead>
                 <tr>
                     <th>ID</th>
+                    <th>Utilisateur</th>
                     <th>Sujet</th>
                     <th>Description</th>
                     <th>Date</th>
+                    <th>Type de Congé</th>
                     <th>Statut</th>
+                    <th>Classification</th> 
                 </tr>
             </thead>
             <tbody>
-                {% for reclamation in reclamations %}
+                {% for reclamation in pagination %}
                     <tr>
                         <td>{{ reclamation.id }}</td>
+                        <td>{{ reclamation.user.firstName }} {{ reclamation.user.lastName }}</td>
                         <td>{{ reclamation.sujet }}</td>
                         <td>{{ reclamation.description }}</td>
-                        <td>{{ reclamation.date|date('Y-m-d') }}</td>
+                        <td>{{ reclamation.date ? reclamation.date|date('d/m/Y') : 'Non spécifiée' }}</td>
+                        <td>{{ reclamation.conge ? reclamation.conge.typeConge : 'Non spécifié' }}</td>
                         <td>{{ reclamation.statut }}</td>
+                        <td>{{ reclamation.classification }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
+
+        {% if pagination.pageCount > 1 %}
+            <div class="pagination">
+                {{ knp_pagination_render(pagination) }}
+            </div>
+        {% else %}
+            <!-- Message si une seule page -->
+            <p>Il n'y a qu'une seule page de réclamations traitées.</p>
+        {% endif %}
+
     {% else %}
         <p>Aucune réclamation traitée.</p>
     {% endif %}

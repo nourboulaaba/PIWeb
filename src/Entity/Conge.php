@@ -2,9 +2,9 @@
 
 namespace App\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
 use App\Repository\CongeRepository;
 use App\Entity\User;
+use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CongeRepository::class)]
 #[ORM\Table(name: 'conges')]
@@ -12,10 +12,10 @@ class Conge
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(name: 'idConges', type: 'integer')]
-    private ?int $idConges = null;
+    #[ORM\Column(type: 'integer')]
+    private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'conges')]
     #[ORM\JoinColumn(name: 'idEmploye', referencedColumnName: 'id', nullable: false)]
     private ?User $employe = null;
 
@@ -29,17 +29,15 @@ class Conge
     private ?string $typeConge = null;
 
     #[ORM\Column(name: 'statut', type: 'string', length: 100)]
-    private ?string $statut = 'en attente';
+    private ?string $statut = self::STATUT_EN_ATTENTE;
 
-    // Constante pour les statuts possibles
     const STATUT_EN_ATTENTE = 'en attente';
     const STATUT_APPRUVE = 'approuvé';
     const STATUT_REFUSE = 'refusé';
 
-    // Getters et setters
-    public function getIdConges(): ?int
+    public function getId(): ?int
     {
-        return $this->idConges;
+        return $this->id;
     }
 
     public function getEmploye(): ?User
@@ -99,10 +97,9 @@ class Conge
 
     public function getDuree(): int
     {
-        // Vérification des dates avant calcul
         if ($this->dateDebut && $this->dateFin) {
             return $this->dateDebut->diff($this->dateFin)->days + 1;
         }
-        return 0; // Retourne 0 si les dates sont nulles
+        return 0;
     }
 }

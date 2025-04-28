@@ -36,6 +36,7 @@ final class CongeController extends AbstractController
         ]);
     }
 
+
     #[Route('/new', name: 'app_conge_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -96,16 +97,6 @@ final class CongeController extends AbstractController
         return $this->redirectToRoute('app_conge_index');
     }
 
-    #[Route('/{idConges}', name: 'app_conge_delete', methods: ['POST'])]
-    public function delete(Request $request, Conge $conge, EntityManagerInterface $entityManager): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$conge->getIdConges(), $request->request->get('_token'))) {
-            $entityManager->remove($conge);
-            $entityManager->flush();
-        }
-
-        return $this->redirectToRoute('app_conge_index');
-    }
     #[Route('/dashboard/all', name: 'app_conge_index_tous', methods: ['GET'])]
     public function indexTous(CongeRepository $congeRepository): Response
     {
@@ -120,6 +111,10 @@ final class CongeController extends AbstractController
     public function searchCongesByEmploye(Request $request, CongeRepository $congeRepository, ValidatorInterface $validator): Response
     {
         $idEmploye = $request->query->get('idEmploye'); // Récupère l'ID de l'employé
+        echo $idEmploye;
+        echo $idEmploye;
+        echo $idEmploye;
+
         $conges = [];
         $errorMessage = '';
 

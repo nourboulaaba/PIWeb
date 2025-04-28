@@ -1,24 +1,36 @@
-# This file is the entry point to configure your own services.
-# Files in the packages/ subdirectory configure your dependencies.
+# services.yaml
 
-# Put parameters here that don't need to change on each machine where the app is deployed
-# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
+# Define the parameters outside the `services` section
 parameters:
+  gemini_api_url: "%env(GEMINI_API_URL)%"
+  gemini_api_key: "%env(GEMINI_API_KEY)%"
 
 services:
-    # default configuration for services in *this* file
-    _defaults:
-        autowire: true      # Automatically injects dependencies in your services.
-        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
 
-    # makes classes in src/ available to be used as services
-    # this creates a service per class whose id is the fully-qualified class name
-    App\:
-        resource: '../src/'
-        exclude:
-            - '../src/DependencyInjection/'
-            - '../src/Entity/'
-            - '../src/Kernel.php'
+  App\:
+    resource: "../src/"
+    exclude: "../src/{DependencyInjection,Entity,Tests,Kernel.php}"
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+  App\Controller\:
+    resource: "../src/Controller/"
+    tags: ["controller.service_arguments"]
+
+  App\Controller\EmployeeController:
+    autowire: true
+    autoconfigure: true
+    public: true
+
+  App\Repository\CongeRepository:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  # Configure GeminiService to inject the parameters
+  App\Service\GeminiService:
+    arguments:
+      $apiUrl: "%gemini_api_url%"
+      $apiKey: "%gemini_api_key%"

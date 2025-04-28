@@ -15,7 +15,7 @@
     </tr>
     {% for conge in conges %}
         <tr>
-            <td>{{ conge.idConges }}</td>
+            <td>{{ conge.id }}</td>
             <td>{{ conge.employe.id }}</td>
             <td>{{ conge.dateDebut|date('Y-m-d') }}</td>
             <td>{{ conge.dateFin|date('Y-m-d') }}</td>

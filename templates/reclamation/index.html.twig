@@ -22,6 +22,9 @@
                 <th>Description</th>
                 <th>Utilisateur</th>
                 <th>Date</th>
+                <th>ID Congé</th>
+                <th>Type de Congé</th>
+                <th>Classification</th> <!-- Nouvelle colonne pour la classification -->
                 <th>Actions</th>
             </tr>
         </thead>
@@ -32,6 +35,9 @@
                     <td>{{ reclamation.description }}</td>
                     <td>{{ reclamation.user.firstName }} {{ reclamation.user.lastName }}</td>
                     <td>{{ reclamation.date ? reclamation.date|date('d/m/Y') : 'Non spécifiée' }}</td>
+                    <td>{{ reclamation.conge ? reclamation.conge.id : 'Non spécifié' }}</td>
+                    <td>{{ reclamation.conge ? reclamation.conge.typeConge : 'Non spécifié' }}</td>
+                    <td>{{ reclamation.classification ?: 'Non classifiée' }}</td> <!-- Affichage de la classification -->
                     <td>
                         <a href="{{ path('app_reclamation_edit', {'id': reclamation.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
                         <form action="{{ path('app_reclamation_delete', {'id': reclamation.id}) }}" method="POST" style="display:inline;">
@@ -42,7 +48,7 @@
                 </tr>
             {% else %}
                 <tr>
-                    <td colspan="5">Aucune réclamation trouvée.</td>
+                    <td colspan="8">Aucune réclamation trouvée.</td> <!-- Ajustez le colspan à 8 pour inclure la colonne "Classification" -->
                 </tr>
             {% endfor %}
         </tbody>

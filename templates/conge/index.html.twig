@@ -16,14 +16,14 @@
     </tr>
     {% for conge in conges %}
         <tr>
-            <td>{{ conge.idConges }}</td>
+            <td>{{ conge.id }}</td>
             <td>{{ conge.dateDebut|date('Y-m-d') }}</td>
             <td>{{ conge.dateFin|date('Y-m-d') }}</td>
             <td>{{ conge.statut }}</td>
             <td>{{ conge.employe.id }}</td>
 
             <td>
-                <form method="post" action="{{ path('app_conge_update_statut', {id: conge.idConges}) }}">
+                <form method="post" action="{{ path('app_conge_update_statut', {id: conge.id}) }}">
                     <button type="submit" name="action" value="accept">Accepter</button>
                     <button type="submit" name="action" value="reject">Refuser</button>
                 </form>

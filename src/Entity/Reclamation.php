@@ -2,11 +2,7 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-
 use App\Repository\ReclamationRepository;
 
 #[ORM\Entity(repositoryClass: ReclamationRepository::class)]
@@ -17,6 +13,26 @@ class Reclamation
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private ?int $id = null;
+
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
+
+    #[ORM\ManyToOne(targetEntity: Conge::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Conge $conge = null;
+
+    #[ORM\Column(type: 'string', nullable: false)]
+    private ?string $sujet = null;
+
+    #[ORM\Column(type: 'string', nullable: false)]
+    private ?string $description = null;
+
+    #[ORM\Column(type: 'date', nullable: true)]
+    private ?\DateTimeInterface $date = null;
+
+    #[ORM\Column(type: 'string', nullable: false)]
+    private string $statut = 'Non traité';
 
     public function getId(): ?int
     {
@@ -29,70 +45,60 @@ class Reclamation
         return $this;
     }
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $user = null;
-    
     public function getUser(): ?User
     {
         return $this->user;
     }
-    
-    public function setUser(?User $user): static
+
+    public function setUser(?User $user): self
     {
         $this->user = $user;
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: false)]
-    private ?string $sujet = null;
+    public function getConge(): ?Conge
+    {
+        return $this->conge;
+    }
+
+    public function setConge(?Conge $conge): self
+    {
+        $this->conge = $conge;
+        return $this;
+    }
 
     public function getSujet(): ?string
     {
         return $this->sujet;
     }
 
-    public function setSujet(string $sujet): static
+    public function setSujet(string $sujet): self
     {
         $this->sujet = $sujet;
-
         return $this;
     }
-
-    #[ORM\Column(type: 'string', nullable: false)]
-    private ?string $description = null;
 
     public function getDescription(): ?string
     {
         return $this->description;
     }
 
-    public function setDescription(string $description): static
+    public function setDescription(string $description): self
     {
         $this->description = $description;
-
         return $this;
     }
-
-
-
-    #[ORM\Column(type: 'date', nullable: true)]
-    private ?\DateTimeInterface $date = null;
 
     public function getDate(): ?\DateTimeInterface
     {
         return $this->date;
     }
 
-    public function setDate(?\DateTimeInterface $date): static
+    public function setDate(?\DateTimeInterface $date): self
     {
         $this->date = $date;
-
         return $this;
     }
-    #[ORM\Column(type: 'string', nullable: false)]
-
-    private $statut = 'Non traité';  // Valeur par défaut
 
     public function getStatut(): ?string
     {
@@ -102,10 +108,21 @@ class Reclamation
     public function setStatut(string $statut): self
     {
         $this->statut = $statut;
-
         return $this;
     }
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $classification = null;
 
-   
+    // Getters et Setters pour classification
 
+    public function getClassification(): ?string
+    {
+        return $this->classification;
+    }
+
+    public function setClassification(?string $classification): self
+    {
+        $this->classification = $classification;
+        return $this;
+    }
 }
