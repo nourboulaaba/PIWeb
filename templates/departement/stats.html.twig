@@ -1,0 +1,373 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Statistiques{% endblock %}
+
+{% block body %}
+    <div class="container-fluid dashboard">
+        <!-- Header -->
+        <div class="dashboard-header mb-5">
+            <h1 class="display-6 fw-bold">HR Analytics Dashboard</h1>
+            <p class="text-muted">Comprehensive analysis of departments and job offers</p>
+            <a href="{{ path('departement_generate_pdf') }}" class="btn btn-outline-danger float-end">
+                <i class="fas fa-file-pdf"></i> Export PDF
+            </a>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="row g-4 mb-5">
+            <div class="col-xl-3 col-md-6">
+                <div class="metric-card bg-primary text-white">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-file-alt fa-2x me-3"></i>
+                        <div>
+                            <h6 class="mb-0">Total Offers</h6>
+                            <h2 class="mb-0">{{ offres|length }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="metric-card bg-success text-white">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-users fa-2x me-3"></i>
+                        <div>
+                            <h6 class="mb-0">Total Employees</h6>
+                            <h2 class="mb-0">{{ departements|map(d => d.nbEmploye)|reduce((sum, emp) => sum + emp) }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="metric-card bg-warning text-dark">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-coins fa-2x me-3"></i>
+                        <div>
+                            <h6 class="mb-0">Avg Salary Range</h6>
+                            <h2 class="mb-0">
+                                {% set avgMin = (offres|map(o => o.salaireMin)|reduce((sum, s) => sum + s)) / offres|length %}
+                                {% set avgMax = (offres|map(o => o.salaireMax)|reduce((sum, s) => sum + s)) / offres|length %}
+                                {{ avgMin|round }}k - {{ avgMax|round }}k
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6">
+                <div class="metric-card bg-light text-white">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-chart-pie fa-2x me-3"></i>
+                        <div>
+                            <h6 class="mb-0">Total Budget</h6>
+                            <h2 class="mb-0">
+                                {{ (departements|map(d => d.budget)|reduce((sum, b) => sum + b) / 1000)|round(1) }}M€
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Advanced Visualizations -->
+        <div class="row g-4 mb-5">
+            <!-- Budget vs Salary Correlation -->
+            <div class="col-xl-6">
+                <div class="chart-card">
+                    <h5>Budget vs Salary Allocation</h5>
+                    <canvas id="budgetSalaryChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Salary Range Distribution -->
+            <div class="col-xl-6">
+                <div class="chart-card">
+                    <h5>Salary Range Distribution</h5>
+                    <canvas id="salaryRangeChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Department Efficiency -->
+            <div class="col-xl-6">
+                <div class="chart-card">
+                    <h5>Department Efficiency</h5>
+                    <canvas id="efficiencyChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Employee/Offer Ratio -->
+            <div class="col-xl-6">
+                <div class="chart-card">
+                    <h5>Employee/Offer Ratio</h5>
+                    <canvas id="employeeOfferChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Offers by Department -->
+            <div class="col-xl-6">
+                <div class="chart-card">
+                    <h5>Offers by Department</h5>
+                    <canvas id="offersByDeptChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Budget Allocation -->
+            <div class="col-xl-6">
+                <div class="chart-card">
+                    <h5>Budget Allocation</h5>
+                    <canvas id="budgetAllocationChart"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+        {% set offreMap = {} %}
+        {% for offre in offres %}
+            {% set deptId = offre.departement.id %}
+            {% if offreMap[deptId] is not defined %}
+                {% set offreMap = offreMap|merge({ (deptId): [offre] }) %}
+            {% else %}
+                {% set offreMap = offreMap|merge({ (deptId): offreMap[deptId]|merge([offre]) }) %}
+            {% endif %}
+        {% endfor %}
+
+        {# Scatter Data: Budget vs Avg Salary #}
+        {% set scatterData = [] %}
+        {% for d in departements %}
+            {% set deptOffers = offreMap[d.id] ?? [] %}
+            {% set total = 0 %}
+            {% for o in deptOffers %}
+                {% set total = total + ((o.salaireMin + o.salaireMax) / 2) %}
+            {% endfor %}
+            {% set count = deptOffers|length %}
+            {% set avg = count > 0 ? (total / count) : 0 %}
+            {% set scatterData = scatterData|merge([{ avgSalary: avg, budget: d.budget }]) %}
+        {% endfor %}
+
+        {# Bubble Data: Offers vs Employees #}
+        {% set bubbleData = [] %}
+        {% for d in departements %}
+            {% set offerCount = (offreMap[d.id] ?? [])|length %}
+            {% set r = d.budget > 0 ? (d.budget ** 0.5) / 100 : 0 %}
+            {% set bubbleData = bubbleData|merge([{
+                x: offerCount,
+                y: d.nbEmploye,
+                r: r
+            }]) %}
+        {% endfor %}
+
+        {# Radar Data: Employee/Offer Ratio #}
+        {% set radarLabels = [] %}
+        {% set radarData = [] %}
+        {% for d in departements %}
+            {% set offerCount = (offreMap[d.id] ?? [])|length %}
+            {% set ratio = offerCount > 0 ? (d.nbEmploye / offerCount) : 0 %}
+            {% set radarLabels = radarLabels|merge([d.nom]) %}
+            {% set radarData = radarData|merge([ratio]) %}
+        {% endfor %}
+    </div>
+
+    <!-- Chart.js core -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // Scatter Chart: Budget vs Avg Salary
+        new Chart(document.getElementById('budgetSalaryChart'), {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Departments',
+                    data: {{ scatterData|json_encode|raw }},
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                    parsing: {
+                        xAxisKey: 'budget',
+                        yAxisKey: 'avgSalary'
+                    }
+                }]
+            },
+            options: {
+                scales: {
+                    x: { title: { display: true, text: 'Budget (€)' } },
+                    y: { title: { display: true, text: 'Avg Salary (€)' } }
+                }
+            }
+        });
+
+        // Simple Bar Chart: Salary Range Distribution
+        new Chart(document.getElementById('salaryRangeChart'), {
+            type: 'bar',
+            data: {
+                labels: {{ radarLabels|json_encode|raw }},
+                datasets: [{
+                    label: 'Average Salary Range',
+                    data: {{ radarData|json_encode|raw }},
+                    backgroundColor: 'rgba(255, 159, 64, 0.5)',
+                }]
+            }
+        });
+
+        // Simple Bar Chart: Department Efficiency
+        new Chart(document.getElementById('efficiencyChart'), {
+            type: 'bar',
+            data: {
+                labels: {{ radarLabels|json_encode|raw }},
+                datasets: [{
+                    label: 'Employees per Offer',
+                    data: {{ radarData|json_encode|raw }},
+                    backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                }]
+            }
+        });
+
+        // Radar Chart: Employee/Offer Ratio
+        new Chart(document.getElementById('employeeOfferChart'), {
+            type: 'radar',
+            data: {
+                labels: {{ radarLabels|json_encode|raw }},
+                datasets: [{
+                    label: 'Employees per Offer',
+                    data: {{ radarData|json_encode|raw }},
+                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                }]
+            }
+        });
+
+
+
+        // Prepare data for Offers by Department
+        const offersByDept = {};
+        {% for d in departements %}
+        {% set offerCount = (offreMap[d.id] ?? [])|length %}
+        offersByDept["{{ d.nom }}"] = {{ offerCount }};
+        {% endfor %}
+
+        // Offers by Department - Bar Chart
+        new Chart(document.getElementById('offersByDeptChart'), {
+            type: 'bar',
+            data: {
+                labels: Object.keys(offersByDept),
+                datasets: [{
+                    label: 'Number of Offers',
+                    data: Object.values(offersByDept),
+                    backgroundColor: 'rgba(255, 99, 132, 0.6)'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Offers by Department'
+                    },
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // Prepare data for Budget Allocation
+        const budgetData = {};
+        {% for d in departements %}
+        budgetData["{{ d.nom }}"] = {{ d.budget }};
+        {% endfor %}
+
+        // Budget Allocation - Doughnut Chart
+        new Chart(document.getElementById('budgetAllocationChart'), {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(budgetData),
+                datasets: [{
+                    data: Object.values(budgetData),
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.6)',
+                        'rgba(255, 206, 86, 0.6)',
+                        'rgba(75, 192, 192, 0.6)',
+                        'rgba(153, 102, 255, 0.6)',
+                        'rgba(255, 159, 64, 0.6)'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Department Budget Distribution'
+                    }
+                }
+            }
+        });
+
+
+        // Capture the chart image and convert it to a base64 string
+        const chartImage1 = document.getElementById('budgetSalaryChart').toDataURL('image/png');
+        const chartImage2 = document.getElementById('salaryRangeChart').toDataURL('image/png');
+        const chartImage3 = document.getElementById('efficiencyChart').toDataURL('image/png');
+        const chartImage4 = document.getElementById('employeeOfferChart').toDataURL('image/png');
+        const chartImage5 = document.getElementById('offersByDeptChart').toDataURL('image/png');
+        const chartImage6 = document.getElementById('budgetAllocationChart').toDataURL('image/png');
+
+        // Function to send image data to the server
+        function sendChartToServer(chartData, chartName) {
+            fetch('/upload-chart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    chartData: chartData,
+                    chartName: chartName,
+                }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Image uploaded successfully:', data);
+                })
+                .catch(error => {
+                    console.error('Error uploading image:', error);
+                });
+        }
+
+
+        // Send the chart images to the server
+        sendChartToServer(chartImage1, 'budgetSalaryChart');
+        sendChartToServer(chartImage2, 'salaryRangeChart');
+        sendChartToServer(chartImage3, 'efficiencyChart');
+        sendChartToServer(chartImage4, 'employeeOfferChart');
+        sendChartToServer(chartImage5, 'offersByDeptChart');
+    </script>
+
+    <style>
+        .dashboard {
+            background: #f8f9fa;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .metric-card {
+            padding: 1.5rem;
+            border-radius: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .chart-card, .data-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: rgba(248, 249, 250, 0.9);
+            cursor: pointer;
+        }
+
+        .dashboard-header {
+            border-bottom: 2px solid #eee;
+            padding-bottom: 1.5rem;
+        }
+    </style>
+{% endblock %}

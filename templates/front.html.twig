@@ -1,0 +1,177 @@
+{% extends 'basefront.html.twig' %}
+
+{% block title %}Offres – Front Office{% endblock %}
+
+{% block body %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+        :root {
+            --blue-dark: #00214a;
+            --blue-mid: #003e7e;
+            --blue-light: #4c8cc9;
+            --blue-very-light: #e4edf7;
+            --white-soft: #f4f4f4;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--white-soft);
+            color: #333;
+        }
+
+        h2 {
+            font-weight: 700;
+            color: var(--blue-dark);
+        }
+
+        .card {
+            background: var(--blue-very-light);
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--blue-mid);
+        }
+
+        .card-text {
+            color: #444;
+            font-size: 0.95rem;
+        }
+
+        .salary {
+            font-weight: 600;
+            color: var(--blue-dark);
+        }
+
+        .btn-info {
+            background-color: var(--blue-light);
+            border: none;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background-color: var(--blue-mid);
+        }
+
+        .btn-primary {
+            background-color: var(--blue-dark);
+            border: none;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 12px 24px;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--blue-mid);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary i {
+            font-size: 1.1rem;
+        }
+
+
+        .form-control {
+            border-radius: 30px;
+            padding: 10px 20px;
+            border: 1px solid #ced4da;
+        }
+
+        .form-control:focus {
+            border-color: var(--blue-light);
+            box-shadow: 0 0 5px rgba(76, 140, 201, 0.4);
+        }
+
+        .badge-offre {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: var(--blue-dark);
+            color: white;
+            padding: 6px 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            border-radius: 10px;
+            text-transform: uppercase;
+        }
+
+        i {
+            margin-right: 6px;
+            color: var(--blue-light);
+        }
+
+    </style>
+
+
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">Liste des offres</h2>
+
+        <!-- Search and Filter Form -->
+        <form method="get" action="{{ path('front_office_offres') }}" class="mb-5">
+            <div class="row mb-3 justify-content-center">
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <input type="text" name="q" class="form-control shadow-sm" placeholder="🔍 Rechercher une offre..." value="{{ query }}">
+                </div>
+                <div class="col-md-4 col-lg-3 mb-3">
+                    <select name="departement" class="form-control shadow-sm">
+                        <option value="">🏢 Tous les départements</option>
+                        {% for departement in departements %}
+                            <option value="{{ departement.id }}" {% if departement.id == departementId %}selected{% endif %}>
+                                {{ departement.nom }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <button type="submit" class="btn btn-primary btn-lg w-100 shadow-sm rounded-pill">
+                        <i class="fas fa-filter"></i> Filtrer
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Offers List -->
+        <div class="row">
+            {% for offre in offres %}
+                <div class="col-md-4 mb-4">
+                    <div class="card position-relative h-100">
+                        <div class="badge-offre"><i class="fas fa-briefcase"></i> Offre</div>
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-briefcase"></i>{{ offre.titre }}</h5>
+                            <p class="card-text"><i class="fas fa-align-left"></i>{{ offre.description|length > 100 ? offre.description|slice(0, 100) ~ '...' : offre.description }}</p>
+                            <p class="salary"><i class="fas fa-money-bill-wave"></i>{{ offre.salaireMin }} - {{ offre.salaireMax }} DT</p>
+                            <div class="mt-3">
+                                <img src="{{ path('app_offre_qrcode', { id: offre.id }) }}" alt="QR Code for {{ offre.titre }}" width="150" height="150">
+                            </div>
+                            <a href="" class="btn btn-info w-100 rounded-pill shadow-sm">
+                                <i class="fas fa-eye"></i> Apply
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-12 text-center">
+                    <div class="alert alert-info">Aucune offre trouvée</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

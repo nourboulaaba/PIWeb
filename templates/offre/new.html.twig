@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Offre{% endblock %}
+
+{% block body %}
+
+
+    {{ include('offre/_form.html.twig') }}
+
+    <a href="{{ path('app_offre_index') }}" class="btn btn-back-to-list">
+        <i class="bi bi-arrow-left-circle"></i> Back to list
+    </a>
+
+    <style>
+        .btn-back-to-list {
+            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+            color: white !important;
+            border: none;
+            border-radius: 25px;
+            padding: 12px 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 2rem auto;
+            text-decoration: none;
+        }
+
+        .btn-back-to-list:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.3);
+            background: linear-gradient(135deg, #5a6268 0%, #4a5056 100%);
+        }
+
+        .btn-back-to-list i {
+            transition: transform 0.3s ease;
+        }
+
+        .btn-back-to-list:hover i {
+            transform: translateX(-3px);
+        }
+
+        @media (max-width: 768px) {
+            .btn-back-to-list {
+                width: 100%;
+                justify-content: center;
+                padding: 10px 20px;
+            }
+        }
+    </style>
+
+{% endblock %}

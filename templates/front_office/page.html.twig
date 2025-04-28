@@ -1,0 +1,136 @@
+{% extends 'basefront.html.twig' %}
+
+{% block title %}Offres – Front Office{% endblock %}
+
+{% block body %}
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f7f7f7;
+        }
+
+        /* Header Styling */
+        h2 {
+            font-family: 'Roboto', sans-serif;
+            font-weight: bold;
+        }
+
+        /* Card Styles */
+        .card {
+            border: none;
+            border-radius: 15px;
+            background: linear-gradient(145deg, #ffffff, #f2f2f2);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Button Styles */
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+        }
+
+        .btn-info {
+            background-color: #17a2b8;
+            border-color: #17a2b8;
+        }
+
+        .btn-info:hover {
+            background-color: #138496;
+            border-color: #117a8b;
+        }
+
+        .btn-lg {
+            padding: 10px 20px;
+            font-size: 1.1rem;
+        }
+
+        /* Form Input Styles */
+        .form-control {
+            border-radius: 30px;
+            padding: 12px;
+            font-size: 1rem;
+        }
+
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+        /* Apply a smooth transition to the card hover effect */
+        .transition-transform {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .transform-on-hover:hover {
+            transform: translateY(-10px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .col-md-4 {
+                flex: 0 0 100%;
+            }
+
+            .col-md-6,
+            .col-md-4 {
+                max-width: 100%;
+            }
+        }
+    </style>
+
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">Liste des offres</h2>
+
+        <!-- Search and Department Filter Form -->
+        <form method="get" action="{{ path('front_office_offres') }}" class="mb-5">
+            <div class="row mb-3 justify-content-center">
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <input type="text" name="q" class="form-control shadow-sm rounded-pill py-2" placeholder="Rechercher une offre..." value="{{ query }}">
+                </div>
+                <div class="col-md-4 col-lg-3 mb-3">
+                    <select name="departement" class="form-control shadow-sm rounded-pill">
+                        <option value="">Tous les départements</option>
+                        {% for departement in departements %}
+                            <option value="{{ departement.id }}" {% if departement.id == departementId %}selected{% endif %}>{{ departement.nom }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <button type="submit" class="btn btn-primary btn-lg w-100 shadow-sm rounded-pill">Filtrer</button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Display Offers -->
+        <div class="row">
+            {% for offre in offres %}
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-lg h-100 rounded-3 transition-transform transform-on-hover">
+                        <div class="card-body">
+                            <h5 class="card-title text-dark fw-bold">{{ offre.titre }}</h5>
+                            <p class="card-text text-muted" style="font-size: 0.95rem;">{{ offre.description|length > 100 ? offre.description|slice(0, 100) ~ '...' : offre.description }}</p>
+                            <p class="card-text"><strong>Salaire:</strong> <span class="text-success">{{ offre.salaireMin }} - {{ offre.salaireMax }} DT</span></p>
+                            <a href="{{ path('app_offre_show', {'id': offre.id}) }}" class="btn btn-info w-100 shadow-sm rounded-pill">Voir</a>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-12 text-center">
+                    <div class="alert alert-info">Aucune offre trouvée</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock %}

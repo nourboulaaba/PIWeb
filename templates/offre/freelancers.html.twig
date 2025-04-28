@@ -1,0 +1,247 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Freelancers | TalentHub{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="freelancers-header">
+            <h1>Top Freelancers</h1>
+        </div>
+
+        <div class="freelancers-grid">
+            {% for freelancer in freelancers %}
+                <div class="freelancer-card">
+                    <div class="card-header">
+                        <div class="profile-meta">
+                            <div class="rating">
+                                <span class="stars">{{ freelancer.stars }}</span>
+                                <div class="stars-outer">
+                                    <div class="stars-inner" style="width: {{ (freelancer.stars / 5) * 100 }}%"></div>
+                                </div>
+                                <span class="reviews">({{ freelancer.reviews|split(' ')|first }} reviews)</span>
+                            </div>
+                            <span class="hourly-rate">{{ freelancer.hourRating }}</span>
+                        </div>
+                        <h2 class="name">{{ freelancer.name }}</h2>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="bio">{{ freelancer.bio|slice(0, 150) }}...</div>
+
+                        <div class="skills">
+                            {% for skill in freelancer.skills|split(', ') %}
+                                <span class="skill-badge">{{ skill }}</span>
+                            {% endfor %}
+                        </div>
+
+                        <div class="stats">
+                            <div class="stat-item">
+                                <i class="fas fa-briefcase"></i>
+                                <span>Earnings: ${{ freelancer.earnings }}k+</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <a href="{{ freelancer.freelancerProfile }}" target="_blank" class="profile-btn">
+                            View Full Profile
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            {% else %}
+                <div class="no-results">
+                    <i class="fas fa-search fa-2x"></i>
+                    <p>No freelancers found matching your criteria</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <style>
+        :root {
+            --primary: #2A4B7C;
+            --secondary: #FF6B6B;
+            --accent: #F4F7FA;
+            --text: #2D3436;
+        }
+
+        .freelancers-header {
+            text-align: center;
+            margin: 4rem 0 3rem;
+        }
+
+        .freelancers-header h1 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .search-filter {
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-filter input {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid var(--accent);
+            border-radius: 50px;
+            font-size: 1rem;
+        }
+
+        .search-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .search-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .freelancers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .freelancer-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+
+        .freelancer-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            background: var(--accent);
+            border-bottom: 3px solid var(--primary);
+        }
+
+        .profile-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stars-outer {
+            position: relative;
+            display: inline-block;
+            color: #ddd;
+        }
+
+        .stars-inner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            color: #ffc107;
+        }
+
+        .hourly-rate {
+            background: var(--primary);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .name {
+            margin: 0;
+            color: var(--text);
+            font-size: 1.4rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .bio {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .skill-badge {
+            background: var(--accent);
+            color: var(--primary);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .stats {
+            display: flex;
+            gap: 1rem;
+            color: var(--text);
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .card-footer {
+            padding: 1.5rem;
+            background: var(--accent);
+            border-top: 2px solid #eee;
+        }
+
+        .profile-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: gap 0.2s;
+        }
+
+        .profile-btn:hover {
+            gap: 12px;
+        }
+
+        .no-results {
+            text-align: center;
+            grid-column: 1 / -1;
+            padding: 4rem;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .freelancers-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+{% endblock %}

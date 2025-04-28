@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Departement Index{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1>Departement Index</h1>
+
+        <!-- Search Input -->
+        <div class="mb-3">
+            <input type="text" id="search-departement" class="form-control" placeholder="Search by department name...">
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <!-- Table Container to update via AJAX -->
+                <div id="departement-table">
+                    {% include 'departement/_table.html.twig' with {'departements': departements} %}
+                </div>
+
+                <div class="mt-3">
+                    <a href="{{ path('app_departement_new') }}" class="btn btn-primary">Create New</a>
+                </div>
+
+                <div class="mt-3">
+                    <a href="{{ path('app_departement_stats') }}" class="btn btn-primary">Statistiques</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AJAX script -->
+    <script>
+        document.getElementById('search-departement').addEventListener('input', function () {
+            const query = this.value;
+
+            fetch('{{ path("app_departement_search") }}?q=' + encodeURIComponent(query))
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('departement-table').innerHTML = html;
+                });
+        });
+    </script>
+{% endblock %}

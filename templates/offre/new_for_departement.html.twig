@@ -1,0 +1,142 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter une Offre - {{ departement.nom }}{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h3 class="card-title">Ajouter une offre pour le département : {{ departement.nom }}</h3>
+            </div>
+            <div class="card-body">
+                <!-- Offer Creation Form -->
+                {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'id': 'offer-form'}}) }}
+
+                <div class="mb-3">
+                    {{ form_label(form.titre) }}
+                    {{ form_widget(form.titre, {'attr': {'class': 'form-control', 'placeholder': 'Titre'}}) }}
+                    <div class="invalid-feedback"></div>
+                </div>
+
+                <div class="mb-3">
+                    {{ form_label(form.description) }}
+                    {{ form_widget(form.description, {'attr': {'class': 'form-control', 'placeholder': 'Description', 'id': 'description-field'}}) }}
+                    <div id="description-input"></div>
+                    <button type="button" class="btn btn-outline-secondary mt-2" id="ai-fill-btn">Remplir avec l'IA</button>
+                    <div class="invalid-feedback"></div>
+                </div>
+
+                <div class="mb-3">
+                    {{ form_label(form.salaireMin) }}
+                    {{ form_widget(form.salaireMin, {'attr': {'class': 'form-control', 'type': 'number'}}) }}
+                    <div class="invalid-feedback"></div>
+                </div>
+
+                <div class="mb-3">
+                    {{ form_label(form.salaireMax) }}
+                    {{ form_widget(form.salaireMax, {'attr': {'class': 'form-control', 'type': 'number'}}) }}
+                    <div class="invalid-feedback"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-3">Créer l'offre</button>
+
+                {{ form_end(form) }}
+
+                <a href="{{ path('app_departement_show', {'id': departement.id}) }}" class="btn btn-secondary mt-3">← Retour au département</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('offer-form');
+            const inputs = form.querySelectorAll('input, textarea');
+
+            inputs.forEach(input => {
+                input.addEventListener('input', () => validateInput(input));
+            });
+
+            form.addEventListener('submit', function (e) {
+                let valid = true;
+                inputs.forEach(input => {
+                    if (!validateInput(input)) valid = false;
+                });
+                if (!valid) e.preventDefault();
+            });
+
+            function validateInput(input) {
+                const value = input.value.trim();
+                const feedback = input.parentElement.querySelector('.invalid-feedback');
+                let error = '';
+
+                if (input.name.includes('[titre]')) {
+                    if (!value) error = "Le titre ne peut pas être vide.";
+                }
+
+                if (input.name.includes('[description]')) {
+                    if (!value) error = "La description est requise.";
+                }
+
+                if (input.name.includes('[salaireMin]')) {
+                    const num = parseFloat(value);
+                    if (!value) error = "Salaire minimum requis.";
+                    else if (isNaN(num) || num < 0) error = "Salaire min invalide.";
+                }
+
+                if (input.name.includes('[salaireMax]')) {
+                    const num = parseFloat(value);
+                    if (!value) error = "Salaire maximum requis.";
+                    else if (isNaN(num) || num < 0) error = "Salaire max invalide.";
+                }
+
+                if (error) {
+                    input.classList.add('is-invalid');
+                    feedback.textContent = error;
+                    return false;
+                } else {
+                    input.classList.remove('is-invalid');
+                    feedback.textContent = '';
+                    return true;
+                }
+            }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const aiBtn = document.getElementById('ai-fill-btn');
+            const titreInput = document.querySelector('[name$="[titre]"]');
+            const descriptionInput = document.getElementById('offre_for_departement_description');
+
+            aiBtn.addEventListener('click', async () => {
+                const titre = titreInput.value.trim();
+                //const currentDescription = descriptionInput.value.trim();
+
+                if (!titre) {
+                    alert("Veuillez d'abord entrer un titre.");
+                    return;
+                }
+
+                try {
+                    const response = await fetch('{{ path('app_ai_generate_description') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({ titre })
+                    });
+
+                    if (!response.ok) throw new Error('Erreur AI');
+
+                    const data = await response.json();
+                    console.log(data);
+                    descriptionInput.value = data.suggestion;
+                } catch (error) {
+                    console.error(error);
+                    alert("Une erreur est survenue lors de la génération de la description.");
+                }
+            });
+        });
+    </script>
+
+{% endblock %}
