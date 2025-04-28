@@ -41,12 +41,12 @@
                 </a>
             </li>
             
-            <li class="sidebar-item {{ app.request.get('_route') starts with 'app_certificat' ? 'active' : '' }}">
-                
-                    <i data-feather="file-text"></i>
-                    <span class="align-middle">Certificats</span>
-                </a>
-            </li>
+            <li class="sidebar-item">
+    <a class="sidebar-link" href="{{ path('app_certificat_index') }}">
+        <i class="align-middle" data-feather="file-text"></i> 
+        <span class="align-middle">Certificats</span>
+    </a>
+</li>
             
             {% if is_granted('ROLE_RH') or is_granted('ROLE_ADMIN') %}
             <li class="sidebar-header">
@@ -89,12 +89,12 @@
                 </a>
             </li>
             
-            <li class="sidebar-item {{ app.request.get('_route') starts with 'app_formation' ? 'active' : '' }}">
-                <a class="sidebar-link" href="#">
-                    <i data-feather="book-open"></i>
-                    <span class="align-middle">Formations</span>
-                </a>
-            </li>
+            <li class="sidebar-item">
+    <a class="sidebar-link" href="{{ path('app_formation_index') }}">
+        <i class="align-middle" data-feather="book-open"></i> 
+        <span class="align-middle">Formations</span>
+    </a>
+</li>
             {% endif %}
             
             {% if is_granted('ROLE_ADMIN') %}

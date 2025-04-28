@@ -1,0 +1,59 @@
+{% extends 'basefront.html.twig' %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-primary">Nos Formations Professionnelles</h1>
+        <p class="lead text-muted">Découvrez nos programmes de formation pour booster votre carrière</p>
+        <hr class="my-4 w-25 mx-auto">
+    </div>
+    
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 justify-content-center">
+        {% for formation in formations %}
+            <div class="col">
+                <div class="card h-100 shadow-sm hover-card">
+                    <img src="{{ asset('images/formations/' ~ formation.id ~ '.jpg') }}"
+     class="card-img-top"
+     alt="Formation {{ formation.name }}"
+     onerror="this.onerror=null;this.src='{{ asset('images/formations/default.jpg') }}';">
+
+
+                    <div class="card-body">
+                        <h3 class="card-title fw-bold">{{ formation.name }}</h3>
+                        <p class="card-text text-muted">{{ formation.description|length > 100 ? formation.description|slice(0, 100) ~ '...' : formation.description }}</p>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-primary rounded-pill p-2">{{ formation.prix }} DT</span>
+                            <small class="text-muted">Cliquez pour détails</small>
+                        </div>
+                    </div>
+                    <a href="{{ path('app_front_formation_show', { 'id': formation.id }) }}" 
+                       class="stretched-link" aria-label="Voir détails de {{ formation.name }}"></a>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-12 text-center">
+                <div class="alert alert-info p-5">
+                    <i class="bi bi-exclamation-circle fs-1 d-block mb-3"></i>
+                    <p class="lead">Aucune formation n'est disponible pour le moment.</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .hover-card {
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .hover-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15) !important;
+    }
+    .card-img-top {
+        height: 200px;
+        object-fit: cover;
+    }
+</style>
+{% endblock %}

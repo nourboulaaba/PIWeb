@@ -1,0 +1,8 @@
+{% extends 'basefront.html.twig' %}
+
+{% block body %}
+    <h1>Détails de la formation</h1>
+    <h2>{{ formation.name}}</h2>
+    <p>{{ formation.description }}</p>
+    <a href="{{ path('app_front_formation_index') }}">Retour à la liste</a>
+{% endblock %}

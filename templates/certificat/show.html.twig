@@ -1,0 +1,28 @@
+{# certificat/show.html.twig #}
+{% extends 'indexback.html.twig' %}
+{% block title %}Détails du Certificat{% endblock %}
+{% block body %}
+<div class="container-fluid">
+  <div class="card shadow-sm animate__animated animate__fadeIn">
+    <div class="card-header bg-primary text-white">
+      <h5>Détails du certificat</h5>
+    </div>
+    <div class="card-body">
+      <ul class="list-group">
+        <li class="list-group-item"><strong>Date examen :</strong> {{ certificat.dateExamen|date('d/m/Y') }}</li>
+        <li class="list-group-item"><strong>Heure :</strong> {{ certificat.heure|date('H:i') }}</li>
+        <li class="list-group-item"><strong>Durée :</strong> {{ certificat.duree }} min</li>
+        <li class="list-group-item"><strong>Prix :</strong> {{ certificat.prixExam }} DT</li>
+        <li class="list-group-item"><strong>Niveau :</strong> {{ certificat.niveau }}</li>
+        <li class="list-group-item"><strong>Résultat :</strong> {{ certificat.resultatExamen|default('N/A') }}</li>
+        <li class="list-group-item"><strong>Date reprogrammation :</strong> {{ certificat.dateReprogrammation ? certificat.dateReprogrammation|date('d/m/Y') : 'Non' }}</li>
+      </ul>
+      <div class="mt-3 text-end">
+        <a href="{{ path('app_certificat_edit', {'idCertif': certificat.idCertif}) }}" class="btn btn-warning">
+          <i class="fas fa-edit"></i> Modifier
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

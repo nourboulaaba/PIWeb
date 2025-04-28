@@ -4,10 +4,8 @@ namespace App\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-
 use App\Repository\CertificatRepository;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CertificatRepository::class)]
 #[ORM\Table(name: 'certificat')]
@@ -15,7 +13,7 @@ class Certificat
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(name: 'id_certif', type: 'integer')]
     private ?int $idCertif = null;
 
     public function getIdCertif(): ?int
@@ -28,9 +26,43 @@ class Certificat
         $this->idCertif = $idCertif;
         return $this;
     }
+    #[ORM\Column(name: 'nom', type: 'string', length: 255)]
+#[Assert\NotBlank(message: "Le nom du bénéficiaire est requis.")]
+private ?string $nom = null;
+
+#[ORM\Column(name: 'email', type: 'string', length: 255)]
+#[Assert\NotBlank(message: "L'email du bénéficiaire est requis.")]
+#[Assert\Email(message: "L'adresse email '{{ value }}' n'est pas valide.")]
+private ?string $email = null;
+
+// Getter et Setter pour nom
+public function getNom(): ?string
+{
+    return $this->nom;
+}
+
+public function setNom(string $nom): self
+{
+    $this->nom = $nom;
+    return $this;
+}
+
+// Getter et Setter pour email
+public function getEmail(): ?string
+{
+    return $this->email;
+}
+
+public function setEmail(string $email): self
+{
+    $this->email = $email;
+    return $this;
+}
+
 
     #[ORM\ManyToOne(targetEntity: Formation::class, inversedBy: 'certificats')]
     #[ORM\JoinColumn(name: 'idFormation', referencedColumnName: 'id')]
+    #[Assert\NotNull(message: "La formation associée est requise.")]
     private ?Formation $formation = null;
 
     public function getFormation(): ?Formation
@@ -44,7 +76,8 @@ class Certificat
         return $this;
     }
 
-    #[ORM\Column(type: 'date', nullable: false)]
+    #[ORM\Column(name: 'date_examen', type: 'date')]
+    #[Assert\NotBlank(message: "La date de l'examen est requise.")]
     private ?\DateTimeInterface $dateExamen = null;
 
     public function getDateExamen(): ?\DateTimeInterface
@@ -58,21 +91,24 @@ class Certificat
         return $this;
     }
 
-    #[ORM\Column(type: 'time', nullable: false)]
-    private ?string $heure = null;
+    #[ORM\Column(name: 'heure', type: 'time')]
+    #[Assert\NotBlank(message: "L'heure de l'examen est requise.")]
+    private ?\DateTimeInterface $heure = null;
 
-    public function getHeure(): ?string
+    public function getHeure(): ?\DateTimeInterface
     {
         return $this->heure;
     }
 
-    public function setHeure(string $heure): self
+    public function setHeure(?\DateTimeInterface $heure): self
     {
         $this->heure = $heure;
         return $this;
     }
 
-    #[ORM\Column(type: 'integer', nullable: false)]
+    #[ORM\Column(name: 'duree', type: 'integer')]
+    #[Assert\NotNull(message: "La durée est requise.")]
+    #[Assert\Positive(message: "La durée doit être un entier positif.")]
     private ?int $duree = null;
 
     public function getDuree(): ?int
@@ -86,7 +122,12 @@ class Certificat
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: false)]
+    #[ORM\Column(name: 'prix_exam', type: 'string', length: 255)]
+    #[Assert\NotBlank(message: "Le prix de l'examen est requis.")]
+    #[Assert\Regex(
+        pattern: "/^\d+(\.\d{1,2})?$/",
+        message: "Le prix doit être un nombre valide (ex: 100 ou 100.00)."
+    )]
     private ?string $prixExam = null;
 
     public function getPrixExam(): ?string
@@ -100,7 +141,8 @@ class Certificat
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: false)]
+    #[ORM\Column(name: 'niveau', type: 'string', length: 255)]
+    #[Assert\NotBlank(message: "Le niveau est requis.")]
     private ?string $niveau = null;
 
     public function getNiveau(): ?string
@@ -114,7 +156,7 @@ class Certificat
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: true)]
+    #[ORM\Column(name: 'resultat_examen', type: 'string', nullable: true, length: 255)]
     private ?string $resultatExamen = null;
 
     public function getResultatExamen(): ?string
@@ -128,7 +170,11 @@ class Certificat
         return $this;
     }
 
-    #[ORM\Column(type: 'date', nullable: true)]
+    #[ORM\Column(name: 'date_reprogrammation', type: 'date', nullable: true)]
+    #[Assert\Expression(
+        "this.getDateReprogrammation() === null or this.getDateReprogrammation() >= this.getDateExamen()",
+        message: "La date de reprogrammation doit être postérieure à la date d'examen."
+    )]
     private ?\DateTimeInterface $dateReprogrammation = null;
 
     public function getDateReprogrammation(): ?\DateTimeInterface
@@ -141,5 +187,4 @@ class Certificat
         $this->dateReprogrammation = $dateReprogrammation;
         return $this;
     }
-
 }
