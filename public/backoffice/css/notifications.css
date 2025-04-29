@@ -1,0 +1,112 @@
+/* Styles pour les notifications */
+
+/* Badge de notification */
+.notification-badge {
+  background: #0d6efd;
+  box-shadow: 0 0 0 2px #fff;
+  border-radius: 50%;
+  display: block;
+  height: 18px;
+  width: 18px;
+  padding: 1px;
+  position: absolute;
+  top: 0;
+  right: -8px;
+  text-align: center;
+  transition: top 0.1s ease-out;
+  font-size: 0.675rem;
+  color: #fff;
+}
+
+/* Icône de notification dans le menu déroulant */
+.notification-icon-wrapper {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: rgba(13, 110, 253, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+/* Notification non lue */
+.notification-list .unread {
+  background-color: rgba(13, 110, 253, 0.05);
+  border-left: 3px solid #0d6efd;
+}
+
+/* Icône de notification dans la liste */
+.notification-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(13, 110, 253, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+/* Animation pour les nouvelles notifications */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.notification-badge.new {
+  animation: pulse 1s infinite;
+}
+
+/* Style pour l'icône de notification */
+#notificationCounter {
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+}
+
+#notificationCounter:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Assurer que le menu déroulant est visible */
+.dropdown-menu {
+  display: none;
+}
+
+.dropdown-menu.show {
+  display: block !important;
+  z-index: 1000;
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition: all 0.3s ease;
+}
+
+/* Styles pour le menu déroulant des notifications */
+.notification-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 320px;
+  max-height: 400px;
+  overflow-y: auto;
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 0.25rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
+  margin: 0.125rem 0 0;
+  padding: 0.5rem 0;
+  font-size: 0.875rem;
+  color: #212529;
+  text-align: left;
+  list-style: none;
+}

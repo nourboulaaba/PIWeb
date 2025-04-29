@@ -1,0 +1,134 @@
+/* Menu déroulant personnalisé */
+.custom-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.custom-dropdown-toggle {
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-dropdown-toggle:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.custom-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 350px;
+  max-height: 400px;
+  overflow-y: auto;
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 0.25rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
+  margin: 0.125rem 0 0;
+  padding: 0.5rem 0;
+  font-size: 0.875rem;
+  color: #212529;
+  text-align: left;
+  list-style: none;
+  z-index: 1000;
+  
+  /* Par défaut, le menu est caché */
+  display: none;
+}
+
+/* Quand le menu est visible */
+.custom-dropdown.open .custom-dropdown-menu {
+  display: block;
+}
+
+/* Style pour l'en-tête du menu */
+.custom-dropdown-header {
+  padding: 0.5rem 1rem;
+  margin-bottom: 0;
+  font-size: 0.875rem;
+  color: #6c757d;
+  white-space: nowrap;
+  border-bottom: 1px solid #e9ecef;
+}
+
+/* Style pour les éléments du menu */
+.custom-dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  clear: both;
+  font-weight: 400;
+  color: #212529;
+  text-align: inherit;
+  white-space: nowrap;
+  background-color: transparent;
+  border: 0;
+  text-decoration: none;
+}
+
+.custom-dropdown-item:hover {
+  background-color: #f8f9fa;
+  color: #16181b;
+  text-decoration: none;
+}
+
+/* Style pour le pied du menu */
+.custom-dropdown-footer {
+  padding: 0.5rem 1rem;
+  margin-top: 0;
+  font-size: 0.875rem;
+  color: #6c757d;
+  text-align: center;
+  border-top: 1px solid #e9ecef;
+}
+
+.custom-dropdown-footer a {
+  color: #6c757d;
+  text-decoration: none;
+}
+
+.custom-dropdown-footer a:hover {
+  color: #212529;
+  text-decoration: underline;
+}
+
+/* Style pour les notifications non lues */
+.notification-item.unread {
+  background-color: rgba(13, 110, 253, 0.05);
+  border-left: 3px solid #0d6efd;
+}
+
+/* Style pour l'icône de notification */
+.notification-icon-wrapper {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: rgba(13, 110, 253, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+/* Badge de notification */
+.custom-notification-badge {
+  background: #0d6efd;
+  box-shadow: 0 0 0 2px #fff;
+  border-radius: 50%;
+  display: block;
+  height: 18px;
+  width: 18px;
+  padding: 1px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  text-align: center;
+  transition: top .1s ease-out;
+  font-size: 0.675rem;
+  color: #fff;
+}

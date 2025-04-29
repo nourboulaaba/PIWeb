@@ -2,12 +2,9 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-
 use App\Repository\CongeRepository;
+use App\Entity\User;
+use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CongeRepository::class)]
 #[ORM\Table(name: 'conges')]
@@ -16,35 +13,43 @@ class Conge
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private ?int $idConges = null;
+    private ?int $id = null;
 
-    public function getIdConges(): ?int
-    {
-        return $this->idConges;
-    }
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'conges')]
+    #[ORM\JoinColumn(name: 'idEmploye', referencedColumnName: 'id', nullable: false)]
+    private ?User $employe = null;
 
-    public function setIdConges(int $idConges): self
-    {
-        $this->idConges = $idConges;
-        return $this;
-    }
-
-    #[ORM\Column(type: 'integer', nullable: false)]
-    private ?int $idEmploye = null;
-
-    public function getIdEmploye(): ?int
-    {
-        return $this->idEmploye;
-    }
-
-    public function setIdEmploye(int $idEmploye): self
-    {
-        $this->idEmploye = $idEmploye;
-        return $this;
-    }
-
-    #[ORM\Column(type: 'date', nullable: false)]
+    #[ORM\Column(name: 'dateDebut', type: 'date')]
     private ?\DateTimeInterface $dateDebut = null;
+
+    #[ORM\Column(name: 'dateFin', type: 'date')]
+    private ?\DateTimeInterface $dateFin = null;
+
+    #[ORM\Column(name: 'typeConge', type: 'string', length: 200)]
+    private ?string $typeConge = null;
+
+    #[ORM\Column(name: 'statut', type: 'string', length: 100)]
+    private ?string $statut = self::STATUT_EN_ATTENTE;
+
+    const STATUT_EN_ATTENTE = 'en attente';
+    const STATUT_APPRUVE = 'approuvé';
+    const STATUT_REFUSE = 'refusé';
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getEmploye(): ?User
+    {
+        return $this->employe;
+    }
+
+    public function setEmploye(User $employe): self
+    {
+        $this->employe = $employe;
+        return $this;
+    }
 
     public function getDateDebut(): ?\DateTimeInterface
     {
@@ -57,9 +62,6 @@ class Conge
         return $this;
     }
 
-    #[ORM\Column(type: 'date', nullable: false)]
-    private ?\DateTimeInterface $dateFin = null;
-
     public function getDateFin(): ?\DateTimeInterface
     {
         return $this->dateFin;
@@ -70,9 +72,6 @@ class Conge
         $this->dateFin = $dateFin;
         return $this;
     }
-
-    #[ORM\Column(type: 'string', nullable: false)]
-    private ?string $typeConge = null;
 
     public function getTypeConge(): ?string
     {
@@ -85,9 +84,6 @@ class Conge
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: false)]
-    private ?string $statut = null;
-
     public function getStatut(): ?string
     {
         return $this->statut;
@@ -99,4 +95,11 @@ class Conge
         return $this;
     }
 
+    public function getDuree(): int
+    {
+        if ($this->dateDebut && $this->dateFin) {
+            return $this->dateDebut->diff($this->dateFin)->days + 1;
+        }
+        return 0;
+    }
 }

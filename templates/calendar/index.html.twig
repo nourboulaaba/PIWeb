@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Calendar</title>
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core/locales/fr.js"></script>
+</head>
+<body>
+    <h1>Employee Calendar</h1>
+
+    <form method="get">
+        <label for="userId">Enter your User ID:</label>
+        <input type="text" id="userId" name="userId" required>
+        
+        <!-- Display the leave balance -->
+        </br> 
+        <label>Leave Balance:</label> 
+        <div id="leaveBalance" name="leaveBalance">Loading...</div>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    {% if userId %}
+        <p>Displaying calendar for user ID: {{ userId }}</p>
+
+        <div id="calendar"></div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var calendarEl = document.getElementById('calendar');
+
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: 'dayGridMonth',
+                    events: function(info, successCallback, failureCallback) {
+                        // Fetch events from the backend
+                        fetch('/calendar', {
+                            method: 'POST',
+                            body: new URLSearchParams({
+                                userId: '{{ userId }}'  // Pass userId to backend
+                            }),
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            // Handle error case
+                            if (data.error) {
+                                alert(data.error);
+                                document.getElementById('calendar').innerHTML = "<p>" + data.error + "</p>";
+                            } else {
+                                // Display events in FullCalendar
+                                successCallback(data.events);
+
+                                // Display leave balance
+                                const congeSolde = data.congeSolde;
+                                document.getElementById('leaveBalance').innerHTML = congeSolde + " days";
+                            }
+                        })
+                        .catch(error => {
+                            failureCallback();
+                            alert('There was an error fetching events!');
+                        });
+                    },
+                    locale: 'fr', // Optional: French language
+                });
+
+                calendar.render();
+            });
+        </script>
+    {% else %}
+        <p>No User ID provided!</p>
+    {% endif %}
+</body>
+</html>

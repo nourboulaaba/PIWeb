@@ -1,0 +1,174 @@
+{% extends 'backoffice/base.html.twig' %}
+
+{% block title %}Notifications{% endblock %}
+
+{% block body %}
+<div class="container-fluid p-0">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">Notifications</h5>
+                    <button id="mark-all-read" class="btn btn-sm btn-primary">
+                        <i class="fas fa-check-double me-1"></i> Marquer tout comme lu
+                    </button>
+                </div>
+                <div class="card-body">
+                    {% if notifications is empty %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i> Vous n'avez aucune notification.
+                        </div>
+                    {% else %}
+                        <div class="list-group notification-list">
+                            {% for notification in notifications %}
+                                <div class="list-group-item list-group-item-action {% if not notification.isRead %}unread{% endif %}" data-id="{{ notification.id }}">
+                                    <div class="d-flex w-100 justify-content-between align-items-center">
+                                        <div>
+                                            <div class="d-flex align-items-center">
+                                                <div class="notification-icon me-3">
+                                                    {% if notification.type == 'new_user' %}
+                                                        <i class="fas fa-user-plus text-primary"></i>
+                                                    {% else %}
+                                                        <i class="fas fa-bell text-warning"></i>
+                                                    {% endif %}
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-1">{{ notification.message }}</h6>
+                                                    <small class="text-muted">{{ notification.createdAt|date('d/m/Y H:i') }}</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            {% if notification.relatedUserId %}
+                                                <a href="{{ path('app_user_edit', {'id': notification.relatedUserId}) }}" class="btn btn-sm btn-outline-primary me-2">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            {% elseif notification.link %}
+                                                <a href="{{ absolute_url(notification.link) }}" class="btn btn-sm btn-outline-primary me-2">
+                                                    <i class="fas fa-external-link-alt"></i>
+                                                </a>
+                                            {% endif %}
+                                            <button class="btn btn-sm btn-outline-success mark-read-btn" data-id="{{ notification.id }}" {% if notification.isRead %}disabled{% endif %}>
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    .notification-list .unread {
+        background-color: rgba(13, 110, 253, 0.05);
+        border-left: 3px solid #0d6efd;
+    }
+    .notification-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: rgba(13, 110, 253, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+</style>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Marquer une notification comme lue
+        document.querySelectorAll('.mark-read-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const id = this.getAttribute('data-id');
+                markAsRead(id, this);
+            });
+        });
+
+        // Marquer toutes les notifications comme lues
+        document.getElementById('mark-all-read').addEventListener('click', function(e) {
+            e.preventDefault();
+            markAllAsRead();
+        });
+
+        // Fonction pour marquer une notification comme lue
+        function markAsRead(id, button) {
+            fetch('{{ path('app_notification_mark_as_read', {'id': 'ID'}) }}'.replace('ID', id), {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Mettre à jour l'interface
+                    button.disabled = true;
+                    const listItem = button.closest('.list-group-item');
+                    listItem.classList.remove('unread');
+
+                    // Mettre à jour le compteur de notifications
+                    updateNotificationCount();
+                }
+            })
+            .catch(error => console.error('Erreur:', error));
+        }
+
+        // Fonction pour marquer toutes les notifications comme lues
+        function markAllAsRead() {
+            fetch('{{ path('app_notifications_mark_all_as_read') }}', {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Mettre à jour l'interface
+                    document.querySelectorAll('.mark-read-btn').forEach(btn => {
+                        btn.disabled = true;
+                    });
+                    document.querySelectorAll('.list-group-item').forEach(item => {
+                        item.classList.remove('unread');
+                    });
+
+                    // Mettre à jour le compteur de notifications
+                    updateNotificationCount();
+                }
+            })
+            .catch(error => console.error('Erreur:', error));
+        }
+
+        // Fonction pour mettre à jour le compteur de notifications
+        function updateNotificationCount() {
+            fetch('{{ path('app_notifications_count') }}')
+                .then(response => response.json())
+                .then(data => {
+                    const badge = document.querySelector('.notification-badge');
+                    if (badge) {
+                        if (data.count > 0) {
+                            badge.textContent = data.count;
+                            badge.style.display = 'inline-block';
+                        } else {
+                            badge.style.display = 'none';
+                        }
+                    }
+                })
+                .catch(error => console.error('Erreur:', error));
+        }
+    });
+</script>
+{% endblock %}

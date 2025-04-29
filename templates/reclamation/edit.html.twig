@@ -1,0 +1,165 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier le statut de la réclamation{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Conteneur principal */
+        .reclamation-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Titre */
+        .reclamation-container h1 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        /* Détails de la réclamation */
+        .reclamation-container p {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        /* Boutons */
+        .btn {
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        /* Animation pour les boutons */
+        .btn:focus {
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+        /* Formulaire */
+        form {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .reclamation-container a {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        /* Zone d'alerte pour les messages */
+        .alert {
+            font-size: 1rem;
+            text-align: center;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="reclamation-container">
+    <h1>Détails de la réclamation</h1>
+
+    <p><strong>Sujet :</strong> {{ reclamation.sujet }}</p>
+    <p><strong>Description :</strong> {{ reclamation.description }}</p>
+    <p><strong>Statut actuel :</strong> {{ reclamation.statut }}</p>
+
+    {# Affichage des messages flash #}
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger">{{ message }}</div>
+    {% endfor %}
+
+    <form method="POST">
+        <button type="submit" name="statut" value="Traité" class="btn btn-success">Marquer comme Traité</button>
+        <button type="submit" name="statut" value="En cours" class="btn btn-warning">Mettre en cours</button>
+    </form>
+
+    <a href="{{ path('app_reclamation_index') }}" class="btn btn-secondary">Retour à la liste</a>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Ajout d'une animation de confirmation lors de la soumission
+        document.querySelectorAll('form button').forEach(function(button) {
+            button.addEventListener('click', function(e) {
+                // Ajouter une animation de transition pour le bouton cliqué
+                button.style.transform = 'scale(0.95)';
+                setTimeout(function() {
+                    button.style.transform = 'scale(1)';
+                }, 200);
+
+                // Simulation d'une alerte de succès ou d'échec après un délai
+                setTimeout(function() {
+                    alert('Statut de la réclamation mis à jour !');
+                }, 1500);
+            });
+        });
+
+        // Effet sur le survol des boutons
+        document.querySelectorAll('.btn').forEach(function(button) {
+            button.addEventListener('mouseenter', function() {
+                this.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
+            });
+            button.addEventListener('mouseleave', function() {
+                this.style.boxShadow = 'none';
+            });
+        });
+    </script>
+{% endblock %}

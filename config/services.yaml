@@ -7,20 +7,42 @@
 parameters:
   profile_photos: "%kernel.project_dir%/public/uploads/profile_photos"
   cvs_directory: "%kernel.project_dir%/public/uploads/cvs"
+  recaptcha.site_key: "%env(RECAPTCHA_SITE_KEY)%"
+  recaptcha.secret_key: "%env(RECAPTCHA_SECRET_KEY)%"
+  gemini_api_url: "%env(GEMINI_API_URL)%"
+  gemini_api_key: "%env(GEMINI_API_KEY)%"
 
 services:
   _defaults:
     autowire: true
     autoconfigure: true
+    public: false
 
   App\:
     resource: "../src/"
-    exclude:
-      - "../src/DependencyInjection/"
-      - "../src/Entity/"
-      - "../src/Kernel.php"
+    exclude: "../src/{DependencyInjection,Entity,Tests,Kernel.php}"
 
-  # Le service reCAPTCHA a été supprimé
+  App\Controller\:
+    resource: "../src/Controller/"
+    tags: ["controller.service_arguments"]
 
-  # add more service definitions when explicit configuration is needed
-  # please note that last definitions always *replace* previous ones
+  App\Controller\EmployeeController:
+    autowire: true
+    autoconfigure: true
+    public: true
+
+  App\Repository\CongeRepository:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  App\Service\RecaptchaService:
+    arguments:
+      $secretKey: "%recaptcha.secret_key%"
+      $siteKey: "%recaptcha.site_key%"
+
+  # Configure GeminiService to inject the parameters
+  App\Service\GeminiService:
+    arguments:
+      $apiUrl: "%gemini_api_url%"
+      $apiKey: "%gemini_api_key%"

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,7 +25,11 @@ class AdminController extends AbstractController
     }
 
     #[Route('/user/{id}/activate', name: 'app_admin_activate_user')]
-    public function activateUser(User $user, EntityManagerInterface $entityManager): Response
+    public function activateUser(
+        User $user,
+        EntityManagerInterface $entityManager,
+        NotificationService $notificationService
+    ): Response
     {
         // Activer l'utilisateur
         $user->setIsVerified(true);
@@ -37,6 +42,9 @@ class AdminController extends AbstractController
         // Persister les changements
         $entityManager->persist($user);
         $entityManager->flush();
+
+        // Notifier les utilisateurs RH qu'un utilisateur a été activé
+        $notificationService->notifyRhAboutNewUser($user);
 
         $this->addFlash('success', '<strong>Utilisateur activé</strong> <br><br>L\'utilisateur <strong>' . $user->getEmail() . '</strong> a été activé avec succès. <br>Cet utilisateur peut maintenant se connecter à son compte.');
 

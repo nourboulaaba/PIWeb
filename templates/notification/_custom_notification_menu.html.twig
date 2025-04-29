@@ -1,0 +1,53 @@
+{% if is_granted('ROLE_RH') %}
+    <div id="customNotificationDropdown" class="custom-dropdown">
+        <div id="customNotificationToggle" class="custom-dropdown-toggle">
+            <div class="position-relative">
+                <i class="align-middle" data-feather="bell"></i>
+                {% if unreadCount > 0 %}
+                    <span class="custom-notification-badge">{{ unreadCount }}</span>
+                {% endif %}
+            </div>
+        </div>
+        <div class="custom-dropdown-menu">
+            <div class="custom-dropdown-header">
+                {% if unreadCount > 0 %}
+                    {{ unreadCount }} nouvelle{% if unreadCount > 1 %}s{% endif %} notification{% if unreadCount > 1 %}s{% endif %}
+                {% else %}
+                    Aucune nouvelle notification
+                {% endif %}
+            </div>
+            <div class="notification-list">
+                {% if notifications is empty %}
+                    <div class="custom-dropdown-item">
+                        <div class="text-center py-2">
+                            <i class="fas fa-bell-slash text-muted me-2"></i> Aucune notification
+                        </div>
+                    </div>
+                {% else %}
+                    {% for notification in notifications|slice(0, 5) %}
+                        <a href="{{ absolute_url(notification.link|default('#')) }}" class="custom-dropdown-item notification-item {% if not notification.isRead %}unread{% endif %}">
+                            <div class="row g-0 align-items-center">
+                                <div class="col-2">
+                                    <div class="notification-icon-wrapper">
+                                        {% if notification.type == 'new_user' %}
+                                            <i class="fas fa-user-plus text-primary"></i>
+                                        {% else %}
+                                            <i class="fas fa-bell text-warning"></i>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-10">
+                                    <div class="text-truncate">{{ notification.message }}</div>
+                                    <div class="text-muted small mt-1">{{ notification.createdAt|date('d/m/Y H:i') }}</div>
+                                </div>
+                            </div>
+                        </a>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <div class="custom-dropdown-footer">
+                <a href="{{ path('app_notifications') }}">Afficher toutes les notifications</a>
+            </div>
+        </div>
+    </div>
+{% endif %}

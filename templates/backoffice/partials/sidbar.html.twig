@@ -59,7 +59,31 @@
                     <span class="align-middle">Employés</span>
                 </a>
             </li>
-            
+
+              <li class="sidebar-item {{ app.request.get('_route') starts with 'app_user' ? 'active' : '' }}">
+                <a class="sidebar-link" href="{{ path('app_conge_index') }}">
+                    <i data-feather="users"></i>
+                    <span class="align-middle">Congés à Traiter</span>
+                </a>
+            </li>
+            <li class="sidebar-item {{ app.request.get('_route') starts with 'app_user' ? 'active' : '' }}">
+                <a class="sidebar-link" href="{{ path('app_conge_index_tous') }}">
+                    <i data-feather="users"></i>
+                    <span class="align-middle">Tous les Congés</span>
+                </a>
+            </li>
+             <li class="sidebar-item {{ app.request.get('_route') starts with 'app_user' ? 'active' : '' }}">
+                <a class="sidebar-link" href="{{ path('app_reclamation_index') }}">
+                    <i data-feather="users"></i>
+                    <span class="align-middle">Réclamations à Traiter</span>
+                </a>
+            </li>
+             <li class="sidebar-item {{ app.request.get('_route') starts with 'app_user' ? 'active' : '' }}">
+                <a class="sidebar-link" href="{{ path('app_reclamation_traites') }}">
+                    <i data-feather="users"></i>
+                    <span class="align-middle">Toutes les Réclamations</span>
+                </a>
+            </li>
             <li class="sidebar-item {{ app.request.get('_route') starts with 'app_contrat' ? 'active' : '' }}">
                 <a class="sidebar-link" >
                     <i data-feather="file"></i>

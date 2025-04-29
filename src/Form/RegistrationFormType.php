@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\User;
+use App\Form\RecaptchaType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -56,9 +57,8 @@ class RegistrationFormType extends AbstractType
                     ]),
                 ],
 
-            ]);
-
-            // reCAPTCHA a été supprimé
+            ])
+            ->add('recaptcha', RecaptchaType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -25,8 +25,20 @@
                         <a class="nav-link active" href="#">
                             <i class="fas fa-user-circle me-2"></i> Mon Profil
                         </a>
-                        <a class="nav-link" href="#">
-                            <i class="fas fa-calendar-alt me-2"></i> Mes Congés
+                         <a class="nav-link" href="{{ path('app_conge_new') }}">
+                            <i class="fas fa-circle me-2"></i> Nouveau Congé
+                        </a>
+                        <a class="nav-link" href="{{ path('app_conge_search') }}">
+                            <i class="fas fa-search me-2"></i> Mes Congés
+                        </a>
+                          <a class="nav-link" href="{{ path('employee_calendar', { 'userId': app.user.id }) }}">
+                            <i class="fas fa-calendar-alt me-2"></i> Calendrier
+                        </a>
+                           <a class="nav-link" href="{{ path('app_reclamation_new') }}">
+                            <i class="fas fa-calendar-alt me-2"></i> Nouveau Réclamation
+                        </a>
+                           <a class="nav-link" href="{{ path('app_reclamation_search') }}">
+                            <i class="fas fa-calendar-alt me-2"></i> Mes Réclamations
                         </a>
                         <a class="nav-link" href="#">
                             <i class="fas fa-file-invoice me-2"></i> Mes Bulletins de Paie

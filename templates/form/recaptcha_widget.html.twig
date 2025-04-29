@@ -1,0 +1,12 @@
+{# templates/form/recaptcha_widget.html.twig #}
+{% block recaptcha_widget %}
+    <div class="g-recaptcha mb-3" data-sitekey="{{ attr['data-sitekey'] }}"></div>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    {% if errors|length > 0 %}
+        <div class="text-danger">
+            {% for error in errors %}
+                {{ error.message }}
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

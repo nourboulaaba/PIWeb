@@ -2,6 +2,7 @@
 namespace App\Form;
 
 use App\Entity\User;
+use App\Form\RecaptchaType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
@@ -59,7 +60,9 @@ class RegistrationType extends AbstractType
                     'attr' => ['class' => 'password-field form-control'],
                 ],
 
-            ]);
+            ])
+            //->add('recaptcha', RecaptchaType::class)
+            ;
         }
 
 

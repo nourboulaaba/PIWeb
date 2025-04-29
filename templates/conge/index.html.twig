@@ -1,0 +1,151 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des congés en attente{% endblock %}
+
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    /* Badges de rôle */
+    .badge-role {
+      padding: 0.35em 0.8em;
+      font-size: 0.75em;
+      text-transform: uppercase;
+      border-radius: 30px;
+      letter-spacing: 0.03em;
+      font-weight: 600;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s ease;
+    }
+
+    .badge-role:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    .badge-role.rh {
+      background-color: #4e73df;
+      color: white;
+    }
+
+    .badge-role.employe {
+      background-color: #4895ef;
+      color: white;
+    }
+
+    .badge-role.admin {
+      background-color: #f6c23e;
+      color: #333;
+    }
+
+    /* Badges de statut */
+    .status-badge {
+      padding: 0.35em 0.8em;
+      font-size: 0.75em;
+      border-radius: 30px;
+      font-weight: 600;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s ease;
+    }
+
+    .status-badge:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    .status-badge.active {
+      background-color: #1cc88a;
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .status-badge.inactive {
+      background-color: #e74a3b;
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+</style>
+{% endblock %}
+
+
+{% block body %}
+<div class="container-fluid">
+    <div class="dashboard-container animate__animated animate__fadeIn">
+        <div class="dashboard-header d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h3 mb-0 text-gray-800">Congés en attente</h1>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    {# Formulaire de filtrage #}
+                    <form method="GET" action="{{ path('app_conge_index') }}" class="d-flex justify-content-between">
+                        <select name="typeConge" id="typeConge" class="form-select w-25">
+                            <option value="">Tous les types</option>
+                            <option value="Maladie" {% if typeConge == 'Maladie' %}selected{% endif %}>Maladie</option>
+                            <option value="Sans solde" {% if typeConge == 'Sans solde' %}selected{% endif %}>Sans solde</option>
+                            <option value="Maternité" {% if typeConge == 'Maternité' %}selected{% endif %}>Maternité</option>
+                            <option value="Annuelle" {% if typeConge == 'Annuelle' %}selected{% endif %}>Annuelle</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary">Filtrer</button>
+                    </form>
+
+                    <table class="table table-bordered table-striped colored-table mt-4">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Employé</th>
+                                <th>Date de début</th>
+                                <th>Date de fin</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for conge in conges %}
+                                <tr>
+                                    <td>{{ conge.id }}</td>
+                                    <td>{{ conge.employe.lastName }} {{ conge.employe.firstName }}</td>
+                                    <td>{{ conge.dateDebut|date('Y-m-d') }}</td>
+                                    <td>{{ conge.dateFin|date('Y-m-d') }}</td>
+                                    <td>{{ conge.statut }}</td>
+                                    <td>
+                                        <form method="post" action="{{ path('app_conge_update_statut', {id: conge.id}) }}">
+                                            <button type="submit" name="action" value="accept" class="btn-accept">Accepter</button>
+                                            <button type="submit" name="action" value="reject" class="btn-reject">Refuser</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted">Aucun congé en attente.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tableRows = document.querySelectorAll('.colored-table tbody tr');
+            tableRows.forEach((row, index) => {
+                row.style.opacity = '0';
+                row.style.transform = 'translateY(10px)';
+                setTimeout(() => {
+                    row.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                    row.style.opacity = '1';
+                    row.style.transform = 'translateY(0)';
+                }, 100 + (index * 50));
+            });
+        });
+    </script>
+{% endblock %}

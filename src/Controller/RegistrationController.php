@@ -4,8 +4,10 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Security\EmailVerifier;
+use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail as MimeTemplatedEmail;
+use Symfony\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,7 +25,11 @@ class RegistrationController extends AbstractController
     }
 
     #[Route('/verify/email', name: 'app_verify_email')]
-    public function verifyUserEmail(Request $request, EntityManagerInterface $entityManager): Response
+    public function verifyUserEmail(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        NotificationService $notificationService
+    ): Response
     {
         $id = $request->query->get('id');
 
@@ -52,6 +58,9 @@ class RegistrationController extends AbstractController
             // Persister les changements
             $entityManager->persist($user);
             $entityManager->flush();
+
+            // Notifier les utilisateurs RH qu'un nouvel utilisateur a vérifié son email
+            $notificationService->notifyRhAboutNewUser($user);
 
             // Vérifier que les changements ont été appliqués
             $entityManager->refresh($user);
@@ -98,7 +107,7 @@ class RegistrationController extends AbstractController
     private function sendVerificationEmail(User $user): void
     {
         $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
-            (new TemplatedEmail())
+            (new MimeTemplatedEmail())
                 ->from(new Address('boulaabanour2020@gmail.com', 'TrueMatch'))
                 ->to($user->getEmail())
                 ->subject('Confirmation de votre adresse email')
