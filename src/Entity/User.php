@@ -85,36 +85,6 @@ private ?string $password = null;
 
     #[ORM\Column(name: "is_verified", type: "boolean", nullable: true)]
     private ?bool $isVerified = null;
-    #[ORM\ManyToMany(targetEntity: Badge::class)]
-    #[ORM\JoinTable(name: 'user_badge')]
-    private $badges;
-
-    // Ajoutez des méthodes pour ajouter, retirer des badges et obtenir les badges de l'utilisateur
-    public function __construct()
-    {
-        $this->badges = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-
-    public function getBadges()
-    {
-        return $this->badges;
-    }
-
-    public function addBadge(Badge $badge): self
-    {
-        if (!$this->badges->contains($badge)) {
-            $this->badges[] = $badge;
-        }
-
-        return $this;
-    }
-
-    public function removeBadge(Badge $badge): self
-    {
-        $this->badges->removeElement($badge);
-        return $this;
-    }
-
     // Getters & Setters
 
     public function getId(): ?int

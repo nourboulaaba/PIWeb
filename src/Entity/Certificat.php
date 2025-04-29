@@ -26,39 +26,6 @@ class Certificat
         $this->idCertif = $idCertif;
         return $this;
     }
-    #[ORM\Column(name: 'nom', type: 'string', length: 255)]
-#[Assert\NotBlank(message: "Le nom du bénéficiaire est requis.")]
-private ?string $nom = null;
-
-#[ORM\Column(name: 'email', type: 'string', length: 255)]
-#[Assert\NotBlank(message: "L'email du bénéficiaire est requis.")]
-#[Assert\Email(message: "L'adresse email '{{ value }}' n'est pas valide.")]
-private ?string $email = null;
-
-// Getter et Setter pour nom
-public function getNom(): ?string
-{
-    return $this->nom;
-}
-
-public function setNom(string $nom): self
-{
-    $this->nom = $nom;
-    return $this;
-}
-
-// Getter et Setter pour email
-public function getEmail(): ?string
-{
-    return $this->email;
-}
-
-public function setEmail(string $email): self
-{
-    $this->email = $email;
-    return $this;
-}
-
 
     #[ORM\ManyToOne(targetEntity: Formation::class, inversedBy: 'certificats')]
     #[ORM\JoinColumn(name: 'idFormation', referencedColumnName: 'id')]

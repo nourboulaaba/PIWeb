@@ -10,7 +10,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use App\Service\CertifierService;
 
 #[Route('/certificat')]
 final class CertificatController extends AbstractController
@@ -24,31 +23,21 @@ final class CertificatController extends AbstractController
     }
 
     #[Route('/new', name: 'app_certificat_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager, CertifierService $certifierService): Response
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $certificat = new Certificat();
         $form = $this->createForm(CertificatType::class, $certificat);
         $form->handleRequest($request);
-    
+
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($certificat);
             $entityManager->flush();
-    
-            // 👇 ENVOYER à Certifier.me APRÈS enregistrement local
-            try {
-                $response = $certifierService->sendCertificate(
-                    $certificat->getNom(),     // Il faut avoir un champ "Nom" sur ton certificat
-                    $certificat->getEmail()    // Il faut avoir un champ "Email" aussi
-                );
-    
-                $this->addFlash('success', 'Certificat enregistré et envoyé avec succès !');
-            } catch (\Exception $e) {
-                $this->addFlash('error', 'Erreur lors de l\'envoi du certificat : ' . $e->getMessage());
-            }
-    
-            return $this->redirectToRoute('app_certificat_index', [], Response::HTTP_SEE_OTHER);
+
+            $this->addFlash('success', 'Certificat créé avec succès.');
+
+            return $this->redirectToRoute('app_certificat_index');
         }
-    
+
         return $this->render('certificat/new.html.twig', [
             'certificat' => $certificat,
             'form' => $form,
@@ -72,7 +61,9 @@ final class CertificatController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_certificat_index', [], Response::HTTP_SEE_OTHER);
+            $this->addFlash('success', 'Certificat modifié avec succès.');
+
+            return $this->redirectToRoute('app_certificat_index');
         }
 
         return $this->render('certificat/edit.html.twig', [
@@ -89,6 +80,8 @@ final class CertificatController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_certificat_index', [], Response::HTTP_SEE_OTHER);
+        $this->addFlash('success', 'Certificat supprimé avec succès.');
+
+        return $this->redirectToRoute('app_certificat_index');
     }
 }
