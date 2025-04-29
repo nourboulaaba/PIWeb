@@ -29,4 +29,6 @@ class OffreRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+
 }

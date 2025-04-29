@@ -131,9 +131,11 @@ class OffreController extends AbstractController
         // Properly encode title and description for URL
         $title = urlencode($offre->getTitre());
         $description = urlencode($offre->getDescription());
+        $salaireMin = urlencode($offre->getSalaireMin());
+        $salaireMax = urlencode($offre->getSalaireMax());
 
         // Generate the direct link to be opened via QR scan
-        $url = "https://parisfrance2424g7g7gtt.on.drv.tw/AbderrahmenOffreQRCode/offer.html?title={$title}&description={$description}";
+        $url = "https://parisfrance2424g7g7gtt.on.drv.tw/AbderrahmenOffreQRCode/offer.html?title={$title}&description={$description}&salaire_min={$salaireMin}&salaire_max={$salaireMax}";
 
         // Build QR code from the full URL
         $result = Builder::create()

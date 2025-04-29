@@ -126,12 +126,18 @@
 
         <!-- Search and Filter Form -->
         <form method="get" action="{{ path('front_office_offres') }}" class="mb-5">
-            <div class="row mb-3 justify-content-center">
-                <div class="col-md-6 col-lg-4 mb-3">
-                    <input type="text" name="q" class="form-control shadow-sm" placeholder="🔍 Rechercher une offre..." value="{{ query }}">
+            <div class="row justify-content-center g-3">
+                <!-- Search Input -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="input-group shadow-sm">
+                        <span class="input-group-text bg-white">🔍</span>
+                        <input id="searchinput" type="text" name="q" class="form-control" placeholder="Rechercher une offre..." value="{{ query }}">
+                    </div>
                 </div>
-                <div class="col-md-4 col-lg-3 mb-3">
-                    <select name="departement" class="form-control shadow-sm">
+
+                <!-- Department Filter -->
+                <div class="col-md-4 col-lg-3">
+                    <select id="selectedDepartement" name="departement" class="form-select shadow-sm">
                         <option value="">🏢 Tous les départements</option>
                         {% for departement in departements %}
                             <option value="{{ departement.id }}" {% if departement.id == departementId %}selected{% endif %}>
@@ -140,18 +146,41 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="col-md-2 mb-3">
-                    <button type="submit" class="btn btn-primary btn-lg w-100 shadow-sm rounded-pill">
-                        <i class="fas fa-filter"></i> Filtrer
-                    </button>
+            </div>
+
+            <!-- Salary Range in Card -->
+            <div class="row justify-content-center g-3 mt-3">
+                <div class="col-md-8">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="row g-3 align-items-center">
+                                <div class="col-md-5">
+                                    <div class="input-group">
+                                        <span class="input-group-text">Min 💰</span>
+                                        <input type="number" name="salaireMin" id="salaireMin" class="form-control" placeholder="Salaire min (DT)" value="{{ salaireMin is defined ? salaireMin : '' }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="input-group">
+                                        <span class="input-group-text">Max 💰</span>
+                                        <input type="number" name="salaireMax" id="salaireMax" class="form-control" placeholder="Salaire max (DT)" value="{{ salaireMax is defined ? salaireMax : '' }}">
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </form>
 
+
         <!-- Offers List -->
-        <div class="row">
+        <div class="row" id="offreslist">
             {% for offre in offres %}
-                <div class="col-md-4 mb-4">
+                <div class="col-md-4 mb-4" data-departement-id="{{ offre.departement.id }}"
+                     data-salaire-min="{{ offre.salaireMin }}"
+                     data-salaire-max="{{ offre.salaireMax }}">
                     <div class="card position-relative h-100">
                         <div class="badge-offre"><i class="fas fa-briefcase"></i> Offre</div>
                         <div class="card-body">
@@ -173,5 +202,95 @@
                 </div>
             {% endfor %}
         </div>
+        {% if offres.pageCount > 1 %}
+            <div class="pagination-container">
+                <nav aria-label="Pagination">
+                    <ul class="pagination">
+
+                        {# Previous button #}
+                        {% if offres.previousPageNumber is defined %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ path(app.request.attributes.get('_route'), app.request.query.all | merge({'page': offres.previousPageNumber})) }}">
+                                    &laquo;
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        {# Page numbers #}
+                        {% for page in 1..offres.pageCount %}
+                            {% if page == offres.currentPageNumber %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ page }}</span>
+                                </li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ path(app.request.attributes.get('_route'), app.request.query.all | merge({'page': page})) }}">
+                                        {{ page }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {# Next button #}
+                        {% if offres.nextPageNumber is defined %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ path(app.request.attributes.get('_route'), app.request.query.all | merge({'page': offres.nextPageNumber})) }}">
+                                    &raquo;
+                                </a>
+                            </li>
+                        {% endif %}
+
+                    </ul>
+                </nav>
+            </div>
+        {% endif %}
+
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('searchinput');
+            const departementSelect = document.getElementById('selectedDepartement');
+            const salaireMinInput = document.getElementById('salaireMin');
+            const salaireMaxInput = document.getElementById('salaireMax');
+            const offresList = document.getElementById('offreslist');
+            const offres = offresList.querySelectorAll('.col-md-4');
+
+            function normalize(str) {
+                return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            }
+
+            function filterOffers() {
+                const query = normalize(searchInput.value.trim());
+                const selectedDept = departementSelect.value;
+                const minSalary = parseFloat(salaireMinInput.value) || 0;
+                const maxSalary = parseFloat(salaireMaxInput.value) || Infinity;
+
+                offres.forEach((offreDiv) => {
+                    const titre = normalize(offreDiv.querySelector('.card-title').textContent);
+                    const description = normalize(offreDiv.querySelector('.card-text').textContent);
+                    const deptId = offreDiv.dataset.departementId;
+                    const offreSalaireMin = parseFloat(offreDiv.dataset.salaireMin);
+                    const offreSalaireMax = parseFloat(offreDiv.dataset.salaireMax);
+
+                    const matchesSearch = titre.includes(query) || description.includes(query);
+                    const matchesDept = !selectedDept || selectedDept === deptId;
+                    const matchesSalary = offreSalaireMax >= minSalary && offreSalaireMin <= maxSalary;
+
+                    if (matchesSearch && matchesDept && matchesSalary) {
+                        offreDiv.style.display = '';
+                    } else {
+                        offreDiv.style.display = 'none';
+                    }
+                });
+            }
+
+            searchInput.addEventListener('input', filterOffers);
+            departementSelect.addEventListener('change', filterOffers);
+            salaireMinInput.addEventListener('input', filterOffers);
+            salaireMaxInput.addEventListener('input', filterOffers);
+        });
+    </script>
+
+
 {% endblock %}

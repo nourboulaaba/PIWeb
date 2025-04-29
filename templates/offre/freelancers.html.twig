@@ -7,10 +7,21 @@
         <div class="freelancers-header">
             <h1>Top Freelancers</h1>
         </div>
+        <div class="search-filter mb-5">
+            <input type="text" id="searchInput" placeholder="🔍 Search by name or skill..." />
+
+            <input type="number" id="minPrice" placeholder="Min $" style="max-width: 100px;" />
+            <input type="number" id="maxPrice" placeholder="Max $" style="max-width: 100px;" />
+        </div>
+
 
         <div class="freelancers-grid">
             {% for freelancer in freelancers %}
-                <div class="freelancer-card">
+                <div class="freelancer-card"
+                     data-name="{{ freelancer.name|lower }}"
+                     data-bio="{{ freelancer.bio|lower }}"
+                     data-skills="{{ freelancer.skills|lower }}"
+                     data-rate="{{ freelancer.hourRating|replace({'$':''}) }}">
                     <div class="card-header">
                         <div class="profile-meta">
                             <div class="rating">
@@ -244,4 +255,39 @@
             }
         }
     </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('searchInput');
+            const minPriceInput = document.getElementById('minPrice');
+            const maxPriceInput = document.getElementById('maxPrice');
+            const cards = document.querySelectorAll('.freelancer-card');
+
+            function normalize(str) {
+                return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            }
+
+            function filterFreelancers() {
+                const query = normalize(searchInput.value.trim());
+                const min = parseFloat(minPriceInput.value) || 0;
+                const max = parseFloat(maxPriceInput.value) || Infinity;
+
+                cards.forEach(card => {
+                    const name = card.dataset.name;
+                    const skills = card.dataset.skills;
+                    const bio = card.dataset.bio;
+                    const rate = parseFloat(card.dataset.rate);
+
+                    const matchesSearch = name.includes(query) || skills.includes(query) || bio.includes(query);
+                    const matchesRate = rate >= min && rate <= max;
+
+                    card.style.display = (matchesSearch && matchesRate) ? 'block' : 'none';
+                });
+            }
+
+            searchInput.addEventListener('input', filterFreelancers);
+            minPriceInput.addEventListener('input', filterFreelancers);
+            maxPriceInput.addEventListener('input', filterFreelancers);
+        });
+    </script>
+
 {% endblock %}

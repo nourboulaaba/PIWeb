@@ -6,9 +6,11 @@ namespace App\Controller;
 use App\Repository\OffreRepository;
 use App\Entity\Departement;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 
 class FrontOfficeController extends AbstractController
 {
@@ -21,23 +23,28 @@ class FrontOfficeController extends AbstractController
     }
 
     #[Route('/offres', name: 'front_office_offres')]
-    public function index(Request $request, OffreRepository $offreRepository)
+    public function index(Request $request, OffreRepository $offreRepository, PaginatorInterface $paginator)
     {
-        // Fetch the search query and department filter from the request
         $query = $request->query->get('q', '');
         $departementId = $request->query->get('departement', null);
 
-        // Fetch filtered offers
-        $offres = $offreRepository->findByFilters($query, $departementId);
+        // Apply filters in the repository using QueryBuilder
+        $queryBuilder = $offreRepository->findAll(); // custom QB method
 
-        // Fetch departments to display in the filter dropdown using injected EntityManager
+        $pagination = $paginator->paginate(
+            $queryBuilder,
+            $request->query->getInt('page', 1),
+            5
+        );
+
         $departements = $this->entityManager->getRepository(Departement::class)->findAll();
 
         return $this->render('front.html.twig', [
-            'offres' => $offres,
+            'offres' => $pagination,
             'departements' => $departements,
             'query' => $query,
             'departementId' => $departementId,
         ]);
     }
+
 }
