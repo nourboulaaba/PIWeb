@@ -30,10 +30,23 @@ class RecaptchaValidator extends ConstraintValidator
             return;
         }
 
-        $recaptchaResponse = $request->request->get('g-recaptcha-response');
-        //  dd($this->recaptchaService);
+        // Essayer d'abord de récupérer la valeur du champ caché (notre implémentation)
+        $recaptchaResponse = $value;
+
+        // Si vide, essayer de récupérer depuis la requête (implémentation standard de Google)
+        if (empty($recaptchaResponse)) {
+            $recaptchaResponse = $request->request->get('g-recaptcha-response');
+        }
+
+        // Si toujours vide, c'est une erreur
+        if (empty($recaptchaResponse)) {
+            $this->context->buildViolation($constraint->message)
+                ->addViolation();
+            return;
+        }
+
+        // Vérifier si la réponse reCAPTCHA est valide
         if (!$this->recaptchaService->verify($recaptchaResponse)) {
-            dd("notverifyed");
             $this->context->buildViolation($constraint->message)
                 ->addViolation();
         }

@@ -24,6 +24,8 @@ class RecaptchaType extends AbstractType
     {
         $resolver->setDefaults([
             'mapped' => false,
+            'required' => true,
+            'error_bubbling' => false,
             'constraints' => [
                 new NotBlank([
                     'message' => 'Veuillez cocher la case reCAPTCHA.'
@@ -39,7 +41,8 @@ class RecaptchaType extends AbstractType
 
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
-        $view->vars['type'] = 'checkbox';
+        // Assurez-vous que le type est hidden pour le rendu HTML
+        $view->vars['type'] = 'hidden';
         $view->vars['attr'] = array_merge($view->vars['attr'], [
             'data-sitekey' => $this->recaptchaService->getSiteKey()
         ]);

@@ -1,7 +1,23 @@
 {# templates/form/recaptcha_widget.html.twig #}
 {% block recaptcha_widget %}
-    <div class="g-recaptcha mb-3" data-sitekey="{{ attr['data-sitekey'] }}"></div>
+    {# Champ caché pour stocker la réponse reCAPTCHA #}
+    <input type="hidden" name="{{ full_name }}" id="{{ id }}" {% with { attr: attr|merge({ class: attr.class|default('') }) } %}{{ block('widget_attributes') }}{% endwith %} />
+
+    {# Widget reCAPTCHA #}
+    <div class="g-recaptcha mb-3" data-sitekey="{{ attr['data-sitekey'] }}" data-callback="recaptchaCallback"></div>
+
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script>
+        // Définir la fonction de callback si elle n'existe pas encore
+        if (typeof window.recaptchaCallback !== 'function') {
+            window.recaptchaCallback = function(token) {
+                // Mettre à jour la valeur du champ caché
+                document.getElementById('{{ id }}').value = token;
+                console.log('reCAPTCHA validé, token stocké dans le champ #{{ id }}');
+            };
+        }
+    </script>
+
     {% if errors|length > 0 %}
         <div class="text-danger">
             {% for error in errors %}
