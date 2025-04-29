@@ -26,17 +26,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-xl-3 col-md-6">
-                <div class="metric-card bg-success text-white">
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-users fa-2x me-3"></i>
-                        <div>
-                            <h6 class="mb-0">Total Employees</h6>
-                            <h2 class="mb-0">{{ departements|map(d => d.nbEmploye)|reduce((sum, emp) => sum + emp) }}</h2>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            
             <div class="col-xl-3 col-md-6">
                 <div class="metric-card bg-warning text-dark">
                     <div class="d-flex align-items-center">
