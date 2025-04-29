@@ -137,7 +137,8 @@ class OffreController extends AbstractController
         // Generate the direct link to be opened via QR scan
         $url = "https://parisfrance2424g7g7gtt.on.drv.tw/AbderrahmenOffreQRCode/offer.html?title={$title}&description={$description}&salaire_min={$salaireMin}&salaire_max={$salaireMax}";
 
-        // Build QR code from the full URL
+
+        // Build QR code from the full URL -
         $result = Builder::create()
             ->writer(new PngWriter())
             ->data($url)
