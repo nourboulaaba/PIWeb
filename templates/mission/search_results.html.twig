@@ -1,0 +1,38 @@
+{% extends 'indexback.html.twig' %}
+
+{% block title %}Résultats de recherche{% endblock %}
+
+{% block body %}
+  <div class="container-fluid">
+    <h1>Résultats pour "{{ search_term }}"</h1>
+    
+    {% if missions|length > 0 %}
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Titre</th>
+            <th>Date</th>
+            <th>Destination</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for mission in missions %}
+            <tr>
+              <td>{{ mission.titre }}</td>
+              <td>{{ mission.date|date('Y-m-d') }}</td>
+              <td>{{ mission.destination }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="alert alert-info">
+        Aucune mission trouvée pour "{{ search_term }}"
+      </div>
+    {% endif %}
+    
+    <a href="{{ path('app_mission_index') }}" class="btn btn-primary">
+      Retour à la liste
+    </a>
+  </div>
+{% endblock %}

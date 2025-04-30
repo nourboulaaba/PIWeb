@@ -1,0 +1,52 @@
+{% extends 'basefront.html.twig' %}
+
+{% block title %}Contrat{% endblock %}
+
+{% block body %}
+    <h1>Contrat</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>IdContrat</th>
+                <td>{{ contrat.idContrat }}</td>
+            </tr>
+            <tr>
+                <th>IdEmploye</th>
+                <td>{{ contrat.idEmploye }}</td>
+            </tr>
+            <tr>
+                <th>Type</th>
+                <td>{{ contrat.type }}</td>
+            </tr>
+            <tr>
+                <th>DateDébut</th>
+                <td>{{ contrat.dateDebut ? contrat.dateDebut|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>DateFin</th>
+                <td>{{ contrat.dateFin ? contrat.dateFin|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Salaire</th>
+                <td>{{ contrat.salaire }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="d-flex gap-2 mt-4">
+        <a href="{{ path('app_contrat_index') }}" class="btn btn-secondary">
+            Retour à la liste
+        </a>
+        
+        <a href="{{ path('app_contrat_edit', {'IdContrat': contrat.idContrat}) }}" class="btn btn-primary">
+            Modifier
+        </a>
+
+        <form method="post" action="{{ path('app_contrat_delete', {'IdContrat': contrat.idContrat}) }}" 
+              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce contrat?');">
+            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ contrat.idContrat) }}">
+            <button class="btn btn-danger">Supprimer</button>
+        </form>
+    </div>
+{% endblock %}

@@ -1,0 +1,10 @@
+knp_snappy:
+  pdf:
+    enabled:  true
+    binary:   '%env(WKHTMLTOPDF_PATH)%'
+    options:
+      no-outline:    true
+      margin-top:    10mm
+      margin-bottom: 10mm
+  image:
+    enabled: false

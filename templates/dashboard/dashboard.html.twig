@@ -1,0 +1,24 @@
+<!-- templates/backoffice/dashboard.html.twig -->
+{% extends 'backoffice/indexback.html.twig' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block body %}
+    <h1 class="h3 mb-3"><strong>Analytics</strong> Dashboard</h1>
+
+    <div class="row">
+        <!-- Contenu du dashboard ici -->
+        <!-- ... -->
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Scripts spécifiques au dashboard
+        document.addEventListener("DOMContentLoaded", function() {
+            var ctx = document.getElementById("chartjs-dashboard-line").getContext("2d");
+            // ... reste du code JavaScript
+        });
+    </script>
+{% endblock %}
