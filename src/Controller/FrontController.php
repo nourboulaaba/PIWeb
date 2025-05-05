@@ -33,7 +33,7 @@ class FrontController extends AbstractController
     #[Route('/formations/{id}', name: 'app_front_formation_show')]
     public function formationShow(Formation $formation): Response
     {
-        return $this->render('frontoffice/formation/show.html.twig', [
+        return $this->render('frontoffice/formations/show.html.twig', [
             'formation' => $formation,
         ]);
     }

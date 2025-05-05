@@ -26,11 +26,16 @@ class Certificat
         $this->idCertif = $idCertif;
         return $this;
     }
-
-    #[ORM\ManyToOne(targetEntity: Formation::class, inversedBy: 'certificats')]
-    #[ORM\JoinColumn(name: 'idFormation', referencedColumnName: 'id')]
-    #[Assert\NotNull(message: "La formation associée est requise.")]
+    #[ORM\ManyToOne(inversedBy: 'certificats')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Formation $formation = null;
+    
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    private ?User $user = null;
+    ##[ORM\ManyToOne(targetEntity: Formation::class, inversedBy: 'certificats')]
+    ##[ORM\JoinColumn(name: 'idFormation', referencedColumnName: 'id')]
+    ##[Assert\NotNull(message: "La formation associée est requise.")]
+    #private ?Formation $formation = null;
 
     public function getFormation(): ?Formation
     {

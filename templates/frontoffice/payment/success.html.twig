@@ -1,0 +1,6 @@
+{% extends 'frontoffice/basefront.html.twig' %}
+{% block title %}Paiement réussi{% endblock %}
+{% block body %}
+<div class="alert alert-success">Merci, votre paiement a été effectué !</div>
+<a href="{{ path('app_formation_index_front') }}" class="btn btn-secondary">Retour aux formations</a>
+{% endblock %}

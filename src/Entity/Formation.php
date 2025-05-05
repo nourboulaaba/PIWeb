@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Note;
 use App\Repository\FormationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -48,14 +49,38 @@ class Formation
         message: "Le prix doit être un nombre valide (ex : 100 ou 100.00)."
     )]
     private ?string $prix = null;
+    #[ORM\ManyToOne(targetEntity: User::class)]
+#[ORM\JoinColumn(nullable: false)]
+private ?User $user = null;
 
-    #[ORM\OneToMany(targetEntity: Certificat::class, mappedBy: 'formation')]
+public function getUser(): ?User { return $this->user; }
+public function setUser(?User $user): self { $this->user = $user; return $this; }
+
+   #[ORM\OneToMany(mappedBy: 'formation', targetEntity: Certificat::class)]
     private Collection $certificats;
+
+    #[ORM\OneToMany(targetEntity: Note::class, mappedBy: 'formation')]
+    private Collection $notes;
 
     public function __construct()
     {
         $this->certificats = new ArrayCollection();
+        $this->notes = new ArrayCollection();
     }
+    #[ORM\Column(type: 'date', nullable: true)]
+    private ?\DateTimeInterface $date = null;
+
+    public function getDate(): ?\DateTimeInterface
+    {
+        return $this->date;
+    }
+
+    public function setDate(?\DateTimeInterface $date): self
+    {
+        $this->date = $date;
+        return $this;
+    }
+
 
     public function getId(): ?int
     {
@@ -114,6 +139,33 @@ class Formation
         if ($this->certificats->removeElement($certificat)) {
             if ($certificat->getFormation() === $this) {
                 $certificat->setFormation(null);
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Note>
+     */
+    public function getNotes(): Collection
+    {
+        return $this->notes;
+    }
+
+    public function addNote(Note $note): self
+    {
+        if (!$this->notes->contains($note)) {
+            $this->notes->add($note);
+            $note->setFormation($this);
+        }
+        return $this;
+    }
+
+    public function removeNote(Note $note): self
+    {
+        if ($this->notes->removeElement($note)) {
+            if ($note->getFormation() === $this) {
+                $note->setFormation(null);
             }
         }
         return $this;

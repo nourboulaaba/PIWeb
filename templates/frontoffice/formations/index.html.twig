@@ -7,20 +7,29 @@
         <p class="lead text-muted">Découvrez nos programmes de formation pour booster votre carrière</p>
         <hr class="my-4 w-25 mx-auto">
     </div>
-    
+
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 justify-content-center">
         {% for formation in formations %}
             <div class="col">
                 <div class="card h-100 shadow-sm hover-card">
                     <img src="{{ asset('images/formations/' ~ formation.id ~ '.jpg') }}"
-     class="card-img-top"
-     alt="Formation {{ formation.name }}"
-     onerror="this.onerror=null;this.src='{{ asset('images/formations/default.jpg') }}';">
-
+                         class="card-img-top"
+                         alt="Formation {{ formation.name }}"
+                         onerror="this.onerror=null;this.src='{{ asset('images/formations/default.jpg') }}';">
 
                     <div class="card-body">
                         <h3 class="card-title fw-bold">{{ formation.name }}</h3>
                         <p class="card-text text-muted">{{ formation.description|length > 100 ? formation.description|slice(0, 100) ~ '...' : formation.description }}</p>
+
+                        <!-- Placeholder pour les étoiles (sera rempli par JavaScript) -->
+                        <div class="rating-stars-container mt-2" data-formation-id="{{ formation.id }}">
+                            <div class="d-flex align-items-center">
+                                <div class="spinner-border spinner-border-sm text-primary me-2" role="status">
+                                    <span class="visually-hidden">Chargement...</span>
+                                </div>
+                                <small class="text-muted">Chargement des avis...</small>
+                            </div>
+                        </div>
                     </div>
                     <div class="card-footer bg-transparent">
                         <div class="d-flex justify-content-between align-items-center">
@@ -28,7 +37,7 @@
                             <small class="text-muted">Cliquez pour détails</small>
                         </div>
                     </div>
-                    <a href="{{ path('app_front_formation_show', { 'id': formation.id }) }}" 
+                    <a href="{{ path('app_front_formation_show', { 'id': formation.id }) }}"
                        class="stretched-link" aria-label="Voir détails de {{ formation.name }}"></a>
                 </div>
             </div>
@@ -55,5 +64,78 @@
         height: 200px;
         object-fit: cover;
     }
+    .rating-stars {
+        color: #FFD700;
+        font-size: 0.9rem;
+    }
+    .rating-count {
+        color: #6c757d;
+        font-size: 0.8rem;
+        margin-left: 0.5rem;
+    }
 </style>
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Récupérer tous les conteneurs d'étoiles
+        const ratingContainers = document.querySelectorAll('.rating-stars-container');
+
+        // Pour chaque conteneur, charger les notes
+        ratingContainers.forEach(container => {
+            const formationId = container.dataset.formationId;
+
+            fetch(`/api/notes/formation/${formationId}`)
+                .then(response => response.json())
+                .then(data => {
+                    let html = '';
+
+                    if (data.nombreAvis > 0) {
+                        html = `
+                            <div class="d-flex align-items-center">
+                                <div class="rating-stars">${getStarsHtml(data.moyenne)}</div>
+                                <span class="rating-count">(${data.nombreAvis})</span>
+                            </div>
+                        `;
+                    } else {
+                        html = `<small class="text-muted">Aucun avis</small>`;
+                    }
+
+                    container.innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Erreur lors du chargement des notes:', error);
+                    container.innerHTML = `<small class="text-danger">Erreur de chargement</small>`;
+                });
+        });
+    });
+
+    // Fonction pour générer les étoiles HTML
+    function getStarsHtml(rating) {
+        const fullStars = Math.floor(rating);
+        const halfStar = rating % 1 >= 0.5;
+        const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+
+        let html = '';
+
+        // Étoiles pleines
+        for (let i = 0; i < fullStars; i++) {
+            html += '<i class="fas fa-star"></i>';
+        }
+
+        // Demi-étoile si nécessaire
+        if (halfStar) {
+            html += '<i class="fas fa-star-half-alt"></i>';
+        }
+
+        // Étoiles vides
+        for (let i = 0; i < emptyStars; i++) {
+            html += '<i class="far fa-star"></i>';
+        }
+
+        return html;
+    }
+</script>
+{% endblock %}
 {% endblock %}

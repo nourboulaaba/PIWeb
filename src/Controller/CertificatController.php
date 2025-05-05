@@ -10,6 +10,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Knp\Snappy\Pdf;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+
+
 
 #[Route('/certificat')]
 final class CertificatController extends AbstractController
@@ -84,4 +89,25 @@ final class CertificatController extends AbstractController
 
         return $this->redirectToRoute('app_certificat_index');
     }
+    #[Route('/certificat/pdf/{id}', name: 'certificat_pdf')]
+    public function generatePdf(Certificat $certificat): Response
+    {
+        $pdf = new Dompdf();
+        $html = $this->renderView('certificat/pdf.html.twig', [
+            'certificat' => $certificat,
+        ]);
+    
+        $pdf->loadHtml($html);
+        $pdf->setPaper('A4', 'portrait');
+        $pdf->render();
+    
+        return new Response($pdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="certificat.pdf"'
+        ]);
+    }
+    
+
+    
+
 }

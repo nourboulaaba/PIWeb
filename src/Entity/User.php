@@ -85,7 +85,9 @@ private ?string $password = null;
 
     #[ORM\Column(name: "is_verified", type: "boolean", nullable: true)]
     private ?bool $isVerified = null;
+   
     // Getters & Setters
+    
 
     public function getId(): ?int
     {

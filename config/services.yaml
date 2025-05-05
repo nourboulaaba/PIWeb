@@ -1,14 +1,15 @@
-# This file is the entry point to configure your own services.
-# Files in the packages/ subdirectory configure your dependencies.
-
-# Put parameters here that don't need to change on each machine where the app is deployed
-# https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 # config/services.yaml
+
 parameters:
   profile_photos: "%kernel.project_dir%/public/uploads/profile_photos"
   cvs_directory: "%kernel.project_dir%/public/uploads/cvs"
-  recaptcha.site_key: "%env(RECAPTCHA_SITE_KEY)%"
-  recaptcha.secret_key: "%env(RECAPTCHA_SECRET_KEY)%"
+  STRIPE_PUBLIC_KEY: '%env(STRIPE_PUBLIC_KEY)%'
+
+twig:
+    globals:
+        STRIPE_PUBLIC_KEY: '%STRIPE_PUBLIC_KEY%'
+
+ 
 
 services:
   _defaults:
@@ -21,6 +22,12 @@ services:
       - "../src/DependencyInjection/"
       - "../src/Entity/"
       - "../src/Kernel.php"
+
+  # ----- Ajoute cette section -----
+ # App\Service\StripeService:
+  #  arguments:
+   #   $secretKey: '%env(STRIPE_SECRET_KEY)%'
+  # ---------------------------------
 
   # add more service definitions when explicit configuration is needed
   # please note that last definitions always *replace* previous ones

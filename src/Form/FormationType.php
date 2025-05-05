@@ -6,6 +6,7 @@ use App\Entity\Formation;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 
 class FormationType extends AbstractType
 {
@@ -15,6 +16,11 @@ class FormationType extends AbstractType
             ->add('name')
             ->add('description')
             ->add('prix')
+            ->add('date', DateType::class, [
+                'widget' => 'single_text',
+                'required' => false,
+                'label' => 'Date de début'
+            ]);
         ;
     }
 

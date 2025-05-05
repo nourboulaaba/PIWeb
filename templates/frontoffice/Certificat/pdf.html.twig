@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Certificat PDF</title>
+</head>
+<body>
+    <h1>{{ certificat.titre }}</h1>
+    <p>Date de délivrance : {{ certificat.date|date('d/m/Y') }}</p>
+    <p>Bénéficiaire : {{ certificat.formation.user.nom }}</p>
+    <p>Formation : {{ certificat.formation.nom }}</p>
+</body>
+</html>
