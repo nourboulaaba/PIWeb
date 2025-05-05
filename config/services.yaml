@@ -5,9 +5,9 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 
 parameters:
-  twilio.account_sid: '%env(TWILIO_ACCOUNT_SID)%'
-  twilio.auth_token:  '%env(TWILIO_AUTH_TOKEN)%'
-  twilio.from:        '%env(TWILIO_FROM)%'
+  twilio.account_sid: '%env(TWILIO_ACCOUNT_SID)%' # Notez le "I" après "D"
+  twilio.auth_token: '%env(TWILIO_AUTH_TOKEN)%'
+  twilio.from: '%env(TWILIO_FROM)%'
 
 
 services:

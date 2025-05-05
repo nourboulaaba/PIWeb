@@ -38,16 +38,18 @@ final class MissionController extends AbstractController
     }
     
     #[Route('/new', name: 'app_mission_new', methods: ['GET', 'POST'])]
-    public function new(
-        Request $request, 
-        EntityManagerInterface $entityManager,
-        \App\Service\TwilioSmsApiService $smsService
-    ): Response {
-        $mission = new Mission();
-        $form = $this->createForm(MissionType::class, $mission);
-        $form->handleRequest($request);
+public function new(
+    Request $request, 
+    EntityManagerInterface $entityManager,
+    \App\Service\TwilioSmsApiService $smsService,
+    \Psr\Log\LoggerInterface $logger
+): Response {
+    $mission = new Mission();
+    $form = $this->createForm(MissionType::class, $mission);
+    $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+    if ($form->isSubmitted() && $form->isValid()) {
+        try {
             $entityManager->persist($mission);
             $entityManager->flush();
 
@@ -56,17 +58,29 @@ final class MissionController extends AbstractController
                 $mission->getTitre()
             );
             $toPhoneNumber = '+21627303018';
+            
+            $logger->info('Tentative d\'envoi SMS', [
+                'to' => $toPhoneNumber,
+                'message' => $message
+            ]);
+            
             $smsService->sendSms($toPhoneNumber, $message);
-    
-            return $this->redirectToRoute('app_mission_index', [], Response::HTTP_SEE_OTHER);
+            
+            $this->addFlash('success', 'Mission créée et SMS envoyé avec succès');
+            
+        } catch (\RuntimeException $e) {
+            $logger->error('Erreur Twilio', ['error' => $e->getMessage()]);
+            $this->addFlash('warning', 'Mission créée mais échec d\'envoi du SMS');
         }
 
-        return $this->render('mission/new.html.twig', [
-            'mission' => $mission,
-            'form' => $form,
-        ]);
+        return $this->redirectToRoute('app_mission_index');
     }
 
+    return $this->render('mission/new.html.twig', [
+        'mission' => $mission,
+        'form' => $form,
+    ]);
+}
 
     #[Route('/search', name: 'app_mission_search', methods: ['GET'])]
 public function search(Request $request, MissionRepository $missionRepository): Response

@@ -1,4 +1,5 @@
-<?php // src/Service/TwilioSmsApiService.php
+<?php
+// src/Service/TwilioSmsApiService.php
 namespace App\Service;
 
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -20,17 +21,19 @@ class TwilioSmsApiService
         );
 
         $response = $this->client->request('POST', $url, [
-            // auth_basic gère l’HTTP Basic Auth
             'auth_basic' => [$this->accountSid, $this->authToken],
-            'body'       => [
+            'headers' => [
+                'Content-Type' => 'application/x-www-form-urlencoded',
+            ],
+            'body' => [
                 'From' => $this->from,
-                'To'   => $to,
+                'To' => $to,
                 'Body' => $body,
             ],
         ]);
 
-        // Vérifier le succès (201 Created ou 200 OK selon Twilio)
-        if (!in_array($response->getStatusCode(), [200, 201], true)) {
+        $statusCode = $response->getStatusCode();
+        if ($statusCode < 200 || $statusCode >= 300) {
             throw new \RuntimeException(
                 'Erreur Twilio SMS: '.$response->getContent(false)
             );
