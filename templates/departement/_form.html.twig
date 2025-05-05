@@ -1,0 +1,127 @@
+{% block form %}
+    <div class="card shadow-sm">
+        <div class="card-body">
+            {{ form_start(form) }}
+            <div class="form-group mb-3">
+                {{ form_label(form.nom) }}
+                {{ form_widget(form.nom, {'attr': {'class': 'form-control', 'id': 'departement_nom'}}) }}
+                {{ form_errors(form.nom) }}
+            </div>
+            <div class="form-group mb-3">
+                {{ form_label(form.responsable) }}
+                {{ form_widget(form.responsable, {'attr': {'class': 'form-control', 'id': 'departement_responsableId'}}) }}
+                {{ form_errors(form.responsable) }}
+            </div>
+            <div class="form-group mb-3">
+                {{ form_label(form.budget) }}
+                {{ form_widget(form.budget, {'attr': {'class': 'form-control', 'id': 'departement_budget'}}) }}
+                {{ form_errors(form.budget) }}
+            </div>
+            <div class="form-group mb-3">
+                {{ form_label(form.nbEmploye) }}
+                {{ form_widget(form.nbEmploye, {'attr': {'class': 'form-control', 'id': 'departement_nbEmploye'}}) }}
+                {{ form_errors(form.nbEmploye) }}
+            </div>
+            <div class="form-group mb-3 text-center">
+                <button type="submit" class="btn btn-primary">{{ button_label|default('Save') }}</button>
+            </div>
+
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div id="flash-{{ label }}" data-message="{{ message }}"></div>
+                {% endfor %}
+            {% endfor %}
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const flashSuccess = document.getElementById('flash-success');
+            if (flashSuccess) {
+                const message = flashSuccess.getAttribute('data-message');
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Succès !',
+                    text: message,
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "{{ path('app_departement_index') }}";
+                    }
+                });
+            }
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const nom = document.getElementById('departement_nom');
+            const responsableId = document.getElementById('departement_responsableId');
+            const budget = document.getElementById('departement_budget');
+            const nbEmploye = document.getElementById('departement_nbEmploye');
+
+            function showValidation(input, isValid, message = '') {
+                input.classList.remove('is-valid', 'is-invalid');
+                let feedback = input.parentElement.querySelector('.invalid-feedback');
+                if (!feedback) {
+                    feedback = document.createElement('div');
+                    feedback.classList.add('invalid-feedback');
+                    input.parentElement.appendChild(feedback);
+                }
+
+                if (isValid) {
+                    input.classList.add('is-valid');
+                    feedback.style.display = 'none';
+                } else {
+                    input.classList.add('is-invalid');
+                    feedback.textContent = message;
+                    feedback.style.display = 'block';
+                }
+            }
+
+            nom.addEventListener('input', () => {
+                const value = nom.value.trim();
+                if (!value) {
+                    showValidation(nom, false, "Le nom du département ne peut pas être vide.");
+                } else if (/\d/.test(value)) {
+                    showValidation(nom, false, "Le nom du département ne peut pas contenir de chiffres.");
+                } else {
+                    showValidation(nom, true);
+                }
+            });
+
+            responsableId.addEventListener('input', () => {
+                const value = parseInt(responsableId.value);
+                if (isNaN(value) || value <= 0) {
+                    showValidation(responsableId, false, "L'ID du responsable doit être supérieur à 0.");
+                } else {
+                    showValidation(responsableId, true);
+                }
+            });
+
+            budget.addEventListener('input', () => {
+                const value = parseInt(budget.value);
+                if (isNaN(value) || value <= 0) {
+                    showValidation(budget, false, "Le budget doit être supérieur à 0.");
+                } else {
+                    showValidation(budget, true);
+                }
+            });
+
+            nbEmploye.addEventListener('input', () => {
+                const value = parseInt(nbEmploye.value);
+                if (isNaN(value) || value < 0) {
+                    showValidation(nbEmploye, false, "Le nombre d'employés ne peut pas être négatif.");
+                } else {
+                    showValidation(nbEmploye, true);
+                }
+            });
+        });
+    </script>
+{% endblock %}

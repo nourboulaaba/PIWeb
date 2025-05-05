@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Departement Statistics</title>
+    <style>
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 12px;
+            color: #333;
+        }
+        h1, h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        th, td {
+            border: 1px solid #999;
+            padding: 6px 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Departement Statistics Report</h1>
+
+<h2>Departements</h2>
+<table>
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>Nom</th>
+        <th>Budget</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for departement in departements %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ departement.nom }}</td>
+            <td>{{ departement.budget }}</td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="3">No departements found.</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<h2>Offres</h2>
+<table>
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>Titre</th>
+        <th>Description</th>
+        <th>Salaire Min</th>
+        <th>Salaire Max</th>
+
+    </tr>
+    </thead>
+    <tbody>
+    {% for offre in offres %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ offre.titre }}</td>
+            <td>{{ offre.description }}</td>
+            <td>{{ offre.salaireMin }}</td>
+            <td>{{ offre.salaireMax }}</td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="4">No offres found.</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+</body>
+</html>

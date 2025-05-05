@@ -6,9 +6,6 @@ use App\Entity\Offre;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @extends ServiceEntityRepository<Offre>
- */
 class OffreRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -16,28 +13,22 @@ class OffreRepository extends ServiceEntityRepository
         parent::__construct($registry, Offre::class);
     }
 
-    //    /**
-    //     * @return Offre[] Returns an array of Offre objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('o')
-    //            ->andWhere('o.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('o.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    // Add custom methods as needed
+    public function findByFilters($query, $departementId)
+    {
+        $qb = $this->createQueryBuilder('o')
+            ->leftJoin('o.departement', 'd')
+            ->where('o.titre LIKE :query')
+            ->orWhere('o.description LIKE :query')
+            ->setParameter('query', '%' . $query . '%');
 
-    //    public function findOneBySomeField($value): ?Offre
-    //    {
-    //        return $this->createQueryBuilder('o')
-    //            ->andWhere('o.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        if ($departementId) {
+            $qb->andWhere('d.id = :departementId')
+                ->setParameter('departementId', $departementId);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+
 }

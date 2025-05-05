@@ -1,114 +1,109 @@
 <?php
-
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
+use App\Entity\Departement;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Validator\Constraints as Assert;
 
-use App\Repository\OffreRepository;
 
-#[ORM\Entity(repositoryClass: OffreRepository::class)]
-#[ORM\Table(name: 'offre')]
+#[ORM\Entity]
 class Offre
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private ?int $id = null;
+    #[ORM\GeneratedValue(strategy: 'AUTO')]  // Ensure that the ID is auto-generated
 
-    public function getId(): ?int
+    #[ORM\Column(type: "integer")]
+    private int $id;
+
+    #[ORM\Column(type: "string", length: 255)]
+    #[Assert\NotBlank(message: "The title cannot be empty.")]
+    #[Assert\Regex(
+        pattern: "/^[^0-9]*$/",
+        message: "The title cannot contain numbers."
+    )]
+    private string $titre;
+
+    #[ORM\Column(type: "text")]
+    #[Assert\NotBlank(message: "The description cannot be empty.")]
+
+    private string $description;
+
+    #[ORM\Column(type: "integer")]
+    #[Assert\NotBlank(message: "The minimum salary cannot be empty.")]
+    #[Assert\GreaterThan(
+        value: 0,
+        message: "The minimum salary must be greater than 0."
+    )]
+    private int $salaireMin;
+
+    #[ORM\Column(type: "integer")]
+    #[Assert\NotBlank(message: "The maximum salary cannot be empty.")]
+    #[Assert\GreaterThan(
+        propertyPath: "salaireMin",
+        message: "The maximum salary must be greater than the minimum salary."
+    )]
+    private int $salaireMax;
+
+    #[ORM\ManyToOne(targetEntity: Departement::class, inversedBy: "offres")]
+    #[ORM\JoinColumn(name: 'departement_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    #[Assert\NotNull(message: "The department cannot be null.")]
+
+    private Departement $departement;
+
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function setId(int $id): self
-    {
-        $this->id = $id;
-        return $this;
-    }
 
-    #[ORM\Column(type: 'string', nullable: false)]
-    private ?string $titre = null;
 
-    public function getTitre(): ?string
+    public function getTitre(): string
     {
         return $this->titre;
     }
 
-    public function setTitre(string $titre): self
+    public function setTitre(string $value): void
     {
-        $this->titre = $titre;
-        return $this;
+        $this->titre = $value;
     }
 
-    #[ORM\Column(type: 'text', nullable: false)]
-    private ?string $description = null;
-
-    public function getDescription(): ?string
+    public function getDescription(): string
     {
         return $this->description;
     }
 
-    public function setDescription(string $description): self
+    public function setDescription(string $value): void
     {
-        $this->description = $description;
-        return $this;
+        $this->description = $value;
     }
 
-    #[ORM\Column(type: 'integer', nullable: false)]
-    private ?int $salaireMin = null;
-
-    public function getSalaireMin(): ?int
+    public function getSalaireMin(): int
     {
         return $this->salaireMin;
     }
 
-    public function setSalaireMin(int $salaireMin): self
+    public function setSalaireMin(int $value): void
     {
-        $this->salaireMin = $salaireMin;
-        return $this;
+        $this->salaireMin = $value;
     }
 
-    #[ORM\Column(type: 'integer', nullable: false)]
-    private ?int $salaireMax = null;
-
-    public function getSalaireMax(): ?int
+    public function getSalaireMax(): int
     {
         return $this->salaireMax;
     }
 
-    public function setSalaireMax(int $salaireMax): self
+    public function setSalaireMax(int $value): void
     {
-        $this->salaireMax = $salaireMax;
-        return $this;
+        $this->salaireMax = $value;
     }
 
-    #[ORM\Column(type: 'integer', nullable: false)]
-    private ?int $departement_id = null;
-
-    public function getDepartement_id(): ?int
+    public function getDepartement(): Departement
     {
-        return $this->departement_id;
+        return $this->departement;
     }
 
-    public function setDepartement_id(int $departement_id): self
+    public function setDepartement(Departement $value): void
     {
-        $this->departement_id = $departement_id;
-        return $this;
+        $this->departement = $value;
     }
-
-    public function getDepartementId(): ?int
-    {
-        return $this->departement_id;
-    }
-
-    public function setDepartementId(int $departement_id): static
-    {
-        $this->departement_id = $departement_id;
-
-        return $this;
-    }
-
 }
