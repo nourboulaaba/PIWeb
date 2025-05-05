@@ -1,0 +1,248 @@
+{# templates/front/user_entretiens.html.twig #}{#
+
+{% extends 'basefront.html.twig' %}
+
+{% block title %}My Interviews{% endblock %}
+
+{% block body %}
+    <div class="container py-5">
+        <h1 class="mb-4">My Scheduled Interviews</h1>
+
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            {% for entretien in entretiens %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ entretien.date|date('M d, Y H:i') }}</h5>
+                            <div class="card-text">
+                                <p class="mb-1">
+                                    <i class="bi bi-geo-alt me-2"></i>
+                                    {{ entretien.lieu }}
+                                </p>
+
+                                <div class="mt-3">
+                        <span class="badge bg-{{ entretien.approved ? 'success' : 'warning' }}">
+                            {{ entretien.approved ? 'Confirmed' : 'Pending Confirmation' }}
+                        </span>
+                                </div>
+
+                                {% if not entretien.approved %}
+                                    <form method="post" action="{{ path('approve_entretien', {'id': entretien.id}) }}">
+                                        <div class="form-check mt-3">
+                                            <input class="form-check-input" type="checkbox" id="approve-{{ entretien.id }}" name="approve" required>
+                                            <label class="form-check-label" for="approve-{{ entretien.id }}">
+                                                I accept this interview
+                                            </label>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary btn-sm mt-2">Confirm</button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-12">
+                    <div class="alert alert-info">No upcoming interviews scheduled</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}#}
+{# templates/front/user_entretiens.html.twig #}
+{% extends 'basefront.html.twig' %}
+
+{% block title %}My Interviews | Career Portal{% endblock %}
+
+{% block body %}
+    <div class="interview-header bg-light py-5 mb-5">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="display-5 fw-bold mb-2">My Interviews</h1>
+                    <p class="lead text-muted mb-0">Manage your upcoming interview schedule</p>
+                </div>
+                <div class="dropdown">
+                    <button class="btn btn-outline-primary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-funnel me-2"></i>Filter
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="filterDropdown">
+                        <li><a class="dropdown-item active" href="#">All Interviews</a></li>
+                        <li><a class="dropdown-item" href="#">Confirmed</a></li>
+                        <li><a class="dropdown-item" href="#">Pending</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container pb-5">
+        {% if entretiens %}
+            <div class="timeline">
+                {% for entretien in entretiens %}
+                    <div class="timeline-card">
+                        <div class="timeline-date">
+                            <div class="date-day">{{ entretien.date|date('d') }}</div>
+                            <div class="date-month">{{ entretien.date|date('M') }}</div>
+                        </div>
+                        <div class="timeline-content card shadow-sm h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div>
+                                        <h3 class="h5 card-title mb-1">{{ entretien.date|date('h:i A') }}</h3>
+                                        <p class="text-muted small mb-0">{{ entretien.date|date('l, F j, Y') }}</p>
+                                    </div>
+                                    <span class="badge rounded-pill bg-{{ entretien.approved ? 'success' : 'warning' }} py-2 px-3">
+                                <i class="bi bi-{{ entretien.approved ? 'check-circle' : 'clock' }} me-1"></i>
+                                {{ entretien.approved ? 'Confirmed' : 'Pending' }}
+                            </span>
+                                </div>
+
+                                <div class="interview-details mb-4">
+                                    <div class="detail-item">
+                                        <i class="bi bi-geo-alt-fill text-primary"></i>
+                                        <div>
+                                            <h6 class="mb-0">Location</h6>
+                                            <p>{{ entretien.lieu }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <i class="bi bi-person-badge-fill text-primary"></i>
+                                        <div>
+                                            <h6 class="mb-0">Interviewer</h6>
+                                            <p>To be assigned</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {% if not entretien.approved %}
+                                    <form method="post" action="{{ path('approve_entretien', {'id': entretien.id}) }}" class="approval-form">
+                                        <div class="form-check form-switch mb-3">
+                                            <input class="form-check-input" type="checkbox" id="approve-{{ entretien.id }}" name="approve" required>
+                                            <label class="form-check-label" for="approve-{{ entretien.id }}">
+                                                I accept this interview schedule
+                                            </label>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary w-100">
+                                            <i class="bi bi-check-circle me-2"></i>Confirm Attendance
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <div class="d-flex gap-2">
+
+
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state text-center py-5 my-5">
+                <div class="empty-state-icon bg-light rounded-circle d-inline-flex align-items-center justify-content-center p-4 mb-3">
+                    <i class="bi bi-calendar-x fs-1 text-muted"></i>
+                </div>
+                <h3 class="h4">No Upcoming Interviews</h3>
+                <p class="text-muted mb-4">You don't have any scheduled interviews at the moment.</p>
+                <a href="{{ path('recrutement_list') }}" class="btn btn-primary px-4">
+                    <i class="bi bi-briefcase me-2"></i>View Open Positions
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <style>
+        .interview-header {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 60px;
+        }
+
+        .timeline:before {
+            content: '';
+            position: absolute;
+            left: 30px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #e9ecef;
+        }
+
+        .timeline-card {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .timeline-date {
+            position: absolute;
+            left: -60px;
+            top: 0;
+            width: 50px;
+            text-align: center;
+            background: #fff;
+            border-radius: 8px;
+            padding: 5px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .date-day {
+            font-size: 1.5rem;
+            font-weight: bold;
+            line-height: 1;
+            color: #0d6efd;
+        }
+
+        .date-month {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #6c757d;
+        }
+
+        .interview-details {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .detail-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .detail-item i {
+            font-size: 1.2rem;
+            margin-top: 2px;
+        }
+
+        .empty-state {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .empty-state-icon {
+            width: 80px;
+            height: 80px;
+        }
+
+        .approval-form {
+            background: rgba(13, 110, 253, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .form-switch .form-check-input {
+            width: 2.5em;
+            margin-left: -2.5em;
+        }
+    </style>
+{% endblock %}

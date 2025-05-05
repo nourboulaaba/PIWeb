@@ -1,0 +1,204 @@
+<style>
+    .offre-card {
+        border: none;
+        border-radius: 1rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background: linear-gradient(135deg, #fdfdfd, #f4f7fa);
+        position: relative;
+        overflow: hidden;
+        height: auto !important;
+    }
+
+    .offre-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    .offre-card .card-title {
+        font-weight: 700;
+        color: #212529;
+        font-size: 1.3rem;
+        transition: transform 0.3s ease;
+    }
+
+    .offre-card:hover .card-title {
+        transform: scale(1.05);
+    }
+
+    .offre-card .card-subtitle {
+        font-size: 0.95rem;
+        color: #6c757d;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .offre-card .card-subtitle::before {
+        content: "🏢";
+        font-size: 1.1rem;
+    }
+
+    .offre-card .card-text {
+        font-size: 0.95rem;
+        color: #495057;
+        transition: transform 0.3s ease;
+    }
+
+    .offre-card:hover .card-text {
+        transform: scale(1.01);
+    }
+
+    .offre-card .card-footer {
+        background: transparent;
+        border-top: none;
+        padding-top: 0;
+    }
+
+    .btn-outline-info {
+        border-color: #0dcaf0;
+        color: #0dcaf0;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-info:hover {
+        background-color: #0dcaf0;
+        color: white;
+    }
+
+    .btn-outline-warning {
+        border-color: #ffc107;
+        color: #ffc107;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-warning:hover {
+        background-color: #ffc107;
+        color: black;
+    }
+
+    .salary-badge {
+        display: inline-block;
+        padding: 0.35rem 0.6rem;
+        border-radius: 0.4rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-top: 4px;
+    }
+
+    .salary-high {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .salary-medium {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .salary-low {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    .no-offres {
+        font-style: italic;
+        color: #adb5bd;
+        font-size: 1.1rem;
+        padding: 2rem;
+    }
+
+    .salary-eval {
+        display: block;              /* Ensure it acts like a full-width block element */
+        white-space: normal;         /* Allow text to wrap */
+        word-wrap: break-word;       /* Break long words if needed */
+        overflow-wrap: break-word;   /* Modern word-breaking support */
+        font-size: 0.9rem;           /* Slightly smaller text for compactness */
+        margin-top: 0.5rem;
+        padding: 0.4rem 0.6rem;
+        border-radius: 0.5rem;
+    }
+
+</style>
+
+<div class="row">
+    {% for offre in offres %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card offre-card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">{{ offre.titre }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ offre.departement.nom }}</h6>
+                    <p class="card-text">{{ offre.description }}</p>
+                    <p class="card-text mb-1">
+                        <strong>Salaire min :</strong>
+                        {{ offre.salaireMin | number_format(2, ',', ' ') }} TND
+                    </p>
+                    <p class="card-text">
+                        <strong>Salaire max :</strong>
+                        {{ offre.salaireMax | number_format(2, ',', ' ') }} TND
+                    <div class="salary-eval badge bg-secondary text-white" id="eval-{{ offre.id }}">
+                        Chargement de l'analyse...
+                    </div>
+
+                    </p>
+                    <div class="mt-3">
+                        <img src="{{ path('app_offre_qrcode', { id: offre.id }) }}" alt="QR Code for {{ offre.titre }}" width="150" height="150">
+                    </div>
+                </div>
+                <div class="card-footer d-flex justify-content-between">
+                    <a href="{{ path('app_offre_show', {'id': offre.id}) }}" class="btn btn-sm btn-outline-info">Afficher</a>
+                    <a href="{{ path('app_offre_edit', {'id': offre.id}) }}" class="btn btn-sm btn-outline-warning">Modifier</a>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="col-12 text-center">
+            <p class="no-offres">Aucune offre trouvée</p>
+        </div>
+    {% endfor %}
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const offreCards = document.querySelectorAll('.salary-eval');
+
+        offreCards.forEach(card => {
+            const offreId = card.id.split('-')[1];
+            const title = card.closest('.card-body').querySelector('.card-title').innerText;
+            const description = card.closest('.card-body').querySelector('.card-text').innerText;
+            const salary = card.closest('.card-body').querySelectorAll('.card-text')[1].innerText;
+
+            const prompt = `Évalue cette offre d'emploi pour le marché tunisien :
+Titre : ${title}
+Description : ${description}
+Salaire : ${salary}
+Donne-moi une évaluation en deux phrases maximum sur la compétitivité de cette offre.`;
+
+            fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyCWYXrEGlHeFdgJ-HEgeP-d-53vxgsxCso", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: prompt }] }]
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    const response = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (response) {
+                        card.innerText = response;
+                        card.classList.remove('bg-secondary');
+                        card.classList.add('bg-success');
+                    } else {
+                        card.innerText = "Erreur d'analyse.";
+                        card.classList.add('bg-danger');
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    card.innerText = "Échec de la génération.";
+                    card.classList.add('bg-danger');
+                });
+        });
+    });
+</script>
+
