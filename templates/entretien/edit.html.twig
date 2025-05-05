@@ -1,0 +1,634 @@
+{#
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Interview{% endblock %}
+
+{% block body %}
+    <main class="content">
+        <div class="container-fluid p-0">
+            <div class="mb-3">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h1 class="h3 mb-0">
+                                <i class="align-middle" data-feather="edit-2"></i>
+                                Edit Interview
+                            </h1>
+                            <a href="{{ path('app_entretien_index') }}" class="btn btn-secondary">
+                                <i class="align-middle" data-feather="arrow-left"></i>
+                                Back to List
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        {{ form_start(form) }}
+
+                        <div class="row g-3">
+                            <!-- User ID -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label d-flex align-items-center">
+                                        <i class="align-middle me-2" data-feather="user"></i>
+                                        {{ form_label(form.userId) }}
+                                    </label>
+                                    {{ form_widget(form.userId, {
+                                        'attr': {'class': 'form-control'}
+                                    }) }}
+                                    <div class="invalid-feedback">
+                                        {{ form_errors(form.userId) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Date -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label d-flex align-items-center">
+                                        <i class="align-middle me-2" data-feather="calendar"></i>
+                                        {{ form_label(form.date) }}
+                                    </label>
+                                    {{ form_widget(form.date, {
+                                        'attr': {'class': 'form-control flatpickr-date'}
+                                    }) }}
+                                    <div class="invalid-feedback">
+                                        {{ form_errors(form.date) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Location -->
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label class="form-label d-flex align-items-center">
+                                        <i class="align-middle me-2" data-feather="map-pin"></i>
+                                        {{ form_label(form.lieu) }}
+                                    </label>
+                                    {{ form_widget(form.lieu, {
+                                        'attr': {'class': 'form-control', 'placeholder': 'Enter interview location'}
+                                    }) }}
+                                    <div class="invalid-feedback">
+                                        {{ form_errors(form.lieu) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Coordinates -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label d-flex align-items-center">
+                                        <i class="align-middle me-2" data-feather="map"></i>
+                                        Latitude
+                                    </label>
+                                    {{ form_widget(form.latitude, {
+                                        'attr': {'class': 'form-control', 'placeholder': 'Enter latitude'}
+                                    }) }}
+                                    <div class="invalid-feedback">
+                                        {{ form_errors(form.latitude) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label d-flex align-items-center">
+                                        <i class="align-middle me-2" data-feather="map"></i>
+                                        Longitude
+                                    </label>
+                                    {{ form_widget(form.longitude, {
+                                        'attr': {'class': 'form-control', 'placeholder': 'Enter longitude'}
+                                    }) }}
+                                    <div class="invalid-feedback">
+                                        {{ form_errors(form.longitude) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Recruitment -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label d-flex align-items-center">
+                                        <i class="align-middle me-2" data-feather="briefcase"></i>
+                                        {{ form_label(form.recrutement) }}
+                                    </label>
+                                    {{ form_widget(form.recrutement, {
+                                        'attr': {'class': 'form-select'}
+                                    }) }}
+                                    <div class="invalid-feedback">
+                                        {{ form_errors(form.recrutement) }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Approved Status -->
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label d-flex align-items-center">
+                                        <i class="align-middle me-2" data-feather="check-circle"></i>
+                                        Approval Status
+                                    </label>
+                                    <div class="form-check form-switch">
+                                        {{ form_widget(form.approved, {
+                                            'attr': {'class': 'form-check-input', 'role': 'switch'}
+                                        }) }}
+                                        <label class="form-check-label" for="{{ form.approved.vars.id }}">
+                                            {{ entretien.approved ? 'Approved' : 'Pending Approval' }}
+                                        </label>
+                                    </div>
+                                    <div class="invalid-feedback">
+                                        {{ form_errors(form.approved) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary w-100 btn-lg">
+                                <i class="align-middle" data-feather="save"></i>
+                                Update Interview
+                            </button>
+                        </div>
+
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Initialize Flatpickr with more options
+            flatpickr('.flatpickr-date', {
+                enableTime: false,
+                dateFormat: "Y-m-d",
+                minDate: "today",
+                locale: "en",
+                disableMobile: "true"
+            });
+
+            // Dynamic switch label update
+            document.querySelector('#{{ form.approved.vars.id }}').addEventListener('change', function(e) {
+                const label = e.target.closest('.form-switch').querySelector('.form-check-label');
+                label.textContent = e.target.checked ? 'Approved' : 'Pending Approval';
+            });
+        });
+    </script>
+{% endblock %}#}
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Interview{% endblock %}
+
+
+
+{% block body %}
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --accent-color: #6c63ff;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --border-radius: 12px;
+            --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .edit-container {
+            background-color: #f8fafc;
+            min-height: 100vh;
+        }
+
+        .card {
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(30deg);
+        }
+
+        .card-title {
+            font-weight: 700;
+            margin-bottom: 0;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .btn-back {
+            background: rgba(255,255,255,0.15);
+            border: none;
+            border-radius: 8px;
+            padding: 0.625rem 1.25rem;
+            color: white;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-back:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateX(-3px);
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control, .form-select {
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e2e8f0;
+            transition: var(--transition);
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
+        }
+
+        .form-switch .form-check-input {
+            width: 3em;
+            height: 1.5em;
+            margin-right: 0.5rem;
+            background-color: #e2e8f0;
+            border-color: #e2e8f0;
+        }
+
+        .form-switch .form-check-input:checked {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+        }
+
+        .form-switch .form-check-label {
+            font-weight: 500;
+            color: #475569;
+        }
+
+        .btn-submit {
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 8px;
+            padding: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            width: 100%;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .invalid-feedback {
+            font-size: 0.875rem;
+            color: var(--danger-color);
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+
+        .icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .card-header {
+                padding: 1.25rem;
+            }
+
+            .btn-back {
+                padding: 0.5rem 1rem;
+                font-size: 0.875rem;
+            }
+        }
+    </style>
+    <main class="edit-container">
+        <div class="container py-5">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h1 class="card-title">
+                            <i class="icon" data-feather="edit-2"></i>
+                            Edit Interview
+                        </h1>
+                        <a href="{{ path('app_entretien_index') }}" class="btn-back">
+                            <i class="icon" data-feather="arrow-left"></i>
+                            Back to List
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+
+                    <div class="row g-4">
+                        <!-- User ID -->
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                {{ form_label(form.user, null, {
+                                    'label_attr': {
+                                        'class': 'form-label'
+                                    }
+                                }) }}
+                                {{ form_widget(form.user, {
+                                    'attr': {
+                                        'id':'userId',
+                                        'class': 'form-control' ~ (form.user.vars.errors|length ? ' is-invalid' : '')
+                                    }
+                                }) }}
+                                <div class="invalid-feedback">
+                                    {{ form_errors(form.user) }}
+                                </div>
+                                <div class="invalid-feedback d-none" id="userId-error">
+                                    Please select a user.
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- Date -->
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                {{ form_label(form.date, null, {
+                                    'label_attr': {
+                                        'class': 'form-label'
+                                    }
+                                }) }}
+                                {{ form_widget(form.date, {
+                                    'attr': {
+                                        'id':'date',
+                                        'class': 'form-control flatpickr-date' ~ (form.date.vars.errors|length ? ' is-invalid' : '')
+                                    }
+                                }) }}
+                                <div class="invalid-feedback">
+                                    {{ form_errors(form.date) }}
+                                </div>
+                                <div class="invalid-feedback d-none" id="date-error">
+                                    Please select a valid date.
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- Location -->
+                        <div class="col-12">
+                            <div class="mb-4">
+                                {{ form_label(form.lieu, null, {
+                                    'label_attr': {
+                                        'class': 'form-label'
+                                    }
+                                }) }}
+                                {{ form_widget(form.lieu, {
+                                    'attr': {
+                                        'id':'lieu',
+                                        'class': 'form-control' ~ (form.lieu.vars.errors|length ? ' is-invalid' : ''),
+                                        'placeholder': 'Enter interview location'
+                                    }
+                                }) }}
+                                <div class="invalid-feedback">
+                                    {{ form_errors(form.lieu) }}
+                                </div>
+                                <div class="invalid-feedback d-none" id="lieu-error">
+                                    Lieu is required.
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- Coordinates -->
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                <label class="form-label">
+                                    <i class="icon" data-feather="map"></i>
+                                    Latitude
+                                </label>
+                                {{ form_widget(form.latitude, {
+                                    'attr': {
+                                        'id':'latitude',
+                                        'class': 'form-control' ~ (form.latitude.vars.errors|length ? ' is-invalid' : ''),
+                                        'placeholder': 'Enter latitude'
+                                    }
+                                }) }}
+                                <div class="invalid-feedback">
+                                    {{ form_errors(form.latitude) }}
+                                </div>
+                                <div class="invalid-feedback d-none" id="latitude-error">
+                                    Please give a valid latitude.
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                <label class="form-label">
+                                    <i class="icon" data-feather="map"></i>
+                                    Longitude
+                                </label>
+                                {{ form_widget(form.longitude, {
+                                    'attr': {
+                                        'id':'longitude',
+                                        'class': 'form-control' ~ (form.longitude.vars.errors|length ? ' is-invalid' : ''),
+                                        'placeholder': 'Enter longitude'
+                                    }
+                                }) }}
+                                <div class="invalid-feedback">
+                                    {{ form_errors(form.longitude) }}
+                                </div>
+                                <div class="invalid-feedback d-none" id="longitude-error">
+                                    Please give a valid longitude.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recruitment -->
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                {{ form_label(form.recrutement, null, {
+                                    'label_attr': {
+                                        'class': 'form-label'
+                                    }
+                                }) }}
+                                {{ form_widget(form.recrutement, {
+                                    'attr': {
+                                        'class': 'form-select' ~ (form.recrutement.vars.errors|length ? ' is-invalid' : '')
+                                    }
+                                }) }}
+                                <div class="invalid-feedback">
+                                    {{ form_errors(form.recrutement) }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Approved Status -->
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                <label class="form-label">
+                                    <i class="icon" data-feather="check-circle"></i>
+                                    Approval Status
+                                </label>
+                                <div class="form-check form-switch ps-0">
+                                    {{ form_widget(form.approved, {
+                                        'attr': {
+                                            'class': 'form-check-input' ~ (form.approved.vars.errors|length ? ' is-invalid' : ''),
+                                            'role': 'switch'
+                                        }
+                                    }) }}
+                                    <label class="form-check-label ms-3" for="{{ form.approved.vars.id }}">
+                                        {{ entretien.approved ? 'Approved' : 'Pending Approval' }}
+                                    </label>
+                                </div>
+                                <div class="invalid-feedback">
+                                    {{ form_errors(form.approved) }}
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <br>
+                    <br>
+                    <div class="mt-5">
+                        <button type="submit" class="btn-submit">
+                            <i class="icon" data-feather="save"></i>
+                            Update Interview
+                        </button>
+                    </div>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            function validateField(input, errorElement, minLength = 1, customMessage = '') {
+                const value = input.value.trim();
+                const isInvalid = (input.type === 'number' && Number(value) < 1) || value.length < minLength;
+
+                if (isInvalid) {
+                    input.classList.add('is-invalid');
+                    errorElement.classList.remove('d-none');
+                    errorElement.textContent = customMessage;
+                } else {
+                    input.classList.remove('is-invalid');
+                    errorElement.classList.add('d-none');
+                }
+            }
+
+            // Bind validations to inputs
+            const validations = [
+                { id: 'userId', min: 1, msg: 'Please select a user.' },
+                { id: 'date', min: 1, msg: 'Please select a valid date.' },
+                { id: 'lieu', min: 3, msg: 'Location must be at least 3 characters.' },
+                { id: 'latitude', min: 1, msg: 'Please enter a valid latitude.' },
+                { id: 'longitude', min: 1, msg: 'Please enter a valid longitude.' }
+            ];
+
+            validations.forEach(({ id, min, msg }) => {
+                const input = document.getElementById(id);
+                const error = document.getElementById(`${id}-error`);
+                if (input && error) {
+                    input.addEventListener('input', () => validateField(input, error, min, msg));
+                }
+            });
+
+            // On form submit, validate all dynamically as well
+            const form = document.querySelector('.needs-validation');
+            form.addEventListener('submit', function(event) {
+                let isValid = true;
+
+                validations.forEach(({ id, min, msg }) => {
+                    const input = document.getElementById(id);
+                    const error = document.getElementById(`${id}-error`);
+                    if (input && error) {
+                        validateField(input, error, min, msg);
+                        if (input.classList.contains('is-invalid')) {
+                            isValid = false;
+                        }
+                    }
+                });
+
+                if (!isValid) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+            });
+        });
+        document.addEventListener("DOMContentLoaded", function() {
+            // Initialize Flatpickr with more options
+            flatpickr('.flatpickr-date', {
+                enableTime: false,
+                dateFormat: "Y-m-d",
+                minDate: "today",
+                locale: "en",
+                disableMobile: "true"
+            });
+
+            // Dynamic switch label update
+            document.querySelector('#{{ form.approved.vars.id }}').addEventListener('change', function(e) {
+                const label = e.target.closest('.form-switch').querySelector('.form-check-label');
+                label.textContent = e.target.checked ? 'Approved' : 'Pending Approval';
+            });
+
+            // Initialize form validation
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', function(event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        });
+    </script>
+{% endblock %}
+

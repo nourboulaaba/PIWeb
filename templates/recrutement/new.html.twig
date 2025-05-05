@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Recruitment Campaign{% endblock %}
+
+{% block body %}
+    <main class="content">
+        <div class="container-fluid p-0">
+            <div class="mb-3">
+                <div class="card">
+                    <a href="{{ path('app_recrutement_index') }}" class="btn btn-secondary">
+                        <i class="align-middle me-2" data-feather="arrow-left"></i>
+                        Back to List
+                    </a>
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h1 class="h3 mb-0 d-flex align-items-center">
+                                <i class="align-middle me-2" data-feather="plus-circle"></i>
+                                New Recruitment Campaign
+                            </h1>
+
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        {{ include('recrutement/_form.html.twig') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Initialize date picker
+            flatpickr('.flatpickr-date', {
+                enableTime: false,
+                dateFormat: "Y-m-d",
+                minDate: "today",
+                locale: "en",
+                disableMobile: true
+            });
+
+            // Initialize feather icons
+            feather.replace({ 'aria-hidden': 'true' });
+        });
+    </script>
+{% endblock %}
