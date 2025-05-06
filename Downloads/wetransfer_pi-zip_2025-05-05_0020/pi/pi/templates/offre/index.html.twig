@@ -1,0 +1,152 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Offre Index{% endblock %}
+
+{% block body %}
+
+    <style>
+        .pagination-container {
+            margin: 2rem 0;
+            display: flex;
+            justify-content: center;
+            overflow-x: auto;
+        }
+
+        .pagination {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            gap: 6px;
+            align-items: center;
+            padding: 8px 0;
+        }
+
+        .page-item {
+            display: inline-flex;
+            margin: 0 2px;
+            transition: transform 0.2s ease;
+        }
+
+        .page-link {
+            color: #2A4B7C;
+            border: 1px solid #dee2e6;
+            border-radius: 8px !important;
+            min-width: 40px;
+            height: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        /* Keep existing hover and active styles */
+        .page-link:hover {
+            background-color: #F4F7FA;
+            color: #1a365e;
+            border-color: #2A4B7C;
+            transform: translateY(-2px);
+        }
+
+        .page-item.active .current {
+            background: linear-gradient(135deg, #2A4B7C 0%, #3B5998 100%);
+            color: white !important;
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(42, 75, 124, 0.2);
+        }
+
+        @media (max-width: 576px) {
+            .pagination {
+                gap: 4px;
+            }
+
+            .page-link {
+                min-width: 35px;
+                height: 35px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+    <div class="container mt-5">
+        <input type="text" id="search-offre" class="form-control mb-3" placeholder="Rechercher une offre...">
+
+
+
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h3 class="card-title mb-0">Offre List</h3>
+            </div>
+            <div class="card-body">
+                <a href="{{ path('app_offre_new') }}" class="btn btn-primary btn-sm mb-3">Create New</a>
+                <a href="{{ path('app_freelancers') }}" class="btn btn-info btn-sm mb-3 ms-2">Browse Freelancers</a>
+
+                <div id="offre-table">
+                    {% include 'offre/_table.html.twig' with { 'offres': offres } %}
+                </div>
+
+
+
+
+
+            </div>
+
+
+        </div>
+        <div class="pagination-container">
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    {% if currentPage > 1 %}
+                        <li class="page-item">
+                            <a class="page-link prev-next" href="{{ path('app_offre_index', {'page': currentPage - 1}) }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {% for i in 1..totalPages %}
+                        {% if i == currentPage %}
+                            <li class="page-item active" aria-current="page">
+                                <span class="page-link current">{{ i }}</span>
+                            </li>
+                        {% else %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ path('app_offre_index', {'page': i}) }}">{{ i }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if currentPage < totalPages %}
+                        <li class="page-item">
+                            <a class="page-link prev-next" href="{{ path('app_offre_index', {'page': currentPage + 1}) }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('search-offre');
+
+            searchInput.addEventListener('keyup', function () {
+                const query = this.value;
+                console.log('Search query:', query);
+
+                fetch('{{ path('app_offre_search') }}?q=' + encodeURIComponent(query))
+                    .then(response => response.text())
+                    .then(html => {
+                        document.getElementById('offre-table').innerHTML = html;
+                    });
+            });
+
+        });
+    </script>
+{% endblock %}
+
+

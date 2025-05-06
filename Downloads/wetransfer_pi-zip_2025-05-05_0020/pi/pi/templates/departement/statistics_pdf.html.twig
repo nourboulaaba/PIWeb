@@ -1,0 +1,156 @@
+{# templates/pdf/department_stats.html.twig #}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Department Statistics Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #2c3e50; text-align: center; }
+        h2 { color: #34495e; border-bottom: 1px solid #ecf0f1; padding-bottom: 5px; }
+        .header { margin-bottom: 30px; }
+        .report-date { text-align: right; color: #7f8c8d; font-size: 14px; }
+        .summary-grid { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 15px; 
+            margin-bottom: 25px;
+        }
+        .summary-card { 
+            border: 1px solid #ddd; 
+            padding: 15px; 
+            border-radius: 5px;
+            text-align: center;
+            background-color: #f9f9f9;
+        }
+        .summary-value { 
+            font-size: 24px; 
+            font-weight: bold; 
+            color: #2c3e50;
+            margin: 5px 0;
+        }
+        .summary-label { 
+            color: #7f8c8d; 
+            font-size: 14px;
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        th { 
+            background-color: #34495e; 
+            color: white;
+            text-align: left; 
+            padding: 10px;
+        }
+        td { 
+            padding: 10px; 
+            border-bottom: 1px solid #ecf0f1;
+        }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        .insights-section { 
+            background-color: #f8f9fa; 
+            padding: 15px; 
+            border-radius: 5px;
+            margin: 25px 0;
+            border-left: 4px solid #3498db;
+        }
+        .insights-section h3 { 
+            color: #3498db; 
+            margin-top: 0;
+        }
+        .page-break { page-break-after: always; }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Department and Offer Statistics</h1>
+        <div class="report-date">Generated on: {{ date|date('Y-m-d H:i') }}</div>
+    </div>
+
+    <div class="summary-grid">
+        <div class="summary-card">
+            <div class="summary-label">Departments</div>
+            <div class="summary-value">{{ stats.totalDepartments }}</div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-label">Job Offers</div>
+            <div class="summary-value">{{ stats.totalOffers }}</div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-label">Total Employees</div>
+            <div class="summary-value">{{ stats.totalEmployees }}</div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-label">Total Budget</div>
+            <div class="summary-value">{{ (stats.totalBudget / 1000)|number_format(1) }}K €</div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-label">Avg Salary Range</div>
+            <div class="summary-value">
+                {{ stats.avgSalaryRange.min }}K - {{ stats.avgSalaryRange.max }}K €
+            </div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-label">Employees per Offer</div>
+            <div class="summary-value">
+                {{ stats.totalOffers > 0 ? (stats.totalEmployees / stats.totalOffers)|number_format(1) : 0 }}
+            </div>
+        </div>
+    </div>
+
+    <h2>Department Details</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Department</th>
+                <th>Manager</th>
+                <th class="text-right">Employees</th>
+                <th class="text-right">Offers</th>
+                <th class="text-right">Budget</th>
+                <th class="text-right">Budget/Employee</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dept in stats.departmentDetails %}
+            <tr>
+                <td>{{ dept.name }}</td>
+                <td>{{ dept.manager }}</td>
+                <td class="text-right">{{ dept.employeeCount }}</td>
+                <td class="text-right">{{ dept.offerCount }}</td>
+                <td class="text-right">{{ dept.budget|number_format(0, '.', ',') }} €</td>
+                <td class="text-right">{{ dept.employeeCount > 0 ? (dept.budget / dept.employeeCount)|number_format(0) }} €</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Offer Distribution</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Department</th>
+                <th class="text-right">Offers</th>
+                <th class="text-right">Percentage</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dept, count in stats.offerDistribution %}
+            <tr>
+                <td>{{ dept }}</td>
+                <td class="text-right">{{ count }}</td>
+                <td class="text-right">{{ (count / stats.totalOffers * 100)|number_format(1) }}%</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="insights-section">
+        {{ aiInsights|raw }}
+    </div>
+</body>
+</html>

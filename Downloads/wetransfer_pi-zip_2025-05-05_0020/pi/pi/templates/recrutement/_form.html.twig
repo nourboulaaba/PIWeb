@@ -1,0 +1,534 @@
+{#
+
+<style>
+    .btn-gradient-primary {
+        background: linear-gradient(135deg, #007bff, #00c6ff);
+        border: none;
+        color: white;
+        transition: all 0.3s ease-in-out;
+    }
+    .btn-gradient-primary:hover {
+        filter: brightness(1.1);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(0, 123, 255, 0.3);
+    }
+
+    .form-floating .form-control {
+        border-radius: 1rem;
+    }
+
+    .card {
+        border-radius: 1.25rem;
+    }
+
+    .invalid-feedback {
+        font-size: 0.875rem;
+        color: #dc3545;
+    }
+
+</style>
+{{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+
+<div class="card shadow-lg border-0 rounded-4">
+    <div class="card-header bg-primary text-white rounded-top-4">
+        <h3 class="card-title mb-0 d-flex align-items-center">
+            <i class="align-middle me-2" data-feather="briefcase"></i>
+            {{ button_label|default('New Recruitment Campaign') }}
+        </h3>
+    </div>
+
+    <div class="card-body p-4">
+        <div class="row g-4">
+            <!-- Offre Field -->
+            <div class="col-md-6">
+                <div class="form-floating mb-3 position-relative">
+                    {{ form_widget(form.offre, {'attr': {'class': 'form-control', 'placeholder': 'Offre'}}) }}
+                    {{ form_label(form.offre, null, {'label_attr': {'class': 'form-label'}}) }}
+                    <div class="invalid-feedback">
+                        {{ form_errors(form.offre) }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Number of Interviews -->
+            <div class="col-md-6">
+                <div class="form-floating mb-3 position-relative">
+                    {{ form_widget(form.NbEntretien, {
+                        'attr': {
+                            'class': 'form-control',
+                            'placeholder': 'Number of interviews',
+                            'min': 1
+                        }
+                    }) }}
+                    {{ form_label(form.NbEntretien, null, {'label_attr': {'class': 'form-label'}}) }}
+                    <div class="invalid-feedback">
+                        {{ form_errors(form.NbEntretien) }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Date Début -->
+            <div class="col-md-6">
+                <div class="form-floating mb-3 position-relative">
+                    {{ form_widget(form.dateDebut, {
+                        'attr': {
+                            'class': 'form-control flatpickr-date',
+                            'placeholder': 'Start Date'
+                        }
+                    }) }}
+                    <label for="dateDebut" class="form-label">Start Date</label>
+                    <div class="invalid-feedback">
+                        {{ form_errors(form.dateDebut) }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Date Fin -->
+            <div class="col-md-6">
+                <div class="form-floating mb-3 position-relative">
+                    {{ form_widget(form.dateFin, {
+                        'attr': {
+                            'class': 'form-control flatpickr-date',
+                            'placeholder': 'End Date'
+                        }
+                    }) }}
+                    <label for="dateFin" class="form-label">End Date</label>
+                    <div class="invalid-feedback">
+                        {{ form_errors(form.dateFin) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4 text-end">
+            <button type="submit" class="btn btn-lg btn-gradient-primary w-100 py-3 shadow-sm">
+                <i class="align-middle me-2" data-feather="save"></i>
+                {{ button_label|default('Create Campaign') }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        feather.replace();
+
+        // Activate tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Initialize Flatpickr
+        flatpickr(".flatpickr-date", {
+            dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "F j, Y",
+            allowInput: true,
+            defaultDate: null
+        });
+    });
+</script>
+
+{{ form_end(form) }}
+
+
+
+
+#}
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --secondary-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        --accent-color: #6c63ff;
+        --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 10px 15px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 20px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    .card {
+        border: none;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-header {
+        background: var(--primary-gradient);
+        padding: 1.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .card-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 100%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
+        transform: rotate(30deg);
+    }
+
+    .card-title {
+        font-weight: 700;
+        position: relative;
+        z-index: 1;
+    }
+
+    .card-title i {
+        font-size: 1.5rem;
+    }
+
+    .form-floating {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-control {
+        height: 56px;
+        border-radius: 12px;
+        border: 2px solid #e9ecef;
+        padding: 1rem 1.25rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background-color: #f8f9fa;
+    }
+
+    .form-control:focus {
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
+        background-color: white;
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: #6c757d;
+    }
+
+    .is-invalid {
+        border-color: #dc3545;
+    }
+
+    .is-invalid:focus {
+        box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.25);
+    }
+
+    .invalid-feedback {
+        font-size: 0.875rem;
+        color: #dc3545;
+        margin-top: 0.5rem;
+        font-weight: 500;
+        display: none;
+    }
+
+    .invalid-feedback.show {
+        display: block;
+    }
+
+    .btn-gradient-primary {
+        background: var(--primary-gradient);
+        border: none;
+        color: white;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-gradient-primary::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(rgba(255,255,255,0.1), rgba(255,255,255,0));
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .btn-gradient-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .btn-gradient-primary:hover::after {
+        opacity: 1;
+    }
+
+    .btn-gradient-primary:active {
+        transform: translateY(1px);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .btn-gradient-primary i {
+        margin-right: 8px;
+    }
+
+    .invalid-feedback {
+        font-size: 0.875rem;
+        color: #dc3545;
+        margin-top: 0.5rem;
+        font-weight: 500;
+    }
+
+    .is-invalid {
+        border-color: #dc3545;
+    }
+
+    .is-invalid:focus {
+        box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.25);
+    }
+
+    /* Floating label animation */
+    .form-floating > label {
+        transition: all 0.2s ease;
+        padding: 0.75rem 1.25rem;
+    }
+
+    /* Date picker customization */
+    .flatpickr-input {
+        background-color: #f8f9fa !important;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .card-header {
+            padding: 1.25rem;
+        }
+
+        .btn-gradient-primary {
+            padding: 0.75rem 1.5rem;
+            font-size: 0.9rem;
+        }
+    }
+</style>
+
+{{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+
+<div class="card border-0 mx-auto" style="max-width: 900px;">
+    <div class="card-header text-white">
+        <h3 class="card-title mb-0 d-flex align-items-center">
+            <i class="align-middle me-2" data-feather="target"></i>
+            {{ button_label|default('Launch New Recruitment Campaign') }}
+        </h3>
+        <p class="mb-0 opacity-75 mt-1" style="font-size: 0.9rem;">Fill in the details to start your talent acquisition process</p>
+    </div>
+
+    <div class="card-body p-5">
+        <div class="row g-4">
+            <!-- Offre Field -->
+            <div class="col-md-6">
+                <div class="form-floating">
+                    {{ form_widget(form.offre, {
+                        'attr': {
+                            'id':'offre',
+                            'class': 'form-control' ~ (form.offre.vars.errors|length ? ' is-invalid' : ''),
+                            'placeholder': ' ',
+                            'autofocus': 'autofocus'
+                        }
+                    }) }}
+                    {{ form_label(form.offre, null, {
+                        'label_attr': {
+                            'class': 'fw-medium'
+                        }
+                    }) }}
+                    <div class="invalid-feedback">
+                        {{ form_errors(form.offre) }}
+                    </div>
+                    <div class="invalid-feedback" id="offre-error">
+                        Please enter a valid offer title (at least 5 characters).
+                    </div>
+                </div>
+            </div>
+
+            <!-- Number of Interviews -->
+            <div class="col-md-6">
+                <div class="form-floating">
+                    {{ form_widget(form.NbEntretien, {
+                        'attr': {
+                            'id':'NbEntretien',
+                            'class': 'form-control' ~ (form.NbEntretien.vars.errors|length ? ' is-invalid' : ''),
+                            'placeholder': ' ',
+                            'min': 1
+                        }
+                    }) }}
+                    {{ form_label(form.NbEntretien, null, {
+                        'label_attr': {
+                            'class': 'fw-medium'
+                        }
+                    }) }}
+                    <div class="invalid-feedback">
+                        {{ form_errors(form.NbEntretien) }}
+                    </div>
+                    <div class="invalid-feedback" id="NbEntretien-error">
+                        Please enter a valid number of interviews (must be at least 1).
+                    </div>
+                </div>
+            </div>
+
+            <!-- Date Début -->
+            <div class="col-md-6">
+                <div class="form-floating">
+                    {{ form_widget(form.dateDebut, {
+                        'attr': {
+                            'id':'dateDebut',
+                            'class': 'form-control flatpickr-date' ~ (form.dateDebut.vars.errors|length ? ' is-invalid' : ''),
+                            'placeholder': ' '
+                        }
+                    }) }}
+                    <label for="dateDebut" class="fw-medium">Start Date</label>
+                    <div class="invalid-feedback">
+                        {{ form_errors(form.dateDebut) }}
+                    </div>
+                    <div class="invalid-feedback" id="dateDebut-error">
+                        Please enter a valid start date.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Date Fin -->
+            <div class="col-md-6">
+                <div class="form-floating">
+                    {{ form_widget(form.dateFin, {
+                        'attr': {
+                            'id':'dateFin',
+                            'class': 'form-control flatpickr-date' ~ (form.dateFin.vars.errors|length ? ' is-invalid' : ''),
+                            'placeholder': ' '
+                        }
+                    }) }}
+                    <label for="dateFin" class="fw-medium">End Date</label>
+                    <div class="invalid-feedback">
+                        {{ form_errors(form.dateFin) }}
+                    </div>
+                    <div class="invalid-feedback" id="dateFin-error">
+                        Please enter a valid end date.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-5 pt-2 text-center">
+            <button type="submit" class="btn btn-gradient-primary px-5 py-3">
+                <i class="align-middle me-2" data-feather="send"></i>
+                {{ button_label|default('Launch Campaign') }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Initialize Feather Icons
+        feather.replace();
+
+        // Initialize Flatpickr with custom options
+        flatpickr(".flatpickr-date", {
+            dateFormat: "Y-m-d",
+            altInput: true,
+            altFormat: "F j, Y",
+            allowInput: true,
+            defaultDate: null,
+            theme: "light" // or "dark" for dark mode
+        });
+
+        // Add focus effects to form controls
+        document.querySelectorAll('.form-control').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentNode.querySelector('label').style.color = '#6c63ff';
+            });
+
+            input.addEventListener('blur', function() {
+                this.parentNode.querySelector('label').style.color = '#6c757d';
+            });
+        });
+
+        // Form validation
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+
+        // Add dynamic validation to input fields
+        function validateField(input, errorElement, minLength = 1, errorMessage = '') {
+            const value = input.value.trim();
+            if (value.length < minLength || (input.type === 'number' && Number(value) < 1)) {
+                input.classList.add('is-invalid');
+                errorElement.style.display = 'block';
+                errorElement.textContent = errorMessage;
+            } else {
+                input.classList.remove('is-invalid');
+                errorElement.style.display = 'none';
+            }
+        }
+
+
+        // Input field validations on change
+        document.getElementById("offre").addEventListener("input", function () {
+            validateField(this, document.getElementById("offre-error"), 5, 'Please enter a valid offer title (at least 5 characters).');
+        });
+
+        document.getElementById("NbEntretien").addEventListener("input", function () {
+            validateField(this, document.getElementById("NbEntretien-error"), 1, 'Please enter a valid number of interviews (must be at least 1).');
+        });
+
+        document.getElementById("dateDebut").addEventListener("input", function () {
+            validateField(this, document.getElementById("dateDebut-error"), 1, 'Please enter a valid start date.');
+        });
+
+        document.getElementById("dateFin").addEventListener("input", function () {
+            validateField(this, document.getElementById("dateFin-error"), 1, 'Please enter a valid end date.');
+        });
+
+        // Form submit validation
+        const form = document.querySelector('.needs-validation');
+        form.addEventListener('submit', function(event) {
+            let isValid = true;
+            // Validate all inputs before submit
+            document.querySelectorAll('.form-control').forEach(input => {
+                const errorElement = input.parentElement.querySelector('.invalid-feedback');
+                validateField(input, errorElement);
+                if (input.classList.contains('is-invalid')) {
+                    isValid = false;
+                }
+            });
+
+            if (!isValid) {
+                event.preventDefault();
+                event.stopPropagation();
+            } else {
+                form.classList.add('was-validated');
+            }
+        });
+    });
+</script>
+
+{{ form_end(form) }}

@@ -1,0 +1,224 @@
+
+
+{{ form_start(form, {'attr': {'class': 'form-horizontal needs-validation', 'novalidate': 'novalidate'}}) }}
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_blue.css">
+<!-- Flatpickr JS -->
+
+
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-white border-bottom py-3">
+        <h3 class="mb-0 fw-semibold text-primary">Interview Management</h3>
+        <p class="text-muted mb-0">Please fill in the interview details below</p>
+    </div>
+
+    <div class="card-body p-4">
+        {# User ID Field #}
+        <div class="mb-4">
+            <label class="form-label fw-medium">User Selection</label>
+            <div class="input-group">
+                <span class="input-group-text">
+                    <i class="fas fa-user"></i>
+                </span>
+                {{ form_widget(form.user, {
+                    'attr': {
+                        'class': 'form-control form-control-lg',
+                        'placeholder': 'Select user...'
+                    }
+                }) }}
+            </div>
+            <div class="invalid-feedback">
+                {{ form_errors(form.user) }}
+            </div>
+        </div>
+
+        {# Date Field #}
+        <div class="mb-4">
+            {{ form_label(form.date, null, {
+                'label_attr': {
+                    'class': 'form-label fw-medium'
+                }
+            }) }}
+            {#<div class="input-group">
+                <span class="input-group-text">
+                    <i class="fas fa-calendar-alt"></i>
+                </span>
+                {{ form_widget(form.date, {
+                    'attr': {
+                        'class': 'form-control flatpickr-date' ~ (form.date.vars.errors|length ? ' is-invalid' : ''),
+                        'placeholder': ' '
+                    }
+                }) }}
+            </div>#}
+            <div class="input-group">
+    <span class="input-group-text">
+        <i class="fas fa-calendar-alt"></i>
+    </span>
+                {{ form_widget(form.date, {
+                    'attr': {
+                        'class': 'form-control flatpickr-date' ~ (form.date.vars.errors|length ? ' is-invalid' : ''),
+                        'placeholder': ' '
+                    }
+                }) }}
+            </div>
+
+            <div class="invalid-feedback">
+                {{ form_errors(form.date) }}
+            </div>
+        </div>
+
+        {# Location Fields #}
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                {{ form_label(form.lieu, null, {
+                    'label_attr': {
+                        'class': 'form-label fw-medium'
+                    }
+                }) }}
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </span>
+                    {{ form_widget(form.lieu, {
+                        'attr': {
+                            'class': 'form-control form-control-lg',
+                            'placeholder': 'Enter location...'
+                        }
+                    }) }}
+                </div>
+                <div class="invalid-feedback">
+                    {{ form_errors(form.lieu) }}
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                {{ form_label(form.latitude, null, {
+                    'label_attr': {
+                        'class': 'form-label fw-medium'
+                    }
+                }) }}
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fas fa-globe"></i>
+                    </span>
+                    {{ form_widget(form.latitude, {
+                        'attr': {
+                            'class': 'form-control form-control-lg',
+                            'placeholder': 'Latitude'
+                        }
+                    }) }}
+                </div>
+                <div class="invalid-feedback">
+                    {{ form_errors(form.latitude) }}
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                {{ form_label(form.longitude, null, {
+                    'label_attr': {
+                        'class': 'form-label fw-medium'
+                    }
+                }) }}
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fas fa-globe"></i>
+                    </span>
+                    {{ form_widget(form.longitude, {
+                        'attr': {
+                            'class': 'form-control form-control-lg',
+                            'placeholder': 'Longitude'
+                        }
+                    }) }}
+                </div>
+                <div class="invalid-feedback">
+                    {{ form_errors(form.longitude) }}
+                </div>
+            </div>
+        </div>
+
+        {# Approved Checkbox #}
+        <div class="mb-4">
+            <div class="form-check form-switch">
+                {{ form_widget(form.approved, {
+                    'attr': {
+                        'class': 'form-check-input',
+                        'role': 'switch'
+                    }
+                }) }}
+                {{ form_label(form.approved, null, {
+                    'label_attr': {
+                        'class': 'form-check-label fw-medium'
+                    }
+                }) }}
+                <div class="invalid-feedback">
+                    {{ form_errors(form.approved) }}
+                </div>
+            </div>
+        </div>
+
+        {# Recrutement Dropdown #}
+        <div class="mb-4">
+            {{ form_label(form.recrutement, null, {
+                'label_attr': {
+                    'class': 'form-label fw-medium'
+                }
+            }) }}
+            <div class="input-group">
+                <span class="input-group-text">
+                    <i class="fas fa-briefcase"></i>
+                </span>
+                {{ form_widget(form.recrutement, {
+                    'attr': {
+                        'class': 'form-select form-select-lg'
+                    }
+                }) }}
+            </div>
+            <div class="invalid-feedback">
+                {{ form_errors(form.recrutement) }}
+            </div>
+        </div>
+
+        {# Submit Button #}
+        <div class="d-grid mt-5">
+            <button type="submit" class="btn btn-primary btn-lg py-3">
+                <i class="fas fa-save me-2"></i>
+                {{ button_label|default('Save Interview') }}
+            </button>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        flatpickr("#entretien_date", {
+            altInput: true,
+            altFormat: "F j, Y",
+            dateFormat: "Y-m-d",
+            allowInput: true,
+            theme: "material_blue"
+        });
+    });
+
+</script>
+
+{#<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        flatpickr(".flatpickr-date", {
+            altInput: true,
+            altFormat: "F j, Y",
+            dateFormat: "Y-m-d",
+            allowInput: true,
+            theme: "material_blue",
+            onReady: function(selectedDates, dateStr, instance) {
+                instance.open(); // force open the calendar to test
+            }
+        });
+        console.log(document.querySelector('.flatpickr-date'));
+
+
+    });
+</script>#}
+
+
+{{ form_end(form) }}
