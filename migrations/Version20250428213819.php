@@ -72,7 +72,7 @@ final class Version20250428213819 extends AbstractMigration
             ALTER TABLE conges ADD CONSTRAINT FK_6327DE3AE8BDB84B FOREIGN KEY (idEmploye) REFERENCES user (id)
         SQL);
         $this->addSql(<<<'SQL'
-            ALTER TABLE mission ADD CONSTRAINT FK_9067F23CE8BDB84B FOREIGN KEY (idEmploye) REFERENCES utilisateur (id)
+            ALTER TABLE mission ADD CONSTRAINT FK_9067F23CE8BDB84B FOREIGN KEY (idEmploye) REFERENCES user (id)
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE notification ADD CONSTRAINT FK_BF5476CAA76ED395 FOREIGN KEY (user_id) REFERENCES user (id)

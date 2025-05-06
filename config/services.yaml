@@ -3,7 +3,7 @@
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
-# config/services.yaml
+
 parameters:
   profile_photos: "%kernel.project_dir%/public/uploads/profile_photos"
   cvs_directory: "%kernel.project_dir%/public/uploads/cvs"
@@ -11,6 +11,9 @@ parameters:
   recaptcha.secret_key: "%env(RECAPTCHA_SECRET_KEY)%"
   gemini_api_url: "%env(GEMINI_API_URL)%"
   gemini_api_key: "%env(GEMINI_API_KEY)%"
+  twilio.account_sid: '%env(TWILIO_ACCOUNT_SID)%'
+  twilio.auth_token: '%env(TWILIO_AUTH_TOKEN)%'
+  twilio.from: '%env(TWILIO_FROM)%'
 
 services:
   _defaults:
@@ -20,7 +23,10 @@ services:
 
   App\:
     resource: "../src/"
-    exclude: "../src/{DependencyInjection,Entity,Tests,Kernel.php}"
+    exclude:
+      - "../src/DependencyInjection/"
+      - "../src/Entity/"
+      - "../src/Kernel.php"
 
   App\Controller\:
     resource: "../src/Controller/"
@@ -41,8 +47,13 @@ services:
       $secretKey: "%recaptcha.secret_key%"
       $siteKey: "%recaptcha.site_key%"
 
-  # Configure GeminiService to inject the parameters
   App\Service\GeminiService:
     arguments:
       $apiUrl: "%gemini_api_url%"
       $apiKey: "%gemini_api_key%"
+
+  App\Service\TwilioSmsApiService:
+    arguments:
+      $accountSid: '%twilio.account_sid%'
+      $authToken: '%twilio.auth_token%'
+      $from: '%twilio.from%'

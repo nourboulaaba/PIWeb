@@ -5,7 +5,6 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-
 use App\Repository\UtilisateurRepository;
 
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
@@ -14,7 +13,7 @@ class Utilisateur
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(name: 'id', type: 'integer')]
     private ?int $id = null;
 
     public function getId(): ?int
@@ -28,7 +27,7 @@ class Utilisateur
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: false)]
+    #[ORM\Column(name: 'lastName', type: 'string', length: 255, nullable: false)]
     private ?string $lastName = null;
 
     public function getLastName(): ?string
@@ -42,7 +41,7 @@ class Utilisateur
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: false)]
+    #[ORM\Column(name: 'firstName', type: 'string', length: 255, nullable: false)]
     private ?string $firstName = null;
 
     public function getFirstName(): ?string
@@ -56,7 +55,7 @@ class Utilisateur
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: true)]
+    #[ORM\Column(name: 'identifier', type: 'string', length: 255, nullable: true)]
     private ?string $identifier = null;
 
     public function getIdentifier(): ?string
@@ -70,7 +69,7 @@ class Utilisateur
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: false)]
+    #[ORM\Column(name: 'email', type: 'string', length: 255, nullable: false)]
     private ?string $email = null;
 
     public function getEmail(): ?string
@@ -84,7 +83,7 @@ class Utilisateur
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: true)]
+    #[ORM\Column(name: 'password', type: 'string', length: 255, nullable: true)]
     private ?string $password = null;
 
     public function getPassword(): ?string
@@ -98,7 +97,7 @@ class Utilisateur
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: true)]
+    #[ORM\Column(name: 'CIN', type: 'string', length: 255, nullable: true)]
     private ?string $CIN = null;
 
     public function getCIN(): ?string
@@ -112,7 +111,7 @@ class Utilisateur
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: true)]
+    #[ORM\Column(name: 'role', type: 'string', length: 255, nullable: true)]
     private ?string $role = null;
 
     public function getRole(): ?string
@@ -126,7 +125,7 @@ class Utilisateur
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: true)]
+    #[ORM\Column(name: 'faceId', type: 'string', length: 255, nullable: true)]
     private ?string $faceId = null;
 
     public function getFaceId(): ?string
@@ -140,7 +139,7 @@ class Utilisateur
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: true)]
+    #[ORM\Column(name: 'salary', type: 'string', length: 255, nullable: true)]
     private ?string $salary = null;
 
     public function getSalary(): ?string
@@ -154,7 +153,7 @@ class Utilisateur
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: true)]
+    #[ORM\Column(name: 'hireDate', type: 'string', length: 255, nullable: true)]
     private ?string $hireDate = null;
 
     public function getHireDate(): ?string
@@ -168,7 +167,7 @@ class Utilisateur
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: true)]
+    #[ORM\Column(name: 'phoneNumber', type: 'string', length: 255, nullable: true)]
     private ?string $phoneNumber = null;
 
     public function getPhoneNumber(): ?string
@@ -182,7 +181,7 @@ class Utilisateur
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: true)]
+    #[ORM\Column(name: 'cv', type: 'string', length: 255, nullable: true)]
     private ?string $cv = null;
 
     public function getCv(): ?string
@@ -196,7 +195,7 @@ class Utilisateur
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: true)]
+    #[ORM\Column(name: 'profilePhoto', type: 'string', length: 255, nullable: true)]
     private ?string $profilePhoto = null;
 
     public function getProfilePhoto(): ?string
@@ -223,24 +222,26 @@ class Utilisateur
      */
     public function getMissions(): Collection
     {
-        if (!$this->missions instanceof Collection) {
-            $this->missions = new ArrayCollection();
-        }
         return $this->missions;
     }
 
     public function addMission(Mission $mission): self
     {
-        if (!$this->getMissions()->contains($mission)) {
-            $this->getMissions()->add($mission);
+        if (!$this->missions->contains($mission)) {
+            $this->missions->add($mission);
+            $mission->setUtilisateur($this);
         }
         return $this;
     }
 
     public function removeMission(Mission $mission): self
     {
-        $this->getMissions()->removeElement($mission);
+        if ($this->missions->removeElement($mission)) {
+            // set the owning side to null (unless already changed)
+            if ($mission->getUtilisateur() === $this) {
+                $mission->setUtilisateur(null);
+            }
+        }
         return $this;
     }
-
 }

@@ -1,0 +1,23 @@
+{# templates/mission/_list_partial.html.twig #}
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th class="sortable" data-field="titre">Titre</th>
+      <th class="sortable" data-field="date">Date</th>
+      <th class="sortable" data-field="destination">Destination</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for mission in missions %}
+      <tr>
+        <td>{{ mission.titre }}</td>
+        <td>{{ mission.date ? mission.date|date('Y-m-d') : '' }}</td>
+        <td>{{ mission.destination }}</td>
+      </tr>
+    {% else %}
+      <tr>
+        <td colspan="3">Aucune mission trouvée.</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

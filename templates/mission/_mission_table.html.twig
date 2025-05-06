@@ -1,0 +1,64 @@
+{# templates/mission/_mission_table.html.twig #}
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th class="sortable" data-field="titre">Titre</th>
+        <th class="sortable" data-field="date">Date</th>
+        <th class="sortable" data-field="destination">Destination</th>
+        <th>Employé</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for mission in pagination %}
+        <tr>
+          <td>{{ mission.titre }}</td>
+          <td>{{ mission.date ? mission.date|date('d/m/Y') : '' }}</td>
+          <td>{{ mission.destination }}</td>
+          <td>
+            {% if mission.user %}
+              {{ mission.user.lastName }} {{ mission.user.firstName }}
+            {% else %}
+              Non assigné
+            {% endif %}
+          </td>
+          <td class="action-btns">
+            <a href="{{ path('app_mission_show', {'idMission': mission.idMission}) }}" 
+               class="btn btn-sm btn-info" title="Voir">
+              <i class="fas fa-eye"></i>
+            </a>
+            <a href="{{ path('app_mission_edit', {'idMission': mission.idMission}) }}" 
+               class="btn btn-sm btn-warning mx-1" title="Modifier">
+              <i class="fas fa-edit"></i>
+            </a>
+            <form method="post" 
+                  action="{{ path('app_mission_delete', {'idMission': mission.idMission}) }}" 
+                  onsubmit="return confirm('Supprimer cette mission ?');" 
+                  class="d-inline">
+              <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ mission.idMission) }}">
+              <button class="btn btn-sm btn-danger" title="Supprimer">
+                <i class="fas fa-trash"></i>
+              </button>
+            </form>
+          </td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="5" class="text-center py-4">
+            <div class="alert alert-info mb-0">
+              Aucune mission trouvée
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{# Pagination #}
+{% if pagination is defined and pagination.items|length > 0 %}
+  <div class="pagination-container mt-3">
+    {{ knp_pagination_render(pagination) }}
+  </div>
+{% endif %}

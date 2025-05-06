@@ -213,7 +213,6 @@ public function signup(
             $this->handleFileUploads($form, $user);
 
             // Update password if changed
-
             $entityManager->flush();
 
             $this->addFlash('success', 'User updated successfully!');

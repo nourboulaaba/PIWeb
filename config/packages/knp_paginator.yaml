@@ -1,7 +1,10 @@
 knp_paginator:
-  page_range: 5 # number of pages to show in the range
+  page_range: 5          # nombre de pages affichées autour de la page courante
   default_options:
-    page_name: page # the name of the query parameter
-    sort_field_name: sort # name for the sorting parameter
-    sort_direction_name: direction # name for the sorting direction
-    distinct: true # Ensure distinct results
+    page_name: page      # paramètre GET utilisé pour la page
+    sort_field_name: sort
+    sort_direction_name: direction
+    distinct: true
+  template:
+    pagination: '@KnpPaginator/Pagination/sliding.html.twig'
+    sortable: '@KnpPaginator/Pagination/sortable_link.html.twig'

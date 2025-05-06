@@ -1,0 +1,129 @@
+{# templates/mission/list.html.twig #}
+{% extends 'indexback.html.twig' %}
+
+{% block title %}Liste des Missions{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <style>
+    .table-responsive {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .action-btns .btn {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.8rem;
+    }
+    /* Pagination custom */
+    .custom-pagination {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+    }
+    .custom-pagination .btn {
+      min-width: 3rem;
+    }
+    /* Indicateurs de sens de tri */
+    .sortable {
+      cursor: pointer;
+    }
+    .sortable.asc::after {
+      content: ' ▲';
+      font-size: 0.7em;
+    }
+    .sortable.desc::after {
+      content: ' ▼';
+      font-size: 0.7em;
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+  <div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1>Liste des Missions</h1>
+      <a href="{{ path('app_mission_new') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Ajouter une mission
+      </a>
+    </div>
+
+
+    {# Ajoutez ce formulaire de recherche #}
+    <div class="card mb-4">
+      <div class="card-body">
+        <form action="{{ path('app_mission_search') }}" method="get" class="form-inline">
+          <div class="input-group w-100">
+            <input type="text" 
+                   name="title" 
+                   class="form-control" 
+                   placeholder="Rechercher par titre..."
+                   value="{{ app.request.query.get('title') }}">
+            <div class="input-group-append">
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-search"></i> Rechercher
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="card shadow-sm">
+      <div class="card-body p-0" id="mission-list">
+        {# On inclut ici la table initiale via un partial #}
+        {% include 'mission/_mission_table.html.twig' %}
+      </div>
+    </div>
+
+    {# -- FIN DU CONTENU AJAX -- #}
+  </div>
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Gestion du tri
+      document.querySelectorAll('.sortable').forEach(header => {
+        header.addEventListener('click', function() {
+          const field = this.dataset.field;
+          const url = new URL(window.location.href);
+          
+          // Récupère la direction actuelle ou définit 'asc' par défaut
+          let direction = 'asc';
+          if (url.searchParams.get('sort_by') === field) {
+            direction = url.searchParams.get('sort_dir') === 'asc' ? 'desc' : 'asc';
+          }
+          
+          // Met à jour les paramètres d'URL
+          url.searchParams.set('sort_by', field);
+          url.searchParams.set('sort_dir', direction);
+          
+          // Recharge la page avec les nouveaux paramètres
+          window.location.href = url.toString();
+        });
+      });
+
+      // Gestion de la recherche (conservé de votre code existant)
+      const searchForm = document.getElementById('search-form');
+      if (searchForm) {
+        searchForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          const searchTerm = document.getElementById('search-input').value.trim();
+          if (searchTerm.length > 0) {
+            fetch(`{{ path('app_mission_search') }}?title=${encodeURIComponent(searchTerm)}`, {
+              headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(response => response.text())
+            .then(html => {
+              document.getElementById('mission-list').innerHTML = html;
+            });
+          }
+        });
+      }
+    });
+  </script>
+{% endblock %}
+

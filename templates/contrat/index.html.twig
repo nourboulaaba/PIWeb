@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Contrat index{% endblock %}
+
+{% block body %}
+    <h1>Contrat index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>IdContrat</th>
+                <th>IdEmploye</th>
+                <th>Type</th>
+                <th>DateDébut</th>
+                <th>DateFin</th>
+                <th>Salaire</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+{% for contrat in contrats %}
+    <tr>
+        <td>{{ contrat.IdContrat }}</td>
+        <td>{{ contrat.IdEmploye }}</td>
+        <td>{{ contrat.Type }}</td>
+        <td>{{ contrat.dateDebut ? contrat.dateDebut|date('Y-m-d') : '' }}</td>
+        <td>{{ contrat.dateFin ? contrat.dateFin|date('Y-m-d') : '' }}</td>
+        <td>{{ contrat.Salaire }}</td>
+        <td>
+            <a href="{{ path('app_contrat_show', {'IdContrat': contrat.IdContrat}) }}">show</a>
+            <a href="{{ path('app_contrat_edit', {'IdContrat': contrat.IdContrat}) }}">edit</a>
+
+            {# ➕ Formulaire de suppression ici #}
+            <form method="post" action="{{ path('app_contrat_delete', {'IdContrat': contrat.IdContrat}) }}" 
+      onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce contrat?');">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ contrat.IdContrat) }}">
+    <button class="btn btn-danger btn-sm">Delete</button>
+</form>
+        </td>
+    </tr>
+{% else %}
+    <tr>
+        <td colspan="7">no records found</td>
+    </tr>
+{% endfor %}
+
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_contrat_new') }}">Create new</a>
+{% endblock %}

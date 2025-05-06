@@ -1,0 +1,69 @@
+{% extends 'basefront.html.twig' %}
+
+{% block title %}Gestion du Contrat{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1 class="mb-4">{{ block('title') }}</h1>
+
+    {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+    
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="form-group">
+                {{ form_label(form.idEmploye, null, {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.idEmploye, {'attr': {'class': 'form-control' ~ (form.idEmploye.vars.valid ? '' : ' is-invalid')}}) }}
+                <div class="invalid-feedback">
+                    {{ form_errors(form.idEmploye) }}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group">
+                {{ form_label(form.type, null, {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.type, {'attr': {'class': 'form-select' ~ (form.type.vars.valid ? '' : ' is-invalid')}}) }}
+                <div class="invalid-feedback">
+                    {{ form_errors(form.type) }}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group">
+                {{ form_label(form.dateDebut, null, {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.dateDebut, {'attr': {'class': 'form-control' ~ (form.dateDebut.vars.valid ? '' : ' is-invalid')}}) }}
+                <div class="invalid-feedback">
+                    {{ form_errors(form.dateDebut) }}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group">
+                {{ form_label(form.dateFin, null, {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.dateFin, {'attr': {'class': 'form-control' ~ (form.dateFin.vars.valid ? '' : ' is-invalid')}}) }}
+                <div class="invalid-feedback">
+                    {{ form_errors(form.dateFin) }}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group">
+                {{ form_label(form.salaire, null, {'label_attr': {'class': 'form-label'}}) }}
+                {{ form_widget(form.salaire, {'attr': {'class': 'form-control' ~ (form.salaire.vars.valid ? '' : ' is-invalid')}}) }}
+                <div class="invalid-feedback">
+                    {{ form_errors(form.salaire) }}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 mt-4">
+            <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+            <a href="{{ path('app_contrat_index') }}" class="btn btn-outline-secondary">Annuler</a>
+        </div>
+    </div>
+    {{ form_end(form) }}
+</div>
+{% endblock %}

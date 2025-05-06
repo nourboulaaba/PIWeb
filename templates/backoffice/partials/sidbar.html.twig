@@ -84,16 +84,16 @@
                     <span class="align-middle">Toutes les Réclamations</span>
                 </a>
             </li>
-            <li class="sidebar-item {{ app.request.get('_route') starts with 'app_contrat' ? 'active' : '' }}">
-                <a class="sidebar-link" >
-                    <i data-feather="file"></i>
+            <li class="sidebar-item">
+                <a class="sidebar-link" href="{{ path('app_contrat_index') }}">
+                    <i class="align-middle" data-feather="file-text"></i> 
                     <span class="align-middle">Contrats</span>
                 </a>
             </li>
-            
-            <li class="sidebar-item {{ app.request.get('_route') starts with 'app_mission' ? 'active' : '' }}">
-                <a class="sidebar-link" href="#">
-                    <i data-feather="briefcase"></i>
+
+            <li class="sidebar-item">
+                <a class="sidebar-link" href="{{ path('app_mission_index') }}">
+                    <i class="align-middle" data-feather="briefcase"></i> 
                     <span class="align-middle">Missions</span>
                 </a>
             </li>
