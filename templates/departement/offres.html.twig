@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Offres – {{ departement.nom }}{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <!-- Department Title Card -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title mb-0">Offres du département : {{ departement.nom }}</h3>
+            </div>
+        </div>
+
+        <!-- Offers List -->
+        {% if offres|length > 0 %}
+            <div class="row">
+                {% for offre in offres %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card shadow-sm border-light h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ offre.titre }}</h5>
+                                <p class="card-text">
+                                    {{ offre.description|length > 100 ? offre.description|slice(0, 100) ~ '...' : offre.description }}
+                                </p>
+                                <p class="card-text"><strong>Salaire:</strong> {{ offre.salaireMin }} - {{ offre.salaireMax }} DT</p>
+                            </div>
+                            <div class="card-footer text-center">
+                                <a href="{{ path('app_offre_show', {'id': offre.id}) }}" class="btn btn-info btn-sm">Voir les détails</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info text-center">Aucune offre trouvée pour ce département.</div>
+        {% endif %}
+
+        <!-- Navigation Buttons -->
+        <div class="d-flex justify-content-between mt-4">
+            <a href="{{ path('app_departement_index') }}" class="btn btn-secondary">← Retour à la liste des départements</a>
+            <a href="{{ path('app_offre_new_for_departement', {'departementId': departement.id}) }}" class="btn btn-primary">Ajouter une offre</a>
+        </div>
+    </div>
+{% endblock %}

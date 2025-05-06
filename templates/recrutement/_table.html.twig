@@ -1,0 +1,259 @@
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --card-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+        --card-shadow-hover: 0 15px 30px rgba(0, 0, 0, 0.15);
+        --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    .recrutement-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 2rem;
+        padding: 1rem 0;
+    }
+
+    .recrutement-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: var(--card-shadow);
+        transition: var(--transition);
+        position: relative;
+        border: none;
+    }
+
+    .recrutement-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: var(--primary-gradient);
+    }
+
+    .recrutement-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--card-shadow-hover);
+    }
+
+    .recrutement-card .card-content {
+        padding: 1.75rem;
+        position: relative;
+    }
+
+    .recrutement-card h5 {
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: #2d3748;
+        font-size: 1.25rem;
+        position: relative;
+        padding-bottom: 0.75rem;
+    }
+
+    .recrutement-card h5::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 40px;
+        height: 3px;
+        background: var(--primary-gradient);
+        border-radius: 3px;
+    }
+
+    .recrutement-card .dates {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin: 1.5rem 0;
+    }
+
+    .recrutement-card .date-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.95rem;
+    }
+
+    .recrutement-card .date-item i {
+        color: #6c63ff;
+        width: 20px;
+        height: 20px;
+    }
+
+    .recrutement-card .badge {
+        background: rgba(108, 99, 255, 0.1);
+        color: #6c63ff;
+        font-weight: 600;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .recrutement-card .badge i {
+        width: 16px;
+        height: 16px;
+    }
+
+    .recrutement-card .actions {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: flex-end;
+        margin-top: 1.75rem;
+    }
+
+    .recrutement-card .btn-action {
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .recrutement-card .btn-action i {
+        width: 16px;
+        height: 16px;
+    }
+
+    .recrutement-card .btn-details {
+        background: rgba(108, 99, 255, 0.1);
+        color: #6c63ff;
+        border: none;
+    }
+
+    .recrutement-card .btn-details:hover {
+        background: rgba(108, 99, 255, 0.2);
+    }
+
+    .recrutement-card .btn-edit {
+        background: rgba(74, 85, 104, 0.1);
+        color: #4a5568;
+        border: none;
+    }
+
+    .recrutement-card .btn-edit:hover {
+        background: rgba(74, 85, 104, 0.2);
+    }
+
+    .recrutement-empty {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 4rem 1rem;
+        background: white;
+        border-radius: 16px;
+        box-shadow: var(--card-shadow);
+    }
+
+    .recrutement-empty i {
+        color: #c3cfe2;
+        width: 4rem;
+        height: 4rem;
+    }
+
+    .recrutement-empty p {
+        font-size: 1.25rem;
+        color: #718096;
+        margin-top: 1.5rem;
+        font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+        .recrutement-cards {
+            grid-template-columns: 1fr;
+        }
+
+        .recrutement-card .card-content {
+            padding: 1.5rem;
+        }
+    }
+</style>
+
+<div class="recrutement-cards">
+    {% for recrutement in recrutements %}
+        <div class="recrutement-card" data-id="{{ recrutement.id }}">
+            <div class="card-content">
+                {% set currentOffre = offres|filter(o => o.id == recrutement.offreId)|first %}
+                <h5>{{ currentOffre.titre ?? 'Unknown Offer' }}</h5>
+
+                <div class="dates">
+                    <div class="date-item">
+                        <i data-feather="calendar"></i>
+                        <div>
+                            <strong>Start Date:</strong><br>
+                            <span>{{ recrutement.dateDebut|date('M d, Y') }}</span>
+                        </div>
+                    </div>
+                    <div class="date-item">
+                        <i data-feather="calendar"></i>
+                        <div>
+                            <strong>End Date:</strong><br>
+                            <span>{{ recrutement.dateFin|date('M d, Y') }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <span class="badge">
+                        <i data-feather="users"></i>
+                        {{ recrutement.NbEntretien }} {{ recrutement.NbEntretien > 1 ? 'Interviews' : 'Interview' }}
+                    </span>
+                </div>
+
+                <div class="actions">
+                    <a href="{{ path('app_recrutement_show', {'id': recrutement.id}) }}"
+                       class="btn-action btn-details"
+                       title="View Details">
+                        <i data-feather="eye"></i>
+                        Details
+                    </a>
+                    <a href="{{ path('app_recrutement_edit', {'id': recrutement.id}) }}"
+                       class="btn-action btn-edit"
+                       title="Edit">
+                        <i data-feather="edit"></i>
+                        Edit
+                    </a>
+                    <a href="{{ path('app_recrutement_entretiens', {'id': recrutement.id}) }}"
+                       class="btn-action btn-entretiens"
+                       title="View entretiens">
+                        <i data-feather="eye"></i>
+                        Entretiens
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="recrutement-empty">
+            <i data-feather="briefcase"></i>
+            <p>No recruitment campaigns found</p>
+            <a href="{{ path('app_recrutement_new') }}" class="btn btn-gradient-primary mt-3">
+                <i data-feather="plus"></i> Create New Campaign
+            </a>
+        </div>
+    {% endfor %}
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        feather.replace();
+
+        // Add click effect to cards
+        document.querySelectorAll('.recrutement-card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                // Don't trigger if clicking on actions
+                if (!e.target.closest('.actions a')) {
+                    const detailsLink = this.querySelector('.btn-details');
+                    if (detailsLink) {
+                        window.location.href = detailsLink.href;
+                    }
+                }
+            });
+        });
+    });
+</script>

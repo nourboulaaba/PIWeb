@@ -1,0 +1,160 @@
+<style>
+    .departement-card {
+        border: none;
+        border-radius: 1rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background: linear-gradient(145deg, #f8f9fa, #ffffff);
+    }
+
+    .departement-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+    }
+
+    .departement-card .card-title {
+        font-weight: 700;
+        font-size: 1.4rem;
+        color: #343a40;
+        transition: transform 0.3s ease;
+    }
+
+    .departement-card:hover .card-title {
+        transform: scale(1.05);
+    }
+
+    .departement-card .card-text {
+        font-size: 0.95rem;
+        color: #495057;
+        transition: transform 0.3s ease;
+    }
+
+    .departement-card:hover .card-text {
+        transform: scale(1.01);
+    }
+
+    .departement-card .card-footer {
+        background: transparent;
+        border-top: none;
+    }
+
+    .btn-outline-info, .btn-outline-warning {
+        transition: 0.3s ease;
+    }
+
+    .btn-outline-info {
+        border-color: #0dcaf0;
+        color: #0dcaf0;
+    }
+
+    .btn-outline-info:hover {
+        background-color: #0dcaf0;
+        color: white;
+    }
+
+    .btn-outline-warning {
+        border-color: #ffc107;
+        color: #ffc107;
+    }
+
+    .btn-outline-warning:hover {
+        background-color: #ffc107;
+        color: black;
+    }
+
+    .no-records {
+        font-style: italic;
+        color: #adb5bd;
+        font-size: 1.1rem;
+        padding: 2rem;
+    }
+
+    .budget-badge {
+        font-size: 0.85rem;
+        padding: 0.35rem 0.6rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+    }
+
+    .budget-high {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .budget-medium {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+
+    .budget-low {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    .avatar-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #0dcaf0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 1rem;
+        margin-right: 10px;
+    }
+</style>
+
+<div class="row">
+    {% for departement in departements %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 shadow-sm departement-card" data-href="{{ path('app_departement_offres', {'id': departement.id}) }}" style="cursor: pointer;">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="avatar-circle">
+                            {{ departement.nom|upper }}
+                        </div>
+                        <h5 class="card-title mb-0">{{ departement.nom }}</h5>
+                    </div>
+                    <p class="card-text mb-1"><strong>Responsable :</strong> {{ departement.responsable.first_name }}</p>
+                    <p class="card-text mb-1">
+                        <strong>Budget:</strong>
+                        <span class="budget-badge
+                            {% if departement.budget > 50000 %}
+                                budget-high
+                            {% elseif departement.budget > 20000 %}
+                                budget-medium
+                            {% else %}
+                                budget-low
+                            {% endif %}
+                        ">
+                            {{ departement.budget | number_format(0, ',', ' ') }} TND
+                        </span>
+                    </p>
+                    <p class="card-text"><strong>Nb Employés:</strong> {{ departement.nbEmploye }}</p>
+                </div>
+                <div class="card-footer d-flex justify-content-between">
+                    <a href="{{ path('app_departement_show', {'id': departement.id}) }}" class="btn btn-sm btn-outline-info">Afficher</a>
+                    <a href="{{ path('app_departement_edit', {'id': departement.id}) }}" class="btn btn-sm btn-outline-warning">Modifier</a>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="col-12 text-center">
+            <p class="no-records">Aucun département trouvé.</p>
+        </div>
+    {% endfor %}
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const cards = document.querySelectorAll(".departement-card");
+        cards.forEach(card => {
+            card.addEventListener("click", (e) => {
+                if (!e.target.closest('a, button')) {
+                    window.location = card.getAttribute("data-href");
+                }
+            });
+        });
+    });
+</script>
