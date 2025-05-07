@@ -1,0 +1,179 @@
+{% extends 'basefront.html.twig' %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h1 class="h2 mb-3">{{ formation.name }}</h1>
+
+                    <div class="mb-4">
+                        <img src="{{ asset('images/formations/' ~ formation.id ~ '.jpg') }}"
+                             class="img-fluid rounded mb-3"
+                             alt="Formation {{ formation.name }}"
+                             onerror="this.onerror=null;this.src='{{ asset('images/formations/default.jpg') }}';">
+                    </div>
+
+                    <div class="mb-4">
+                        <h3 class="h5 mb-3">Description</h3>
+                        <p>{{ formation.description }}</p>
+                    </div>
+
+                    {% if formation.date %}
+                    <div class="mb-4">
+                        <h3 class="h5 mb-2">Date de début</h3>
+                        <p>{{ formation.date|date('d/m/Y') }}</p>
+                    </div>
+                    {% endif %}
+
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <a href="{{ path('app_front_formation_index') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-arrow-left me-2"></i> Retour aux formations
+                        </a>
+
+                        {% if app.user %}
+                        <div class="mt-3">
+                            <a href="{{ path('payment_form', {'id': formation.id}) }}" class="btn btn-primary">
+                                Payer cette formation
+                            </a>
+                        </div>
+                        {% else %}
+                        <span class="text-muted">Connectez-vous pour payer</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="h5 mb-0">Avis et évaluations</h3>
+                </div>
+                <div class="card-body">
+                    <div id="ratings-content">
+                        <div class="text-center py-3">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Chargement...</span>
+                            </div>
+                            <p class="mt-2 text-muted">Chargement des avis...</p>
+                        </div>
+                    </div>
+
+                    {% if app.user %}
+                    <div class="mt-3">
+                        <a href="{{ path('app_front_note_new', {'id': formation.id}) }}" class="btn btn-primary w-100">
+                            <i class="fas fa-star me-2"></i> Donner mon avis
+                        </a>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-info-circle me-2"></i> Connectez-vous pour donner votre avis
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Charger les notes via AJAX
+    fetch('/api/notes/formation/{{ formation.id }}')
+        .then(response => response.json())
+        .then(data => {
+            const ratingsContent = document.getElementById('ratings-content');
+            let html = '';
+
+            if (data.nombreAvis > 0) {
+                html += `
+                    <div class="text-center mb-3">
+                        <div class="fs-1 fw-bold text-primary">${data.moyenne}</div>
+                        <div class="rating-stars fs-4 mb-1" style="color: #FFD700;">
+                            ${getStarsHtml(data.moyenne)}
+                        </div>
+                        <div class="text-muted">${data.nombreAvis} avis</div>
+                    </div>
+                `;
+
+                html += '<div class="ratings-list">';
+                data.notes.forEach(note => {
+                    html += `
+                        <div class="p-3 mb-2 bg-light rounded">
+                            <div class="d-flex justify-content-between mb-1">
+                                <div class="fw-bold">${note.utilisateur.prenom} ${note.utilisateur.nom}</div>
+                                <small class="text-muted">${formatDate(note.dateCreation)}</small>
+                            </div>
+                            <div style="color: #FFD700;">${getStarsHtml(note.valeur)}</div>
+                            ${note.commentaire ? `<p class="mt-2 mb-0">${note.commentaire}</p>` : ''}
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            } else {
+                html = `
+                    <div class="text-center py-4">
+                        <i class="fas fa-comment-slash fa-3x mb-3 text-muted"></i>
+                        <p>Aucun avis pour le moment</p>
+                        <p class="small text-muted">Soyez le premier à donner votre avis</p>
+                    </div>
+                `;
+            }
+
+            ratingsContent.innerHTML = html;
+        })
+        .catch(error => {
+            console.error('Erreur lors du chargement des notes:', error);
+            document.getElementById('ratings-content').innerHTML = `
+                <div class="alert alert-danger">
+                    Une erreur est survenue lors du chargement des avis.
+                </div>
+            `;
+        });
+
+    // Paiement avec Stripe
+    const payButton = document.getElementById('pay-button');
+    if (payButton) {
+        const stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
+        payButton.addEventListener('click', function () {
+            // Rediriger vers la page de formulaire de paiement
+            window.location.href = "{{ path('payment_form', {'id': formation.id}) }}";
+        });
+    }
+
+    // Générer les étoiles
+    function getStarsHtml(rating) {
+        const fullStars = Math.floor(rating);
+        const halfStar = rating % 1 >= 0.5;
+        const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+        let html = '';
+
+        for (let i = 0; i < fullStars; i++) html += '<i class="fas fa-star"></i>';
+        if (halfStar) html += '<i class="fas fa-star-half-alt"></i>';
+        for (let i = 0; i < emptyStars; i++) html += '<i class="far fa-star"></i>';
+
+        return html;
+    }
+
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('fr-FR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+    }
+});
+</script>
+{% endblock %}
+
+
+
+
+

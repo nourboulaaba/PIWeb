@@ -73,12 +73,6 @@ class Conge
         return $this;
     }
 
-    public function getTypeConge(): ?string
-    {
-        return $this->typeConge;
-    }
-
-    public function setTypeConge(string $typeConge): self
     {
         $this->typeConge = $typeConge;
         return $this;

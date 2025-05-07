@@ -14,6 +14,13 @@ parameters:
   twilio.account_sid: '%env(TWILIO_ACCOUNT_SID)%'
   twilio.auth_token: '%env(TWILIO_AUTH_TOKEN)%'
   twilio.from: '%env(TWILIO_FROM)%'
+  STRIPE_PUBLIC_KEY: '%env(STRIPE_PUBLIC_KEY)%'
+
+twig:
+    globals:
+        STRIPE_PUBLIC_KEY: '%STRIPE_PUBLIC_KEY%'
+
+ 
 
 services:
   _defaults:

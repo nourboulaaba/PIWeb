@@ -84,7 +84,7 @@ private ?string $password = null;
     private ?float $salary = null;
 
     #[ORM\Column(name: "is_verified", type: "boolean", nullable: true)]
-    private ?bool $isVerified = null;
+    private ?bool $isVerified = true;
 
     // Getters & Setters
 

@@ -1,0 +1,89 @@
+{% extends 'indexback.html.twig' %}
+
+{% block title %}Modifier ma note{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <style>
+    .rating-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 2rem;
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+    .rating-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .rating-stars {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .rating-stars label {
+      cursor: pointer;
+      font-size: 2rem;
+      transition: transform 0.2s;
+    }
+    .rating-stars label:hover {
+      transform: scale(1.2);
+    }
+    .rating-stars input[type="radio"] {
+      display: none;
+    }
+    .rating-stars input[type="radio"]:checked + label {
+      color: #FFD700;
+    }
+    .formation-info {
+      background-color: #f8f9fa;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+  <div class="rating-container animate__animated animate__fadeIn">
+    <div class="rating-header">
+      <h1 class="h3 mb-3">Modifier ma note</h1>
+      <div class="formation-info">
+        <h2 class="h5 mb-2">{{ note.formation.name }}</h2>
+        <p class="text-muted mb-0">{{ note.formation.description }}</p>
+      </div>
+    </div>
+
+    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+      <div class="mb-4">
+        {{ form_label(form.valeur) }}
+        <div class="rating-stars">
+          {% for choice in form.valeur %}
+            {{ form_widget(choice) }}
+            <label for="{{ choice.vars.id }}">⭐</label>
+          {% endfor %}
+        </div>
+        {{ form_errors(form.valeur) }}
+      </div>
+
+      <div class="mb-4">
+        {{ form_label(form.commentaire) }}
+        {{ form_widget(form.commentaire, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.commentaire) }}
+      </div>
+
+      <div class="d-flex justify-content-between">
+        <a href="{{ path('app_formation_show', {'id': note.formation.id}) }}" class="btn btn-outline-secondary">
+          <i class="fas fa-arrow-left me-2"></i> Retour
+        </a>
+        <button type="submit" class="btn btn-primary">
+          <i class="fas fa-save me-2"></i> Enregistrer les modifications
+        </button>
+      </div>
+    {{ form_end(form) }}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends 'basefront.html.twig' %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="text-center mb-4">
+        <h1 class="display-4 fw-bold text-primary">Nos Formations Professionnelles</h1>
+        <p class="lead text-muted">Découvrez nos programmes de formation pour booster votre carrière</p>
+        <hr class="my-4 w-25 mx-auto">
+    </div>
+
+    <!-- Formulaire de recherche et filtres -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            {{ form_start(searchForm) }}
+            <div class="row g-3">
+                <div class="col-md-4">
+                    {{ form_widget(searchForm.keyword) }}
+                </div>
+                <div class="col-md-2">
+                    {{ form_widget(searchForm.prix_min) }}
+                </div>
+                <div class="col-md-2">
+                    {{ form_widget(searchForm.prix_max) }}
+                </div>
+                <div class="col-md-2">
+                    {{ form_widget(searchForm.sort_by) }}
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search me-2"></i>Rechercher
+                    </button>
+                </div>
+            </div>
+            {{ form_end(searchForm) }}
+        </div>
+    </div>
+
+    <!-- Liste des formations -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 justify-content-center">
+        {% for formation in formations %}
+            <div class="col">
+                <div class="card h-100 shadow-sm hover-card">
+                    <img src="{{ asset('images/formations/' ~ formation.id ~ '.jpg') }}"
+                         class="card-img-top"
+                         alt="Formation {{ formation.name }}"
+                         onerror="this.onerror=null;this.src='{{ asset('images/formations/default.jpg') }}';">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ formation.name }}</h5>
+                        <p class="card-text">{{ formation.description|length > 100 ? formation.description|slice(0, 100) ~ '...' : formation.description }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-primary rounded-pill">{{ formation.prix }} DT</span>
+                            <div class="rating-container" data-formation-id="{{ formation.id }}">
+                                <small class="text-muted">Chargement...</small>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="{{ path('app_front_formation_show', {'id': formation.id}) }}" 
+                       class="stretched-link" aria-label="Voir détails de {{ formation.name }}"></a>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-12 text-center">
+                <div class="alert alert-info p-5">
+                    <i class="bi bi-exclamation-circle fs-1 d-block mb-3"></i>
+                    <p class="lead">Aucune formation ne correspond à votre recherche.</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    <div class="d-flex justify-content-center mt-4">
+        {{ knp_pagination_render(formations, null, {}, {'align': 'center', 'size': 'medium', 'rounded': true}) }}
+    </div>
+</div>
+
+<style>
+    .hover-card {
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .hover-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15) !important;
+    }
+    .card-img-top {
+        height: 200px;
+        object-fit: cover;
+    }
+    .rating-stars {
+        color: #FFD700;
+        font-size: 0.9rem;
+    }
+    .rating-count {
+        color: #6c757d;
+        font-size: 0.8rem;
+        margin-left: 0.5rem;
+    }
+</style>
+{% endblock %}

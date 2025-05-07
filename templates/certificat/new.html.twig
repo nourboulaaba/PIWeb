@@ -1,0 +1,20 @@
+{# certificat/new.html.twig #}
+{% extends 'indexback.html.twig' %}
+{% block title %}Nouveau Certificat{% endblock %}
+{% block body %}
+<div class="container py-4">
+  <div class="col-lg-8 mx-auto">
+    <div class="card animate__animated animate__fadeIn">
+      <div class="card-header bg-success text-white">
+        <h5 class="mb-0">Ajouter un nouveau certificat</h5>
+      </div>
+      <div class="card-body">
+        {{ include('certificat/_form.html.twig') }}
+        <a href="{{ path('app_certificat_index') }}" class="btn btn-link mt-3">
+          <i class="fas fa-arrow-left"></i> Retour à la liste
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

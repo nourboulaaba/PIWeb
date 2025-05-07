@@ -1,0 +1,170 @@
+{% extends 'basefront.html.twig' %}
+
+{% block title %}Paiement de la formation{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1 class="mb-4">Paiement de la formation</h1>
+        
+        <div class="card mb-4">
+            <div class="card-body">
+                <h4>{{ formation.name }}</h4>
+                <p>{{ formation.description|slice(0, 100) }}{% if formation.description|length > 100 %}...{% endif %}</p>
+                <h5 class="mt-3">Montant à payer: <strong>{{ formation.prix }} €</strong></h5>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-body">
+                <form id="payment-form">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" id="email" class="form-control" value="{{ app.user.email }}" readonly>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="card-number" class="form-label">Numéro de carte</label>
+                        <input type="text" id="card-number" class="form-control" placeholder="1234 5678 9012 3456" maxlength="19">
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="card-expiry" class="form-label">Date d'expiration (MM/AA)</label>
+                            <input type="text" id="card-expiry" class="form-control" placeholder="MM/AA" maxlength="5">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="card-cvc" class="form-label">CVC</label>
+                            <input type="text" id="card-cvc" class="form-control" placeholder="123" maxlength="4">
+                        </div>
+                    </div>
+                    
+                    <div id="card-errors" class="text-danger mb-3" role="alert"></div>
+                    
+                    <button type="submit" id="submit-button" class="btn btn-primary w-100">
+                        Payer {{ formation.prix }} €
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://js.stripe.com/v2/"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurer Stripe avec la clé publique
+            Stripe.setPublishableKey('{{ stripe_public_key }}');
+            
+            // Éléments du formulaire
+            const form = document.getElementById('payment-form');
+            const emailInput = document.getElementById('email');
+            const cardNumberInput = document.getElementById('card-number');
+            const cardExpiryInput = document.getElementById('card-expiry');
+            const cardCvcInput = document.getElementById('card-cvc');
+            const cardErrors = document.getElementById('card-errors');
+            const submitButton = document.getElementById('submit-button');
+            
+            // Formater le numéro de carte avec des espaces
+            cardNumberInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\s+/g, '');
+                if (value.length > 0) {
+                    value = value.match(new RegExp('.{1,4}', 'g')).join(' ');
+                }
+                e.target.value = value;
+            });
+            
+            // Formater la date d'expiration
+            cardExpiryInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 0) {
+                    if (value.length <= 2) {
+                        e.target.value = value;
+                    } else {
+                        e.target.value = value.slice(0, 2) + '/' + value.slice(2, 4);
+                    }
+                }
+            });
+            
+            // Limiter le CVC à des chiffres
+            cardCvcInput.addEventListener('input', function(e) {
+                e.target.value = e.target.value.replace(/\D/g, '');
+            });
+            
+            // Soumission du formulaire
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                
+                // Désactiver le bouton pour éviter les soumissions multiples
+                submitButton.disabled = true;
+                submitButton.textContent = 'Traitement en cours...';
+                
+                // Effacer les erreurs précédentes
+                cardErrors.textContent = '';
+                
+                // Préparer les données pour Stripe
+                const expiry = cardExpiryInput.value.split('/');
+                const month = expiry[0];
+                const year = '20' + expiry[1]; // Ajouter '20' pour avoir l'année complète
+                
+                // Créer un token avec Stripe
+                Stripe.card.createToken({
+                    number: cardNumberInput.value.replace(/\s+/g, ''),
+                    exp_month: month,
+                    exp_year: year,
+                    cvc: cardCvcInput.value
+                }, handleStripeResponse);
+            });
+            
+            // Gérer la réponse de Stripe
+            function handleStripeResponse(status, response) {
+                if (response.error) {
+                    // Afficher l'erreur
+                    cardErrors.textContent = response.error.message;
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Payer {{ formation.prix }} €';
+                } else {
+                    // Envoyer le token au serveur
+                    processPayment(response.id);
+                }
+            }
+            
+            // Envoyer le token au serveur pour traiter le paiement
+            function processPayment(token) {
+                fetch('{{ path('payment_process', {'id': formation.id}) }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        token: token
+                        // L'email n'est plus envoyé car nous utilisons celui de l'utilisateur connecté
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Rediriger vers la page de succès
+                        window.location.href = data.redirect;
+                    } else {
+                        // Afficher l'erreur
+                        cardErrors.textContent = data.error || 'Une erreur est survenue lors du traitement du paiement.';
+                        submitButton.disabled = false;
+                        submitButton.textContent = 'Payer {{ formation.prix }} €';
+                    }
+                })
+                .catch(error => {
+                    cardErrors.textContent = 'Une erreur de connexion est survenue. Veuillez réessayer.';
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Payer {{ formation.prix }} €';
+                    console.error('Error:', error);
+                });
+            }
+        });
+    </script>
+{% endblock %}
+
+
+

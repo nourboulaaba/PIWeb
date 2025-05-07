@@ -1,0 +1,114 @@
+{% extends 'indexback.html.twig' %}
+
+{% block title %}Liste des Formations{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <style>
+    .dashboard-container {
+      background-color: #f8f9fc;
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+    .table th {
+      background-color: #4e73df;
+      color: white;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+    .table tbody tr:hover {
+      background-color: rgba(78, 115, 223, 0.05);
+    }
+    .action-btn {
+      padding: 0.4rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      margin-right: 4px;
+    }
+    .btn-view {
+      background-color: #4e73df;
+      color: white;
+    }
+    .btn-edit {
+      background-color: #f6c23e;
+      color: white;
+    }
+    .btn-delete {
+      background-color: #e74a3b;
+      color: white;
+    }
+    .btn-new {
+      background-color: #1cc88a;
+      color: white;
+      border-radius: 30px;
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+  <div class="dashboard-container animate__animated animate__fadeIn">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h1 class="h4 text-gray-800 mb-0">Liste des Formations</h1>
+        <p class="text-muted small">Gérez toutes les formations proposées</p>
+      </div>
+      <div class="d-flex">
+        <a href="{{ path('app_formation_new') }}" class="btn btn-new">
+          <i class="fas fa-plus-circle me-2"></i> Nouvelle formation
+        </a>
+      </div>
+    </div>
+
+    <!-- Tableau des formations -->
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nom</th>
+            <th>Description</th>
+            <th>Prix</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for formation in formations %}
+            <tr>
+              <td>#{{ formation.id }}</td>
+              <td>{{ formation.name }}</td>
+              <td>{{ formation.description|length > 50 ? formation.description|slice(0, 50) ~ '…' : formation.description }}</td>
+              <td>{{ formation.prix }} DT</td>
+              <td>{{ formation.date ? formation.date|date('d/m/Y') : '-' }}</td>
+              <td>
+                <a href="{{ path('app_formation_show', {id: formation.id}) }}" class="btn btn-sm action-btn btn-view">
+                  <i class="fas fa-eye"></i>
+                </a>
+                <a href="{{ path('app_formation_edit', {id: formation.id}) }}" class="btn btn-sm action-btn btn-edit">
+                  <i class="fas fa-edit"></i>
+                </a>
+                <form method="post" action="{{ path('app_formation_delete', {id: formation.id}) }}" style="display:inline" onsubmit="return confirm('Supprimer cette formation ?');">
+                  <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ formation.id) }}">
+                  <button class="btn btn-sm action-btn btn-delete"><i class="fas fa-trash"></i></button>
+                </form>
+              </td>
+            </tr>
+          {% else %}
+            <tr>
+              <td colspan="6" class="text-center text-muted">Aucune formation trouvée.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+{% endblock %}

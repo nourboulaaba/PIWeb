@@ -106,7 +106,7 @@ public function signup(
             );
 
             // Définir l'utilisateur comme non vérifié
-            $user->setIsVerified(false);
+            $user->setIsVerified(true);
 
             // Définir le rôle par défaut comme EMPLOYE
             $user->setRole('EMPLOYE');

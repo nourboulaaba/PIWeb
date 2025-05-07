@@ -1,0 +1,6 @@
+{% extends 'frontoffice/basefront.html.twig' %}
+{% block title %}Paiement annulé{% endblock %}
+{% block body %}
+<div class="alert alert-warning">Vous avez annulé le paiement.</div>
+<a href="{{ path('app_formation_index_front') }}" class="btn btn-secondary">Retour aux formations</a>
+{% endblock %}

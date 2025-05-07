@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Certificat PDF</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .certificate {
+            border: 2px solid #333;
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 800px;
+        }
+        .date {
+            margin-top: 40px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="certificate">
+        <h1>Certificat de Formation</h1>
+        
+        <p>Ce certificat atteste que</p>
+        
+         <h2>{{ certificat.user ? certificat.user.firstName ~ ' ' ~ certificat.user.lastName : 'Participant' }}</h2>
+        
+        <p>a suivi avec succès la formation</p>
+        
+        <h3>{{ certificat.formation is defined ? certificat.formation.name : 'Formation' }}</h3>
+        
+        <p>Niveau: {{ certificat.niveau }}</p>
+        
+        <p>Résultat: {{ certificat.resultatExamen }}</p>
+        
+        <p class="date">Date d'examen: {{ certificat.dateExamen|date('d/m/Y') }}</p>
+    </div>
+</body>
+</html>
+
+
+
