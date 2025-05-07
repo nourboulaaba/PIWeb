@@ -17,6 +17,9 @@ use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Writer\PngWriter;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\ErrorCorrectionLevel;
+use Endroid\QrCode\RoundBlockSizeMode;
 
 #[Route('/offre')]
 class OffreController extends AbstractController
@@ -128,25 +131,30 @@ class OffreController extends AbstractController
     #[Route('/offre/{id}/qr-code', name: 'app_offre_qrcode', methods: ['GET'])]
     public function generateQrCode(Offre $offre): Response
     {
-        // Properly encode title and description for URL
+        // Encode URL parameters
         $title = urlencode($offre->getTitre());
         $description = urlencode($offre->getDescription());
         $salaireMin = urlencode($offre->getSalaireMin());
         $salaireMax = urlencode($offre->getSalaireMax());
-
-        // Generate the direct link to be opened via QR scan
+    
+        // Construct URL to encode
         $url = "https://parisfrance2424g7g7gtt.on.drv.tw/AbderrahmenOffreQRCode/offer.html?title={$title}&description={$description}&salaire_min={$salaireMin}&salaire_max={$salaireMax}";
-
-        // Build QR code from the full URL
-        $result = Builder::create()
-            ->writer(new PngWriter())
-            ->data($url)
-            ->size(300)
-            ->margin(10)
-            ->build();
-
+    
+        // Create QR code builder with correct constructor
+        $builder = new Builder(
+            writer: new PngWriter(),
+            data: $url,
+            encoding: new Encoding('UTF-8'),
+            errorCorrectionLevel: ErrorCorrectionLevel::Low,
+            size: 300,
+            margin: 10,
+            roundBlockSizeMode: RoundBlockSizeMode::Margin
+        );
+    
+        $result = $builder->build();
+    
         return new Response($result->getString(), 200, [
-            'Content-Type' => 'image/png',
+            'Content-Type' => $result->getMimeType(),
         ]);
     }
 

@@ -98,20 +98,31 @@
                 </a>
             </li>
             
-            <li class="sidebar-item {{ app.request.get('_route') starts with 'app_emploi' ? 'active' : '' }}">
-                <a class="sidebar-link" href="#">
-                    <i data-feather="clipboard"></i>
-                    <span class="align-middle">Offres d'emploi</span>
-                </a>
-            </li>
+          <li class="sidebar-item active">
+                    <a class="sidebar-link" href="{{ path('app_departement_index') }}">
+                        <i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Departement</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="{{ path('app_offre_index') }}">
+                        <i class="align-middle" data-feather="user"></i> <span class="align-middle">Offres</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="{{ path('app_recrutement_index') }}">
+                        <i class="align-middle" data-feather="log-in"></i> <span class="align-middle">Recrutement</span>
+                    </a>
+                </li>
+
+                <li class="sidebar-item">
+                    <a class="sidebar-link" href="{{ path('app_entretien_index') }}">
+                        <i class="align-middle" data-feather="user-plus"></i> <span class="align-middle">Entretiens</span>
+                    </a>
+                </li>
             
-            <li class="sidebar-item {{ app.request.get('_route') starts with 'app_recrutement' ? 'active' : '' }}">
-                <a class="sidebar-link" href="#">
-                    <i data-feather="award"></i>
-                    <span class="align-middle">Recrutement</span>
-                    <span class="sidebar-badge badge bg-success rounded-pill ms-2">Nouveau</span>
-                </a>
-            </li>
+           
             
             <li class="sidebar-item {{ app.request.get('_route') starts with 'app_formation' ? 'active' : '' }}">
                 <a class="sidebar-link" href="#">

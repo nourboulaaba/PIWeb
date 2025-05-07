@@ -1,0 +1,100 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Interviews for the recutement {{ recrutement.id }}{% endblock %}
+
+{% block body %}
+    <main class="content">
+        <div class="container-fluid p-0">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h1 class="h3 mb-0">Interviews for the recutement {{ recrutement.id }}</h1>
+                        <a href="{{ path('app_entretien_new', {'recrutement_id': recrutement.id}) }}"
+                           class="btn btn-primary">
+                            <i class="align-middle me-2" data-feather="plus"></i>
+                            Add Interview
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <h4 class="mb-4">Applications</h4>
+                    {% if applications is not empty %}
+                        <div class="table-responsive mb-5">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                <tr>
+                                    <th scope="col">Candidate</th>
+                                    <th scope="col">CV</th>
+                                    <th scope="col">ATS Score</th>
+                                    <th scope="col">Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for application in applications %}
+                                    <tr>
+                                        <td>{{ application.user.firstName }}</td>
+                                        <td>
+                                            <a href="{{ asset('uploads/resumes/' ~ application.cvPath) }}" target="_blank">
+                                                View CV
+                                            </a>
+                                        </td>
+                                        <td>{{ application.atsScore }}</td>
+                                        <td>
+                                            <a href="{{ path('app_entretien_new', {'recrutement_id': recrutement.id, 'user_id': application.user.id}) }}"
+                                               class="btn btn-sm btn-outline-primary">
+                                                Schedule Interview
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning">No applications found for this recruitment.</div>
+                    {% endif %}
+                    <div class="row row-cols-1 row-cols-md-3 g-4">
+                        {% for entretien in entretiens %}
+                            <div class="col">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ entretien.date|date('M d, Y H:i') }}</h5>
+                                        <div class="card-text">
+                                            <p class="mb-1">
+                                                <i class="align-middle me-2" data-feather="map-pin"></i>
+                                                {{ entretien.lieu }}
+                                            </p>
+
+                                        </div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">
+                                                Status:
+
+                                                <span class="badge bg-{{ entretien.approved ? 'success' : 'warning' }}">
+    {{ entretien.approved ? 'Approved' : 'Pending Approval' }}
+</span>
+                                            </small>
+                                            <div class="btn-group">
+                                                <a href="{{ path('app_entretien_edit', {'id': entretien.id}) }}"
+                                                   class="btn btn-sm btn-outline-secondary">
+                                                    Edit
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="col-12">
+                                <div class="alert alert-info">No interviews scheduled yet</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}

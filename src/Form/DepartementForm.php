@@ -9,7 +9,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class DepartementType extends AbstractType
+class DepartementForm extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -19,7 +19,7 @@ class DepartementType extends AbstractType
             ->add('responsable', EntityType::class, [
                 'class' => User::class,
                 'choice_label' => function (User $user) {
-                    return $user->getFirst_name() . ' ' . $user->getLast_name();
+                    return $user->getFirstName() . ' ' . $user->getLastName();
                 },
                 'placeholder' => 'Choisissez un responsable',
                 'label' => 'Responsable',

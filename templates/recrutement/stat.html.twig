@@ -1,0 +1,191 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Recruitment Overview{% endblock %}
+
+{% block body %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <main class="content">
+        <div class="container-fluid p-0">
+            <h1 class="h3 mb-4">Recruitment Overview</h1>
+            <a href="{{ path('app_recrutement_stats_pdf') }}" class="btn btn-primary">
+                <i class="fas fa-file-pdf"></i> Generate PDF Report
+            </a>
+
+            <!-- Key Metrics Row -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card bg-light-primary">
+                        <div class="card-body text-center">
+                            <h6 class="text-muted mb-2">Active Processes</h6>
+                            <h2 class="mb-0">{{ totalRecrutements }}</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-light-success">
+                        <div class="card-body text-center">
+                            <h6 class="text-muted mb-2">Total Interviews</h6>
+                            <h2 class="mb-0">{{ totalEntretiens }}</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-light-info">
+                        <div class="card-body text-center">
+                            <h6 class="text-muted mb-2">Approval Rate</h6>
+                            <h2 class="mb-0">{{ (approvalStats.approved / totalEntretiens * 100)|round(1) }}%</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Distribution Charts Row -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title">Interview Status</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="approvalChart" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title">Interviews per Process</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="processChart" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Tables Row -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title">Team Members</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Role</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for user in users|slice(0, 5) %}
+                                        <tr>
+                                            <td>{{ user.firstName }}</td>
+                                            <td>{{ user.role }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title">Interview Locations</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                    <tr>
+                                        <th>Location</th>
+                                        <th class="text-end">Interviews</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for location in locationStats|slice(0, 5) %}
+                                        <tr>
+                                            <td>{{ location.lieu }}</td>
+                                            <td class="text-end">{{ location.count }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Approval Status Chart
+        const approvalCtx = document.getElementById('approvalChart').getContext('2d');
+        new Chart(approvalCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Approved', 'Pending'],
+                datasets: [{
+                    data: [{{ approvalStats.approved }}, {{ approvalStats.pending }}],
+                    backgroundColor: ['#28a745', '#ffc107'],
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    }
+                }
+            }
+        });
+
+        // Process Distribution Chart
+        const processCtx = document.getElementById('processChart').getContext('2d');
+        new Chart(processCtx, {
+            type: 'bar',
+            data: {
+                labels: {{ recrutementStats|map(r => r.NbEntretien ~ ' interviews')|json_encode|raw }},
+                datasets: [{
+                    label: 'Number of Processes',
+                    data: {{ recrutementStats|map(r => r.process_count)|json_encode|raw }},
+                    backgroundColor: '#3b7ddd',
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+    <style>
+        .card {
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .bg-light-primary { background-color: #e3f2fd; }
+        .bg-light-success { background-color: #e8f5e9; }
+        .bg-light-info { background-color: #e1f5fe; }
+        .table-sm td, .table-sm th { padding: 0.5rem; }
+    </style>
+{% endblock %}

@@ -1,0 +1,588 @@
+{# templates/front/recrutement_list.html.twig #}{#
+
+{% extends 'basefront.html.twig' %}
+
+{% block title %}Available Positions{% endblock %}
+
+{% block body %}
+    <div class="container py-5">
+        <h1 class="mb-4">Available Positions</h1>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for recrutement in recrutements %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ recrutement.offre.titre }}</h5>
+                            <div class="card-text">
+                                <p class="mb-1">
+                                    <i class="bi bi-calendar me-2"></i>
+                                    {{ recrutement.dateDebut|date('M d, Y') }} - {{ recrutement.dateFin|date('M d, Y') }}
+                                </p>
+                                <p class="text-muted small">{{ recrutement.NbEntretien }} applications received</p>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white">
+                            <form class="upload-form">
+                                <div class="input-group">
+                                    <input type="file" class="form-control"
+                                           aria-label="Upload resume"
+                                           aria-describedby="upload-button">
+                                    <button class="btn btn-primary" type="button" id="upload-button">
+                                        <i class="bi bi-upload me-2"></i>Apply
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-12">
+                    <div class="alert alert-info">No current positions available</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}#}
+{# templates/front/recrutement_list.html.twig #}
+{# templates/front/recrutement_list.html.twig #}
+{#
+{% extends 'basefront.html.twig' %}
+
+{% block title %}Available Positions{% endblock %}
+
+{% block body %}
+    <div class="container py-5">
+        <div class="text-center mb-5">
+            <h1 class="display-5 fw-bold mb-3">Join Our Team</h1>
+            <p class="lead text-muted">Upload your resume to apply for open positions</p>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for recrutement in recrutements %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ recrutement.offre.titre }}</h5>
+                            <div class="card-text mb-3">
+                                <p class="mb-1 text-muted">
+                                    <i class="bi bi-calendar me-2"></i>
+                                    Closes {{ recrutement.dateFin|date('M d, Y') }}
+                                </p>
+                                <div class="d-flex align-items-center mt-3">
+                                    <div class="flex-grow-1">
+                                        <div class="progress" style="height: 6px;">
+                                            <div class="progress-bar bg-primary" style="width: {{ (recrutement.NbEntretien/10)*100 }}%"></div>
+                                        </div>
+                                    </div>
+                                    <small class="text-muted ms-2">{{ recrutement.NbEntretien }} applied</small>
+                                </div>
+                            </div>
+
+                            <!-- File Upload Form -->
+                            <form class="upload-form" id="uploadForm{{ recrutement.id }}" enctype="multipart/form-data">
+                                <div class="file-upload-area border rounded p-3 text-center mb-3">
+                                    <i class="bi bi-cloud-arrow-up fs-1 text-primary"></i>
+                                    <p class="small mb-2">Drag & drop your resume here</p>
+                                    <p class="small text-muted">or</p>
+                                    <input type="file" id="resume{{ recrutement.id }}" name="resume" class="d-none" accept=".pdf,.doc,.docx">
+                                    <label for="resume{{ recrutement.id }}" class="btn btn-sm btn-outline-primary">
+                                        Select File
+                                    </label>
+                                    <div id="fileName{{ recrutement.id }}" class="small mt-2 text-muted">No file selected</div>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="bi bi-send me-2"></i>Submit Application
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-12">
+                    <div class="alert alert-info text-center">No current positions available</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Success Toast -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="uploadToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-success text-white">
+                <strong class="me-auto">Success</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Your application has been submitted successfully!
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .file-upload-area {
+            border: 2px dashed #dee2e6;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .file-upload-area:hover {
+            border-color: #0d6efd;
+            background-color: rgba(13, 110, 253, 0.05);
+        }
+
+        .card {
+            transition: transform 0.2s;
+            border-radius: 10px;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+
+    <script>
+        // Display selected file name
+        document.querySelectorAll('input[type="file"]').forEach(input => {
+            const id = input.id.replace('resume', '');
+            input.addEventListener('change', function() {
+                const fileName = this.files[0] ? this.files[0].name : 'No file selected';
+                document.getElementById(`fileName${id}`).textContent = fileName;
+            });
+        });
+
+        // Form submission handler (for testing)
+        document.querySelectorAll('.upload-form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                // Show toast notification
+                const toast = new bootstrap.Toast(document.getElementById('uploadToast'));
+                toast.show();
+
+                // Reset form after 2 seconds
+                setTimeout(() => {
+                    form.reset();
+                    const id = form.id.replace('uploadForm', '');
+                    document.getElementById(`fileName${id}`).textContent = 'No file selected';
+                }, 2000);
+            });
+        });
+
+        // Drag and drop functionality
+        document.querySelectorAll('.file-upload-area').forEach(area => {
+            area.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                area.classList.add('border-primary');
+                area.style.backgroundColor = 'rgba(13, 110, 253, 0.1)';
+            });
+
+            area.addEventListener('dragleave', () => {
+                area.classList.remove('border-primary');
+                area.style.backgroundColor = '';
+            });
+
+            area.addEventListener('drop', (e) => {
+                e.preventDefault();
+                area.classList.remove('border-primary');
+                area.style.backgroundColor = '';
+
+                const id = area.closest('form').id.replace('uploadForm', '');
+                const fileInput = document.getElementById(`resume${id}`);
+                fileInput.files = e.dataTransfer.files;
+
+                // Trigger change event
+                const event = new Event('change');
+                fileInput.dispatchEvent(event);
+            });
+        });
+    </script>
+{% endblock %}#}
+
+{#
+{% extends 'basefront.html.twig' %}
+
+{% block title %}Available Positions{% endblock %}
+
+{% block body %}
+    <div class="container py-5">
+        <div class="text-center mb-5">
+            <h1 class="display-5 fw-bold mb-3">Join Our Team</h1>
+            <p class="lead text-muted">Upload your resume to apply for open positions</p>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for recrutement in recrutements %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ recrutement.offre.titre }}</h5>
+                            <div class="card-text mb-3">
+                                <p class="mb-1 text-muted">
+                                    <i class="bi bi-calendar me-2"></i>
+                                    Closes {{ recrutement.dateFin|date('M d, Y') }}
+                                </p>
+                                <div class="d-flex align-items-center mt-3">
+                                    <div class="flex-grow-1">
+                                        <div class="progress" style="height: 6px;">
+                                            <div class="progress-bar bg-primary" style="width: {{ (recrutement.NbEntretien / 10) * 100 }}%"></div>
+                                        </div>
+                                    </div>
+                                    <small class="text-muted ms-2">{{ recrutement.NbEntretien }} applied</small>
+                                </div>
+                            </div>
+
+                            <!-- File Upload Form -->
+                            <form class="upload-form"
+                                  id="uploadForm{{ recrutement.id }}"
+                                  action="{{ path('app_apply', {recrutementId: recrutement.id}) }}"
+                                  method="post"
+                                  enctype="multipart/form-data">
+                                <div class="file-upload-area border rounded p-3 text-center mb-3">
+                                    <i class="bi bi-cloud-arrow-up fs-1 text-primary"></i>
+                                    <p class="small mb-2">Drag & drop your resume here</p>
+                                    <p class="small text-muted">or</p>
+                                    <input type="file" id="resume{{ recrutement.id }}" name="resume" class="d-none" accept=".pdf" {% if recrutement.id in appliedRecrutementsIds %} disabled {% endif %}>
+                                    <label for="resume{{ recrutement.id }}" class="btn btn-sm btn-outline-primary" {% if recrutement.id in appliedRecrutementsIds %} style="pointer-events: none;" {% endif %}>
+                                        Select File
+                                    </label>
+                                    <div id="fileName{{ recrutement.id }}" class="small mt-2 text-muted">No file selected</div>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100" {% if recrutement.id in appliedRecrutementsIds %} disabled {% endif %}>
+                                    <i class="bi bi-send me-2"></i>Submit Application
+                                </button>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-12">
+                    <div class="alert alert-info text-center">No current positions available</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <style>
+        .file-upload-area {
+            border: 2px dashed #dee2e6;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .file-upload-area:hover {
+            border-color: #0d6efd;
+            background-color: rgba(13, 110, 253, 0.05);
+        }
+
+        .card {
+            transition: transform 0.2s;
+            border-radius: 10px;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        // Display selected file name
+        document.querySelectorAll('input[type="file"]').forEach(input => {
+            const id = input.id.replace('resume', '');
+            input.addEventListener('change', function () {
+                const fileName = this.files.length > 0 ? this.files[0].name : 'No file selected';
+                document.getElementById(`fileName${id}`).textContent = fileName;
+            });
+        });
+
+        // Form submission handler with AJAX
+        document.querySelectorAll('.upload-form').forEach(form => {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const recruitmentId = form.id.replace('uploadForm', '');
+                const fileInput = document.getElementById(`resume${recruitmentId}`);
+                const fileNameDiv = document.getElementById(`fileName${recruitmentId}`);
+
+                // Check if a file is selected
+                if (!fileInput || fileInput.files.length === 0) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Please select a resume file to upload.',
+                    });
+                    return;
+                }
+
+                const formData = new FormData(form);
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.message === 'Application submitted successfully!') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: data.message,
+                            });
+                            // Reset form and update file name display
+                            setTimeout(() => {
+                                form.reset();
+                                fileNameDiv.textContent = 'No file selected';
+                            }, 2000);
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: data.message,
+                            });
+                        }
+                    })
+                    .catch(() => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'Something went wrong. Please try again.',
+                        });
+                    });
+            });
+        });
+
+        // Drag and drop functionality
+        document.querySelectorAll('.file-upload-area').forEach(area => {
+            area.addEventListener('dragover', e => {
+                e.preventDefault();
+                area.classList.add('border-primary');
+                area.style.backgroundColor = 'rgba(13, 110, 253, 0.1)';
+            });
+
+            area.addEventListener('dragleave', () => {
+                area.classList.remove('border-primary');
+                area.style.backgroundColor = '';
+            });
+
+            area.addEventListener('drop', e => {
+                e.preventDefault();
+                area.classList.remove('border-primary');
+                area.style.backgroundColor = '';
+
+                const form = area.closest('form');
+                const id = form.id.replace('uploadForm', '');
+                const fileInput = document.getElementById(`resume${id}`);
+                const fileNameDiv = document.getElementById(`fileName${id}`);
+
+                if (fileInput) {
+                    fileInput.files = e.dataTransfer.files;
+
+                    // Update file name display
+                    const event = new Event('change');
+                    fileInput.dispatchEvent(event);
+                }
+            });
+        });
+    </script>
+#}
+
+
+
+{#{% endblock %}#}
+{% extends 'basefront.html.twig' %}
+
+{% block title %}Available Positions{% endblock %}
+
+{% block body %}
+    <div class="container py-5">
+        <div class="text-center mb-5">
+            <h1 class="display-5 fw-bold mb-3">Join Our Team</h1>
+            <p class="lead text-muted">Upload your resume to apply for open positions</p>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for recrutement in recrutements %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ recrutement.offre.titre }}</h5>
+                            <div class="card-text mb-3">
+                                <p class="mb-1 text-muted">
+                                    <i class="bi bi-calendar me-2"></i>
+                                    Closes {{ recrutement.dateFin|date('M d, Y') }}
+                                </p>
+                                <div class="d-flex align-items-center mt-3">
+                                    <div class="flex-grow-1">
+                                        <div class="progress" style="height: 6px;">
+                                            <div class="progress-bar bg-primary" style="width: {{ (recrutement.NbEntretien / 10) * 100 }}%"></div>
+                                        </div>
+                                    </div>
+                                    <small class="text-muted ms-2">{{ recrutement.NbEntretien }} applied</small>
+                                </div>
+                            </div>
+
+                            <!-- File Upload Form -->
+                            <form class="upload-form"
+                                  id="uploadForm{{ recrutement.id }}"
+                                  action="{{ path('app_apply', {recrutementId: recrutement.id}) }}"
+                                  method="post"
+                                  enctype="multipart/form-data">
+                                <div class="file-upload-area border rounded p-3 text-center mb-3">
+                                    <i class="bi bi-cloud-arrow-up fs-1 text-primary"></i>
+                                    <p class="small mb-2">Drag & drop your resume here</p>
+                                    <p class="small text-muted">or</p>
+                                    <input type="file" id="resume{{ recrutement.id }}" name="resume" class="d-none" accept=".pdf" {% if recrutement.id in appliedRecrutementsIds %} disabled {% endif %}>
+                                    <label for="resume{{ recrutement.id }}" class="btn btn-sm btn-outline-primary" {% if recrutement.id in appliedRecrutementsIds %} style="pointer-events: none;" {% endif %}>
+                                        Select File
+                                    </label>
+                                    <div id="fileName{{ recrutement.id }}" class="small mt-2 text-muted">No file selected</div>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100" {% if recrutement.id in appliedRecrutementsIds %} disabled {% endif %}>
+                                    <i class="bi bi-send me-2"></i>Submit Application
+                                </button>
+                            </form>
+
+
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-12">
+                    <div class="alert alert-info text-center">No current positions available</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <style>
+        .file-upload-area {
+            border: 2px dashed #dee2e6;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .file-upload-area:hover {
+            border-color: #0d6efd;
+            background-color: rgba(13, 110, 253, 0.05);
+        }
+
+        .card {
+            transition: transform 0.2s;
+            border-radius: 10px;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        // Display selected file name
+        document.querySelectorAll('input[type="file"]').forEach(input => {
+            const id = input.id.replace('resume', '');
+            input.addEventListener('change', function () {
+                const fileName = this.files.length > 0 ? this.files[0].name : 'No file selected';
+                document.getElementById(`fileName${id}`).textContent = fileName;
+            });
+        });
+
+        // Form submission handler with AJAX
+        document.querySelectorAll('.upload-form').forEach(form => {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const recruitmentId = form.id.replace('uploadForm', '');
+                const fileInput = document.getElementById(`resume${recruitmentId}`);
+                const fileNameDiv = document.getElementById(`fileName${recruitmentId}`);
+
+                // Check if a file is selected
+                if (!fileInput || fileInput.files.length === 0) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Please select a resume file to upload.',
+                    });
+                    return;
+                }
+
+                const formData = new FormData(form);
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.message === 'Application submitted successfully!') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: data.message,
+                            });
+                            // Reset form and update file name display
+                            setTimeout(() => {
+                                form.reset();
+                                fileNameDiv.textContent = 'No file selected';
+                            }, 2000);
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: data.message,
+                            });
+                        }
+                    })
+                    .catch(() => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'Something went wrong. Please try again.',
+                        });
+                    });
+            });
+        });
+
+        // Drag and drop functionality
+        document.querySelectorAll('.file-upload-area').forEach(area => {
+            area.addEventListener('dragover', e => {
+                e.preventDefault();
+                area.classList.add('border-primary');
+                area.style.backgroundColor = 'rgba(13, 110, 253, 0.1)';
+            });
+
+            area.addEventListener('dragleave', () => {
+                area.classList.remove('border-primary');
+                area.style.backgroundColor = '';
+            });
+
+            area.addEventListener('drop', e => {
+                e.preventDefault();
+                area.classList.remove('border-primary');
+                area.style.backgroundColor = '';
+
+                const form = area.closest('form');
+                const id = form.id.replace('uploadForm', '');
+                const fileInput = document.getElementById(`resume${id}`);
+                const fileNameDiv = document.getElementById(`fileName${id}`);
+
+                if (fileInput) {
+                    fileInput.files = e.dataTransfer.files;
+
+                    // Update file name display
+                    const event = new Event('change');
+                    fileInput.dispatchEvent(event);
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
+
+

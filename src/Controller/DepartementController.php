@@ -18,6 +18,7 @@ use Dompdf\Options;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\File;
+use App\Service\PdfGeneratorService;
 
 #[Route('/departement')]
 class DepartementController extends AbstractController
@@ -87,56 +88,44 @@ class DepartementController extends AbstractController
     }
 
 // Add this method inside DepartementController
-    #[Route('/departements/stats/pdf', name: 'departement_stats_pdf', methods: ['POST'])]
-    // Symfony controller to generate the PDF with images
-    public function generateStatsPdf(Request $request)
-    {
-        // Use the saved images in the PDF
-        $chart1Path = '/uploads/charts/budgetSalaryChart.png';
-        $chart2Path = '/uploads/charts/salaryRangeChart.png';
-        $chart3Path = '/uploads/charts/employeeCountChart.png';
-        $chart4Path = '/uploads/charts/departmentBudgetChart.png';
-        $chart5Path = '/uploads/charts/departmentEmployeeCountChart.png';
-
-        // Generate the PDF content
-        $html = '<h2>Statistical Charts</h2>';
-        $html .= '<div><img src="' . $chart1Path . '" style="width: 100%; max-height: 600px;"></div>';
-        $html .= '<div><img src="' . $chart2Path . '" style="width: 100%; max-height: 600px;"></div>';
-        $html .= '<div><img src="' . $chart3Path . '" style="width: 100%; max-height: 600px;"></div>';
-        $html .= '<div><img src="' . $chart4Path . '" style="width: 100%; max-height: 600px;"></div>';
-        $html .= '<div><img src="' . $chart5Path . '" style="width: 100%; max-height: 600px;"></div>';
+    
 
 
-        // Generate the PDF (e.g., using DomPDF or KnpSnappyBundle)
-        $pdfUrl = $this->createAndSavePdf($html, 'stats_charts.pdf');
 
-        return new JsonResponse([
-            'message' => 'PDF generated successfully.',
-            'pdfUrl' => $pdfUrl,
-        ]);
+
+#[Route('/departement/generate-pdf', name: 'departement_generate_pdf')]
+public function generatePdf(PdfGeneratorService $pdfGenerator,EntityManagerInterface $entityManager): Response
+{
+   
+    // Get data from database
+    $departements = $entityManager->getRepository(Departement::class)->findAll();
+    $offres = $entityManager->getRepository(Offre::class)->findAll();
+    
+    // Generate PDF content
+    $pdfResponse = $pdfGenerator->generateDepartmentStatsPdf($departements, $offres);
+    $pdfContent = $pdfResponse->getContent();
+    
+    // Create uploads directory if it doesn't exist
+    $uploadsDir = $this->getParameter('kernel.project_dir').'/public/uploads/';
+    if (!file_exists($uploadsDir)) {
+        mkdir($uploadsDir, 0777, true);
     }
-
-
-
-
-    #[Route('/departement/statistics/pdf', name: 'departement_generate_pdf')]
-    public function generatePdf(OffreRepository $offreRepo, DepartementRepository $departementRepo): JsonResponse
-    {
-        $offres = $offreRepo->findAll();
-        $departements = $departementRepo->findAll();
-
-        $html = $this->renderView('departement/statistics_pdf.html.twig', [
-            'offres' => $offres,
-            'departements' => $departements,
-        ]);
-
-        $pdfUrl = $this->createAndSavePdf($html, 'departement_statistics.pdf');
-
-        return new JsonResponse([
-            'message' => 'PDF generated successfully.',
-            'pdfUrl' => $pdfUrl,
-        ]);
-    }
+    
+    // Generate unique filename
+    $filename = 'department_stats_'.date('Y-m-d_His').'.pdf';
+    $filepath = $uploadsDir.'/'.$filename;
+    
+    // Save PDF to file
+    file_put_contents($filepath, $pdfContent);
+    
+    // Create response to display PDF in browser
+    $response = new Response();
+    $response->headers->set('Content-Type', 'application/pdf');
+    $response->headers->set('Content-Disposition', 'inline; filename="'.$filename.'"');
+    $response->setContent($pdfContent);
+    
+    return $response;
+}
 
 
 
@@ -164,7 +153,7 @@ class DepartementController extends AbstractController
             $entityManager->persist($departement);
             $entityManager->flush();
             $this->addFlash('success', 'Département ajouté avec succès !');
-            // return $this->redirectToRoute('app_departement_index', [], Response::HTTP_SEE_OTHER);
+           // return $this->redirectToRoute('app_departement_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('departement/new.html.twig', [

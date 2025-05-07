@@ -2,99 +2,148 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Validator\Constraints as Assert;
 
-use App\Repository\RecrutementRepository;
 
-#[ORM\Entity(repositoryClass: RecrutementRepository::class)]
-#[ORM\Table(name: 'recrutement')]
+#[ORM\Entity]
 class Recrutement
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private ?int $id = null;
+    #[ORM\Column(type: "integer")]
+    private int $id;
 
-    public function getId(): ?int
+    #[ORM\Column(type: "integer")]
+    private int $offre_id;
+
+    #[ORM\Column(type: "date")]
+    #[Assert\NotNull(message: "La date de début est requise.")]
+
+    private \DateTimeInterface $dateDebut;
+
+    #[ORM\Column(type: "date", nullable: true)]  // Make dateFin nullable
+    #[Assert\GreaterThan(propertyPath: "dateDebut", message: "La date de fin doit être après la date de début.")]
+
+    private ?\DateTimeInterface $dateFin = null;
+
+    #[ORM\Column(type: "integer")]
+    #[Assert\Positive(message: "Le nombre d'entretiens doit être un entier positif.")]
+
+    private int $NbEntretien;
+
+    // One Recrutement belongs to one Offre
+    // One Recrutement belongs to one Offre
+    #[ORM\OneToOne(targetEntity: Offre::class, inversedBy: 'recrutement')]
+    #[ORM\JoinColumn(nullable: false)]
+    private Offre $offre;
+
+    // One Recrutement can have many Entretien
+    #[ORM\OneToMany(mappedBy: 'recrutement', targetEntity: Entretien::class)]
+    private Collection $entretiens;
+
+    public function __construct()
+    {
+        $this->entretiens = new ArrayCollection(); // Initialize with ArrayCollection
+    }
+
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function setId(int $id): self
+    public function setId($value): void
     {
-        $this->id = $id;
-        return $this;
+        $this->id = $value;
     }
 
-    #[ORM\Column(type: 'integer', nullable: false)]
-    private ?int $offre_id = null;
-
-    public function getOffre_id(): ?int
+    public function getoffreId(): int
     {
         return $this->offre_id;
     }
 
-    public function setOffre_id(int $offre_id): self
+    public function setoffreId($value): void
     {
-        $this->offre_id = $offre_id;
-        return $this;
+        $this->offre_id = $value;
     }
 
-    #[ORM\Column(type: 'date', nullable: false)]
-    private ?\DateTimeInterface $dateDebut = null;
-
-    public function getDateDebut(): ?\DateTimeInterface
+    public function getDateDebut(): \DateTimeInterface
     {
         return $this->dateDebut;
     }
 
-    public function setDateDebut(\DateTimeInterface $dateDebut): self
+    public function setDateDebut($value): void
     {
-        $this->dateDebut = $dateDebut;
-        return $this;
+        $this->dateDebut = $value;
     }
-
-    #[ORM\Column(type: 'date', nullable: true)]
-    private ?\DateTimeInterface $dateFin = null;
 
     public function getDateFin(): ?\DateTimeInterface
     {
         return $this->dateFin;
     }
 
-    public function setDateFin(?\DateTimeInterface $dateFin): self
+    public function setDateFin(?\DateTimeInterface $value): void
     {
-        $this->dateFin = $dateFin;
-        return $this;
+        $this->dateFin = $value;
     }
 
-    #[ORM\Column(type: 'integer', nullable: false)]
-    private ?int $NbEntretien = null;
-
-    public function getNbEntretien(): ?int
+    public function getNbEntretien(): int
     {
         return $this->NbEntretien;
     }
 
-    public function setNbEntretien(int $NbEntretien): self
+    public function setNbEntretien($value): void
     {
-        $this->NbEntretien = $NbEntretien;
+        $this->NbEntretien = $value;
+    }
+
+    public function getOffre(): Offre
+    {
+        return $this->offre;
+    }
+
+    public function setOffre(Offre $offre): void
+    {
+        $this->offre = $offre;
+    }
+
+    public function getEntretiens(): Collection
+    {
+        return $this->entretiens;
+    }
+
+    public function addEntretien(Entretien $entretien): self
+    {
+        if (!$this->entretiens->contains($entretien)) {
+            $this->entretiens[] = $entretien;
+            $entretien->setRecrutement($this); // Link the entretien to this recrutement
+        }
+
         return $this;
     }
 
-    public function getOffreId(): ?int
+    public function removeEntretien(Entretien $entretien): self
     {
-        return $this->offre_id;
-    }
-
-    public function setOffreId(int $offre_id): static
-    {
-        $this->offre_id = $offre_id;
+        if ($this->entretiens->removeElement($entretien)) {
+            // Set the owning side to null (because it's a bidirectional relationship)
+            if ($entretien->getRecrutement() === $this) {
+                $entretien->setRecrutement(null);
+            }
+        }
 
         return $this;
     }
 
+    public function __toString(): string
+    {
+        return sprintf(
+            "Recrutement  Offre: %s, Nb Entretien: %d",
+
+            $this->offre->getTitre(), // Assuming Offre has a getTitre method
+
+            $this->NbEntretien
+        );
+    }
 }

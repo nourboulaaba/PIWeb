@@ -1,8 +1,8 @@
 <?php
 namespace App\Entity;
 
-use App\Entity\Departement;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Departement;
 use Symfony\Component\Validator\Constraints as Assert;
 
 
@@ -49,6 +49,9 @@ class Offre
     #[Assert\NotNull(message: "The department cannot be null.")]
 
     private Departement $departement;
+
+    #[ORM\OneToOne(mappedBy: 'offre', targetEntity: Recrutement::class)]
+    private ?Recrutement $recrutement = null;
 
     public function getId(): int
     {
@@ -105,5 +108,15 @@ class Offre
     public function setDepartement(Departement $value): void
     {
         $this->departement = $value;
+    }
+
+    public function getRecrutement(): ?Recrutement
+    {
+        return $this->recrutement;
+    }
+
+    public function setRecrutement(?Recrutement $recrutement): void
+    {
+        $this->recrutement = $recrutement;
     }
 }

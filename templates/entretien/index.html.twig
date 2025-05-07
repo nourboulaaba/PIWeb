@@ -1,0 +1,381 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Interview Management{% endblock %}
+
+
+
+
+
+{% block body %}
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --card-shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.12);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --accent-color: #6c63ff;
+        }
+
+        .interview-header {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .interview-title {
+            font-weight: 700;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .interview-subtitle {
+            color: #718096;
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+        }
+
+        .btn-schedule {
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 50px;
+            padding: 0.75rem 1.75rem;
+            font-weight: 600;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-schedule:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .interview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .interview-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            padding: 1.5rem;
+            transition: var(--transition);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .interview-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--card-shadow-hover);
+        }
+
+        .interview-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary-gradient);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .status-badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-approved {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+        }
+
+        .badge-pending {
+            background: rgba(234, 179, 8, 0.1);
+            color: #ca8a04;
+        }
+
+        .card-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .detail-item i {
+            color: var(--accent-color);
+            width: 18px;
+            height: 18px;
+        }
+
+        .detail-label {
+            font-size: 0.85rem;
+            color: #718096;
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-value {
+            font-weight: 500;
+            color: #2d3748;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+        }
+
+        .btn-action {
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .btn-view {
+            background: rgba(108, 99, 255, 0.1);
+            color: var(--accent-color);
+            border: none;
+        }
+
+        .btn-view:hover {
+            background: rgba(108, 99, 255, 0.2);
+        }
+
+        .btn-edit {
+            background: rgba(74, 85, 104, 0.1);
+            color: #4a5568;
+            border: none;
+        }
+
+        .btn-edit:hover {
+            background: rgba(74, 85, 104, 0.2);
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .empty-state i {
+            color: #c3cfe2;
+            width: 4rem;
+            height: 4rem;
+        }
+
+        .empty-state p {
+            font-size: 1.1rem;
+            color: #718096;
+            margin-top: 1.5rem;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .interview-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .interview-header {
+                padding: 1.25rem;
+            }
+        }
+    </style>
+    <main class="content">
+        <div class="container-fluid p-0">
+            <div class="interview-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="interview-title">
+                            <i data-feather="calendar"></i>
+                            Interview Management
+                        </h1>
+                        <p class="interview-subtitle">List of scheduled interviews and their details</p>
+                    </div>
+                    <a href="{{ path('app_entretien_new') }}" class="btn-schedule">
+                        <i data-feather="plus"></i>
+                        Schedule New
+                    </a>
+                </div>
+            </div>
+
+            <div class="interview-grid">
+                {% for entretien in entretiens %}
+                    <div class="interview-card">
+                        <div class="card-header">
+                            <div class="user-info">
+                                <div class="user-avatar">
+                                    {{ entretien.user.firstName|first|upper }}
+                                </div>
+                                <div>
+                                    <div class="user-name">{{ entretien.user.firstName }}</div>
+                                    <small class="text-muted">Candidate</small>
+                                </div>
+                            </div>
+                            <span class="status-badge badge-{{ entretien.approved ? 'approved' : 'pending' }}">
+                                {{ entretien.approved ? 'Approved' : 'Pending' }}
+                            </span>
+                        </div>
+
+                        <div class="card-details">
+                            <div class="detail-item">
+                                <i data-feather="calendar"></i>
+                                <div>
+                                    <div class="detail-label">Date</div>
+                                    <div class="detail-value">
+                                        {{ entretien.date ? entretien.date|date('M j, Y') : 'Not set' }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="detail-item">
+                                <i data-feather="map-pin"></i>
+                                <div>
+                                    <div class="detail-label">Location</div>
+                                    <div class="detail-value">
+                                        {{ entretien.lieu ?? 'Virtual' }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="detail-item">
+                                <i data-feather="map"></i>
+                                <div>
+                                    <div class="detail-label">Coordinates</div>
+                                    <div class="detail-value">
+                                        {{ entretien.latitude }}, {{ entretien.longitude }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="detail-item">
+                                <i data-feather="briefcase"></i>
+                                <div>
+                                    <div class="detail-label">Campaign</div>
+                                    <div class="detail-value">
+                                        {{ entretien.recrutementId }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-actions">
+                            <a href="{{ path('app_entretien_show', {'id': entretien.id}) }}"
+                               class="btn-action btn-view"
+                               data-bs-toggle="tooltip"
+                               title="View Details">
+                                <i data-feather="eye"></i>
+                                Details
+                            </a>
+                            <a href="{{ path('app_entretien_edit', {'id': entretien.id}) }}"
+                               class="btn-action btn-edit"
+                               data-bs-toggle="tooltip"
+                               title="Edit Interview">
+                                <i data-feather="edit"></i>
+                                Edit
+                            </a>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i data-feather="calendar"></i>
+                        <p>No interviews scheduled yet</p>
+                        <a href="{{ path('app_entretien_new') }}" class="btn-schedule mt-3">
+                            <i data-feather="plus"></i>
+                            Schedule First Interview
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+
+            {% if entretiens|length > 5 %}
+                <div class="mt-4">
+                    <nav aria-label="Pagination">
+                        <ul class="pagination justify-content-center">
+                            <!-- Add pagination links here -->
+                        </ul>
+                    </nav>
+                </div>
+            {% endif %}
+        </div>
+    </main>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Initialize tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            })
+
+            // Initialize feather icons
+            feather.replace({ 'aria-hidden': 'true' });
+
+            // Add animation to cards
+            document.querySelectorAll('.interview-card').forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = `all 0.4s ease ${index * 0.1}s`;
+
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 100);
+            });
+        });
+    </script>
+{% endblock %}
+

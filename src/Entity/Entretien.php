@@ -2,153 +2,142 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Validator\Constraints as Assert;
 
-use App\Repository\EntretienRepository;
-
-#[ORM\Entity(repositoryClass: EntretienRepository::class)]
-#[ORM\Table(name: 'entretien')]
+#[ORM\Entity]
 class Entretien
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private ?int $id = null;
+    #[ORM\Column(type: "integer")]
+    private int $id;
 
-    public function getId(): ?int
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private User $user;
+
+
+    #[ORM\Column(type: "date")]
+    #[Assert\NotNull(message: "La date de l'entretien est requise.")]
+    private \DateTimeInterface $date;
+
+    #[ORM\Column(type: "string", length: 255)]
+    #[Assert\NotBlank(message: "Le lieu ne peut pas être vide.")]
+    private string $lieu;
+
+    #[ORM\Column(type: "float")]
+    #[Assert\NotBlank(message: "Longitude is required.")]
+    #[Assert\Type(type: "float", message: "Longitude must be a valid floating-point number.")]
+    #[Assert\GreaterThan(value: -180, message: "Longitude must be greater than -180.")]
+    #[Assert\LessThan(value: 180, message: "Longitude must be less than 180.")]
+    private float $longitude;
+
+    #[ORM\Column(type: "float")]
+    #[Assert\NotBlank(message: "Latitude is required.")]
+    #[Assert\Type(type: "float", message: "Latitude must be a valid floating-point number.")]
+    #[Assert\GreaterThan(value: -90, message: "Latitude must be greater than -90.")]
+    #[Assert\LessThan(value: 90, message: "Latitude must be less than 90.")]
+    private float $latitude;
+
+    #[ORM\Column(type: "integer")]
+    private int $recrutementId;
+
+    #[ORM\Column(type: "boolean")]
+    private bool $approved;
+
+    #[ORM\ManyToOne(targetEntity: Recrutement::class, inversedBy: 'entretiens')]
+    #[ORM\JoinColumn(nullable: false)]
+    private Recrutement $recrutement;
+
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function setId(int $id): self
+    public function setId(int $value): void
     {
-        $this->id = $id;
-        return $this;
+        $this->id = $value;
     }
 
-    #[ORM\Column(type: 'integer', nullable: false)]
-    private ?int $user_id = null;
-
-    public function getUser_id(): ?int
+    public function getUser(): User
     {
-        return $this->user_id;
+        return $this->user;
     }
 
-    public function setUser_id(int $user_id): self
+    public function setUser(User $user): void
     {
-        $this->user_id = $user_id;
-        return $this;
+        $this->user = $user;
     }
 
-    #[ORM\Column(type: 'date', nullable: false)]
-    private ?\DateTimeInterface $date = null;
 
-    public function getDate(): ?\DateTimeInterface
+    public function getDate(): \DateTimeInterface
     {
         return $this->date;
     }
 
-    public function setDate(\DateTimeInterface $date): self
+    public function setDate(\DateTimeInterface $value): void
     {
-        $this->date = $date;
-        return $this;
+        $this->date = $value;
     }
 
-    #[ORM\Column(type: 'string', nullable: false)]
-    private ?string $lieu = null;
-
-    public function getLieu(): ?string
+    public function getLieu(): string
     {
         return $this->lieu;
     }
 
-    public function setLieu(string $lieu): self
+    public function setLieu(string $value): void
     {
-        $this->lieu = $lieu;
-        return $this;
+        $this->lieu = $value;
     }
 
-    #[ORM\Column(type: 'decimal', nullable: false)]
-    private ?float $longitude = null;
-
-    public function getLongitude(): ?float
+    public function getLongitude(): float
     {
         return $this->longitude;
     }
 
-    public function setLongitude(float $longitude): self
+    public function setLongitude(float $value): void
     {
-        $this->longitude = $longitude;
-        return $this;
+        $this->longitude = $value;
     }
 
-    #[ORM\Column(type: 'decimal', nullable: false)]
-    private ?float $latitude = null;
-
-    public function getLatitude(): ?float
+    public function getLatitude(): float
     {
         return $this->latitude;
     }
 
-    public function setLatitude(float $latitude): self
+    public function setLatitude(float $value): void
     {
-        $this->latitude = $latitude;
-        return $this;
+        $this->latitude = $value;
     }
 
-    #[ORM\Column(type: 'integer', nullable: false)]
-    private ?int $recrutement_id = null;
-
-    public function getRecrutement_id(): ?int
+    public function getRecrutementId(): int
     {
-        return $this->recrutement_id;
+        return $this->recrutementId;
     }
 
-    public function setRecrutement_id(int $recrutement_id): self
+    public function setRecrutementId(int $value): void
     {
-        $this->recrutement_id = $recrutement_id;
-        return $this;
+        $this->recrutementId = $value;
     }
 
-    #[ORM\Column(type: 'boolean', nullable: true)]
-    private ?bool $approved = null;
-
-    public function isApproved(): ?bool
+    public function getApproved(): bool
     {
         return $this->approved;
     }
 
-    public function setApproved(?bool $approved): self
+    public function setApproved(bool $value): void
     {
-        $this->approved = $approved;
-        return $this;
+        $this->approved = $value;
     }
 
-    public function getUserId(): ?int
+    public function getRecrutement(): Recrutement
     {
-        return $this->user_id;
+        return $this->recrutement;
     }
 
-    public function setUserId(int $user_id): static
+    public function setRecrutement(Recrutement $recrutement): void
     {
-        $this->user_id = $user_id;
-
-        return $this;
+        $this->recrutement = $recrutement;
     }
-
-    public function getRecrutementId(): ?int
-    {
-        return $this->recrutement_id;
-    }
-
-    public function setRecrutementId(int $recrutement_id): static
-    {
-        $this->recrutement_id = $recrutement_id;
-
-        return $this;
-    }
-
 }
