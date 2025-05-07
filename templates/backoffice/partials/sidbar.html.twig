@@ -1,0 +1,137 @@
+<nav id="sidebar" class="sidebar js-sidebar">
+    <div class="sidebar-content js-simplebar">
+        <a class="sidebar-brand" href="{{ path('app_dashboard') }}">
+            <img src="{{ asset('backoffice/img/icons/icon-48x48.png') }}" alt="RH Logo">
+            <span class="align-middle">Ressources Humaines</span>
+        </a>
+
+        <ul class="sidebar-nav">
+            <li class="sidebar-header">
+                GESTION PERSONNELLE
+            </li>
+
+            <li class="sidebar-item {{ app.request.get('_route') == 'app_dashboard' ? 'active' : '' }}">
+                <a class="sidebar-link" href="{{ path('app_dashboard') }}">
+                    <i data-feather="pie-chart"></i>
+                    <span class="align-middle">Dashboard</span>
+                </a>
+            </li>
+
+            {% if app.user %}
+    <li class="sidebar-item {{ app.request.get('_route') starts with 'app_profile' ? 'active' : '' }}">
+        <a class="sidebar-link" href="{{ path('app_user_show', {'id': app.user.id}) }}">
+            <i data-feather="user"></i>
+            <span class="align-middle">Mon Profil</span>
+        </a>
+    </li>
+{% endif %}
+
+            <li class="sidebar-item {{ app.request.get('_route') starts with 'app_conge' ? 'active' : '' }}">
+                <a class="sidebar-link" href="#">
+                    <i data-feather="calendar"></i>
+                    <span class="align-middle">Congés</span>
+                    <span class="sidebar-badge badge bg-primary rounded-pill ms-2">3</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item {{ app.request.get('_route') starts with 'app_reclamation' ? 'active' : '' }}">
+                <a class="sidebar-link" href="#">
+                    <i data-feather="alert-circle"></i>
+                    <span class="align-middle">Réclamations</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item">
+    <a class="sidebar-link" href="{{ path('app_certificat_index') }}">
+        <i class="align-middle" data-feather="file-text"></i>
+        <span class="align-middle">Certificats</span>
+    </a>
+</li>
+
+            {% if is_granted('ROLE_RH') or is_granted('ROLE_ADMIN') %}
+            <li class="sidebar-header">
+                GESTION RH
+            </li>
+
+            <li class="sidebar-item {{ app.request.get('_route') starts with 'app_user' ? 'active' : '' }}">
+                <a class="sidebar-link" href="{{ path('app_user_list') }}">
+                    <i data-feather="users"></i>
+                    <span class="align-middle">Employés</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item {{ app.request.get('_route') starts with 'app_contrat' ? 'active' : '' }}">
+                <a class="sidebar-link" href="#">
+                    <i data-feather="file"></i>
+                    <span class="align-middle">Contrats</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item {{ app.request.get('_route') starts with 'app_mission' ? 'active' : '' }}">
+                <a class="sidebar-link" href="#">
+                    <i data-feather="briefcase"></i>
+                    <span class="align-middle">Missions</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item {{ app.request.get('_route') starts with 'app_emploi' ? 'active' : '' }}">
+                <a class="sidebar-link" href="#">
+                    <i data-feather="clipboard"></i>
+                    <span class="align-middle">Offres d'emploi</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item {{ app.request.get('_route') starts with 'app_recrutement' ? 'active' : '' }}">
+                <a class="sidebar-link" href="#">
+                    <i data-feather="award"></i>
+                    <span class="align-middle">Recrutement</span>
+                    <span class="sidebar-badge badge bg-success rounded-pill ms-2">Nouveau</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item">
+    <a class="sidebar-link" href="{{ path('app_formation_index') }}">
+        <i class="align-middle" data-feather="book-open"></i>
+        <span class="align-middle">Formations</span>
+    </a>
+</li>
+            {% endif %}
+
+            {% if is_granted('ROLE_ADMIN') %}
+            <li class="sidebar-header">
+                ADMINISTRATION
+            </li>
+
+            <li class="sidebar-item {{ app.request.get('_route') starts with 'app_settings' ? 'active' : '' }}">
+                <a class="sidebar-link" href="#">
+                    <i data-feather="settings"></i>
+                    <span class="align-middle">Paramètres</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item {{ app.request.get('_route') starts with 'app_logs' ? 'active' : '' }}">
+                <a class="sidebar-link" href="{{ path('app_logs') }}">
+                    <i data-feather="activity"></i>
+                    <span class="align-middle">Journal d'activité</span>
+                </a>
+            </li>
+
+            <li class="sidebar-item {{ app.request.get('_route') starts with 'app_test_api' ? 'active' : '' }}">
+                <a class="sidebar-link" href="{{ path('app_test_api_index') }}">
+                    <i data-feather="code"></i>
+                    <span class="align-middle">Test API</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+
+        <div class="sidebar-cta">
+            <div class="d-grid">
+                <a href="{{ path('app_logout') }}" class="btn btn-outline-light">
+                    <i data-feather="log-out" class="align-middle me-2"></i>
+                    <span class="align-middle">Déconnexion</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>

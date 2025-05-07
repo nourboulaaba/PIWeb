@@ -1,0 +1,239 @@
+{% block title %}Inscription{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('backoffice/css/app.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        .social-login {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+        }
+        .btn-google {
+            background-color: #DB4437;
+            color: white;
+        }
+        .btn-google:hover {
+            background-color: #C53929;
+            color: white;
+        }
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-right: -5px;
+            margin-left: -5px;
+        }
+        .form-row > div {
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <main class="d-flex w-100">
+        <div class="container d-flex flex-column">
+            <div class="row vh-100">
+                <div class="col-sm-10 col-md-8 col-lg-6 mx-auto d-table h-100">
+                    <div class="d-table-cell align-middle">
+
+                        <div class="text-center mt-4">
+                            <h1 class="h2">Créer un compte</h1>
+                            <p class="lead">Inscrivez-vous pour accéder à notre plateforme</p>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="m-sm-4">
+                                    <div class="text-center">
+                                        <img src="{{ asset('backoffice/img/avatars/default.jpg') }}"
+                                             alt="Utilisateur"
+                                             class="img-fluid rounded-circle"
+                                             width="132" height="132">
+                                    </div>
+
+                                    {% if errors is defined and errors|length > 0 %}
+                                        <div class="alert alert-danger">
+                                            <ul class="mb-0">
+                                                {% for error in errors %}
+                                                    <li>{{ error.message }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    {% endif %}
+
+                                    {{ form_start(registrationForm, {'attr': {'novalidate': 'novalidate', 'id': 'signupForm'}}) }}
+                                        {{ form_errors(registrationForm) }}
+
+                                        <div class="form-row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label">Nom</label>
+                                                <input type="text" id="lastname" name="registration_form[lastname]" class="form-control form-control-lg" placeholder="Votre nom" required>
+                                                <div id="lastnameError" class="invalid-feedback"></div>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label">Prénom</label>
+                                                <input type="text" id="firstname" name="registration_form[firstname]" class="form-control form-control-lg" placeholder="Votre prénom" required>
+                                                <div id="firstnameError" class="invalid-feedback"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label">CIN</label>
+                                            <input type="text" id="cin" name="registration_form[cin]" class="form-control form-control-lg" placeholder="Votre numéro de CIN" required>
+                                            <div id="cinError" class="invalid-feedback"></div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label">Email</label>
+                                            <input type="email" id="email" name="registration_form[email]" class="form-control form-control-lg" placeholder="Votre email" required>
+                                            <div id="emailError" class="invalid-feedback"></div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label">Numéro de téléphone</label>
+                                            <input type="tel" id="phone" name="registration_form[phone]" class="form-control form-control-lg" placeholder="Votre numéro de téléphone" required>
+                                            <div id="phoneError" class="invalid-feedback"></div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label">Mot de passe</label>
+                                            <input type="password" id="password" name="registration_form[password]" class="form-control form-control-lg" placeholder="Créer un mot de passe" required>
+                                            <div id="passwordError" class="invalid-feedback"></div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label">Confirmer le mot de passe</label>
+                                            <input type="password" id="confirmPassword" name="registration_form[confirmPassword]" class="form-control form-control-lg" placeholder="Confirmer votre mot de passe" required>
+                                            <div id="confirmPasswordError" class="invalid-feedback"></div>
+                                        </div>
+
+                                        {{ form_row(registrationForm._token) }}
+
+                                        <div class="text-center mt-3">
+                                            <button type="submit" class="btn btn-lg btn-primary w-100">Créer un compte</button>
+                                        </div>
+
+                                        <div class="social-login text-center">
+                                            <p class="mb-2">Ou inscrivez-vous avec</p>
+                                            <a class="btn btn-google w-100" href="#">
+                                                <i class="align-middle me-1" data-feather="mail"></i> Google
+                                            </a>
+                                        </div>
+
+                                        <div class="text-center mt-3">
+                                            <small>Vous avez déjà un compte ? <a href="{{ path('app_login') }}">Connexion</a></small>
+                                        </div>
+                                    {{ form_end(registrationForm, {'render_rest': false}) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('backoffice/js/app.js') }}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById('signupForm');
+            const fields = {
+                lastname: { input: document.getElementById('lastname'), error: document.getElementById('lastnameError'), label: "Nom" },
+                firstname: { input: document.getElementById('firstname'), error: document.getElementById('firstnameError'), label: "Prénom" },
+                cin: { input: document.getElementById('cin'), error: document.getElementById('cinError'), label: "CIN" },
+                email: { input: document.getElementById('email'), error: document.getElementById('emailError'), label: "Email" },
+                phone: { input: document.getElementById('phone'), error: document.getElementById('phoneError'), label: "Numéro de téléphone" },
+                password: { input: document.getElementById('password'), error: document.getElementById('passwordError'), label: "Mot de passe" },
+                confirmPassword: { input: document.getElementById('confirmPassword'), error: document.getElementById('confirmPasswordError'), label: "Confirmation du mot de passe" }
+            };
+
+            function validateRequired(value, fieldName) {
+                return value.trim() ? { isValid: true, message: "" } : { isValid: false, message: `Le champ ${fieldName} est requis` };
+            }
+
+            function validateName(value, fieldName) {
+                let result = validateRequired(value, fieldName);
+                if (!result.isValid) return result;
+                return value.length >= 2 ? { isValid: true, message: "" } : { isValid: false, message: `${fieldName} doit contenir au moins 2 caractères` };
+            }
+
+            function validateCIN(value) {
+                let result = validateRequired(value, "CIN");
+                if (!result.isValid) return result;
+                return /^\d{8}$/.test(value) ? { isValid: true, message: "" } : { isValid: false, message: "Le CIN doit contenir 8 chiffres" };
+            }
+
+            function validateEmail(value) {
+                let result = validateRequired(value, "Email");
+                if (!result.isValid) return result;
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ? { isValid: true, message: "" } : { isValid: false, message: "Format d'adresse email invalide" };
+            }
+
+            function validatePhone(value) {
+                let result = validateRequired(value, "Numéro de téléphone");
+                if (!result.isValid) return result;
+                return /^[2459]\d{7}$/.test(value) ? { isValid: true, message: "" } : { isValid: false, message: "Le numéro doit commencer par 2, 4, 5 ou 9 et avoir 8 chiffres" };
+            }
+
+            function validatePassword(value) {
+                let result = validateRequired(value, "Mot de passe");
+                if (!result.isValid) return result;
+                return value.length >= 9 ? { isValid: true, message: "" } : { isValid: false, message: "Le mot de passe doit contenir au moins 9 caractères" };
+            }
+
+            function validateConfirmPassword(confirmValue, passwordValue) {
+                let result = validateRequired(confirmValue, "Confirmation du mot de passe");
+                if (!result.isValid) return result;
+                return confirmValue === passwordValue ? { isValid: true, message: "" } : { isValid: false, message: "Les mots de passe ne correspondent pas" };
+            }
+
+            function setValidationState(input, errorElement, validation) {
+                input.classList.toggle('is-valid', validation.isValid);
+                input.classList.toggle('is-invalid', !validation.isValid);
+                errorElement.textContent = validation.message;
+                return validation.isValid;
+            }
+
+            function validateField(fieldKey) {
+                const { input, error, label } = fields[fieldKey];
+                let validation;
+
+                switch (fieldKey) {
+                    case 'lastname':
+                    case 'firstname':
+                        validation = validateName(input.value, label);
+                        break;
+                    case 'cin':
+                        validation = validateCIN(input.value);
+                        break;
+                    case 'email':
+                        validation = validateEmail(input.value);
+                        break;
+                    case 'phone':
+                        validation = validatePhone(input.value);
+                        break;
+                    case 'password':
+                        validation = validatePassword(input.value);
+                        break;
+                    case 'confirmPassword':
+                        validation = validateConfirmPassword(input.value, fields.password.input.value);
+                        break;
+                }
+                return setValidationState(input, error, validation);
+            }
+
+            Object.keys(fields).forEach(key => {
+                fields[key].input.addEventListener('input', () => validateField(key));
+                fields[key].input.addEventListener('blur', () => validateField(key));
+            });
+
+            form.addEventListener('submit', function(event) {
+                let isFormValid = Object.keys(fields).every(validateField);
+                if (!isFormValid) event.preventDefault();
+            });
+        });
+    </script>
+{% endblock %}

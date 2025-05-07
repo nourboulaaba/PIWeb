@@ -1,0 +1,36 @@
+{% extends 'basefront.html.twig' %}
+
+{% block title %}Mes Formations{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2 class="mb-4">Mes Formations</h2>
+
+    {% for formation in formations %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">{{ formation.name }}</h5>
+                <p class="card-text">{{ formation.description }}</p>
+                {% if formation.certificats is defined and formation.certificats is not empty %}
+                    <ul>
+                        {% for certificat in formation.certificats %}
+                            <li>
+                                Certificat d'examen ({{ certificat.dateExamen|date('d/m/Y') }})<br>
+                                <a href="{{ path('certificat_pdf', { id: certificat.idCertif }) }}" class="btn btn-sm btn-outline-success mt-1">
+                                    Télécharger PDF
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>Aucun certificat pour cette formation.</p>
+                {% endif %}
+            </div>
+        </div>
+    {% else %}
+        <p>Aucune formation trouvée.</p>
+    {% endfor %}
+</div>
+{% endblock %}
+
+

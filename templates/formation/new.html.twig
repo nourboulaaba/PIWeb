@@ -1,0 +1,42 @@
+{# templates/formation/new.html.twig #}
+{% extends 'indexback.html.twig' %}
+
+{% block title %}Ajouter une Formation{% endblock %}
+
+{% block stylesheets %}{{ parent() }}{% endblock %}
+
+{% block body %}
+<div class="container py-5 animate__animated animate__fadeIn">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card card-add-user">
+        <div class="card-header">
+          <h2 class="mb-0">
+            <i class="bi bi-bookmark-plus header-icon"></i>
+            Ajouter une nouvelle formation
+          </h2>
+          <p class="text-white-50 mb-0 mt-2">Remplissez les informations pour enregistrer une formation</p>
+        </div>
+
+        <div class="card-body">
+          {{ include('formation/_form.html.twig', {'button_label': 'Créer'}) }}
+
+          <div class="mt-4">
+            <a href="{{ path('app_formation_index') }}" class="btn btn-outline-secondary">
+              <i class="bi bi-arrow-left"></i> Retour à la liste
+            </a>
+          </div>
+          {% for label, messages in app.flashes %}
+    {% for message in messages %}
+        <div class="alert alert-{{ label }}">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endfor %}
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

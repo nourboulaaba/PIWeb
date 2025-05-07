@@ -1,0 +1,8 @@
+# config/routes.yaml
+controllers:
+  resource: ../src/Controller/
+  type: attribute
+
+app_home:
+  path: /
+  controller: App\Controller\FrontController::index

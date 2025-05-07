@@ -1,0 +1,103 @@
+<nav class="navbar navbar-expand navbar-light navbar-bg">
+    <a class="sidebar-toggle js-sidebar-toggle">
+        <i class="hamburger align-self-center"></i>
+    </a>
+
+    <div class="navbar-collapse collapse">
+        <ul class="navbar-nav navbar-align">
+
+            <!-- Notifications -->
+            <li class="nav-item dropdown">
+                <a class="nav-icon dropdown-toggle" href="#" id="alertsDropdown" data-bs-toggle="dropdown">
+                    <div class="position-relative">
+                        <i class="align-middle" data-feather="bell"></i>
+                        <span class="indicator">4</span>
+                    </div>
+                </a>
+                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end py-0" aria-labelledby="alertsDropdown">
+                    <div class="dropdown-menu-header">4 New Notifications</div>
+                    <div class="list-group">
+                        <!-- Liste des notifications -->
+                    </div>
+                    <div class="dropdown-menu-footer">
+                        <a href="#" class="text-muted">Afficher toutes les notifications</a>
+                    </div>
+                </div>
+            </li>
+
+            <!-- Messages -->
+            <li class="nav-item dropdown">
+                <a class="nav-icon dropdown-toggle" href="#" id="messagesDropdown" data-bs-toggle="dropdown">
+                    <div class="position-relative">
+                        <i class="align-middle" data-feather="message-square"></i>
+                    </div>
+                </a>
+                <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end py-0" aria-labelledby="messagesDropdown">
+                    <div class="dropdown-menu-header">4 Nouveaux Messages</div>
+                    <div class="list-group">
+                        <!-- Liste des messages -->
+                    </div>
+                    <div class="dropdown-menu-footer">
+                        <a href="#" class="text-muted">Afficher tous les messages</a>
+                    </div>
+                </div>
+            </li>
+
+            <!-- Profil Utilisateur -->
+            <li class="nav-item dropdown">
+
+                <a class="nav-icon dropdown-toggle d-inline-block d-sm-none" href="#" data-bs-toggle="dropdown">
+                    <i class="align-middle" data-feather="settings"></i>
+                </a>
+
+                <a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#" data-bs-toggle="dropdown">
+                    {% if app.user and app.user.profilePhoto %}
+                        <img src="{{ asset('uploads/profile_photos/' ~ app.user.profilePhoto) }}" class="avatar img-fluid rounded me-1" alt="{{ app.user.firstName }} {{ app.user.lastName }}" />
+                    {% else %}
+                        <img src="{{ asset('backoffice/img/avatars/custom-default.jpg') }}" class="avatar img-fluid rounded me-1" alt="Profil" />
+                    {% endif %}
+
+                    {% if app.user %}
+                        <span class="text-dark">{{ app.user.firstName }} {{ app.user.lastName }}</span>
+                    {% else %}
+                        <span class="text-dark">Invité</span>
+                    {% endif %}
+                </a>
+
+                <div class="dropdown-menu dropdown-menu-end">
+                    {% if app.user %}
+                        {# Lien vers Show Profil #}
+                        <a class="dropdown-item" href="{{ path('app_user_show', { id: app.user.id }) }}">
+                            <i class="align-middle me-1" data-feather="user"></i> Mon Profil
+                        </a>
+
+                        {# Lien vers Modifier Profil (à adapter selon ta route réelle) #}
+                        <a class="dropdown-item" href="{{ path('app_user_edit', { id: app.user.id }) }}">
+                            <i class="align-middle me-1" data-feather="edit"></i> Modifier mon Profil
+                        </a>
+
+                        <div class="dropdown-divider"></div>
+
+                        {# Affichage du Rôle #}
+                        {% set mainRole = app.user.roles[0]|replace({'ROLE_':''})|capitalize %}
+                        <a class="dropdown-item" href="#">
+                            <i class="align-middle me-1" data-feather="shield"></i> Rôle : {{ mainRole }}
+                        </a>
+
+                        <div class="dropdown-divider"></div>
+
+                        <a class="dropdown-item" href="{{ path('app_logout') }}">
+                            <i class="align-middle me-1" data-feather="log-out"></i> Déconnexion
+                        </a>
+
+                    {% else %}
+                        <a class="dropdown-item" href="{{ path('app_login') }}">
+                            <i class="align-middle me-1" data-feather="log-in"></i> Connexion
+                        </a>
+                    {% endif %}
+                </div>
+            </li>
+
+        </ul>
+    </div>
+</nav>

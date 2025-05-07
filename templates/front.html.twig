@@ -1,0 +1,52 @@
+{% extends 'basefront.html.twig' %}
+
+{% block title %}Offres – Front Office{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <br>
+        <br>
+        <br>
+        <h2 class="mb-3">Liste des offres</h2>
+
+        <!-- Search and Department Filter Form -->
+        <form method="get" action="{{ path('front_office_offres') }}">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <input type="text" name="q" class="form-control" placeholder="Rechercher une offre..." value="{{ query }}">
+                </div>
+                <div class="col-md-4">
+                    <select name="departement" class="form-control">
+                        <option value="">Tous les départements</option>
+                        {% for departement in departements %}
+                            <option value="{{ departement.id }}" {% if departement.id == departementId %}selected{% endif %}>{{ departement.nom }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Filtrer</button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Display Offers -->
+        <div class="row">
+            {% for offre in offres %}
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ offre.titre }}</h5>
+                            <p class="card-text">{{ offre.description|length > 100 ? offre.description|slice(0, 100) ~ '...' : offre.description }}</p>
+                            <p class="card-text"><strong>Salaire:</strong> {{ offre.salaireMin }} - {{ offre.salaireMax }} DT</p>
+                            <a class="btn btn-info">Voir Recrutement</a>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-12">
+                    <div class="alert alert-info">Aucune offre trouvée</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

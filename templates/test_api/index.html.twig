@@ -1,0 +1,266 @@
+{% extends 'indexback.html.twig' %}
+
+{% block title %}Test des API{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <style>
+    .api-test-card {
+      margin-bottom: 2rem;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .api-test-header {
+      background-color: #4e73df;
+      color: white;
+      padding: 1rem;
+    }
+    .api-test-body {
+      padding: 1.5rem;
+    }
+    .api-test-result {
+      background-color: #f8f9fc;
+      border-radius: 5px;
+      padding: 1rem;
+      margin-top: 1rem;
+      max-height: 300px;
+      overflow-y: auto;
+      font-family: monospace;
+    }
+    .api-test-success {
+      color: #1cc88a;
+    }
+    .api-test-error {
+      color: #e74a3b;
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+  <h1 class="h3 mb-4 text-gray-800">Test des API</h1>
+
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card shadow api-test-card">
+        <div class="api-test-header">
+          <h5 class="m-0">API Test</h5>
+        </div>
+        <div class="api-test-body">
+          <div class="mb-3">
+            <button id="testMainApi" class="btn btn-primary">Tester l'API principale</button>
+          </div>
+          <div id="mainApiResult" class="api-test-result">
+            <p class="text-muted">Cliquez sur le bouton pour tester l'API</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card shadow api-test-card">
+        <div class="api-test-header">
+          <h5 class="m-0">API Formations</h5>
+        </div>
+        <div class="api-test-body">
+          <div class="mb-3">
+            <button id="testFormationsApi" class="btn btn-primary">Tester l'API Formations</button>
+          </div>
+          <div id="formationsApiResult" class="api-test-result">
+            <p class="text-muted">Cliquez sur le bouton pour tester l'API</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card shadow api-test-card">
+        <div class="api-test-header">
+          <h5 class="m-0">API Certificats</h5>
+        </div>
+        <div class="api-test-body">
+          <div class="mb-3">
+            <button id="testCertificatsApi" class="btn btn-primary">Tester l'API Certificats</button>
+          </div>
+          <div id="certificatsApiResult" class="api-test-result">
+            <p class="text-muted">Cliquez sur le bouton pour tester l'API</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card shadow api-test-card">
+        <div class="api-test-header">
+          <h5 class="m-0">Liste des Formations</h5>
+        </div>
+        <div class="api-test-body">
+          <div class="mb-3">
+            <button id="testFormationsList" class="btn btn-primary">Tester la liste des formations</button>
+          </div>
+          <div id="formationsListResult" class="api-test-result">
+            <p class="text-muted">Cliquez sur le bouton pour tester l'API</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card shadow api-test-card">
+        <div class="api-test-header">
+          <h5 class="m-0">Liste des Certificats</h5>
+        </div>
+        <div class="api-test-body">
+          <div class="mb-3">
+            <button id="testCertificatsList" class="btn btn-primary">Tester la liste des certificats</button>
+          </div>
+          <div id="certificatsListResult" class="api-test-result">
+            <p class="text-muted">Cliquez sur le bouton pour tester l'API</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Test de l'API principale
+    document.getElementById('testMainApi').addEventListener('click', function() {
+      const resultElement = document.getElementById('mainApiResult');
+      resultElement.innerHTML = '<p>Chargement...</p>';
+
+      fetch('/api/test')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Erreur HTTP: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          resultElement.innerHTML = `
+            <p class="api-test-success">✓ L'API fonctionne correctement</p>
+            <pre>${JSON.stringify(data, null, 2)}</pre>
+          `;
+        })
+        .catch(error => {
+          resultElement.innerHTML = `
+            <p class="api-test-error">✗ Erreur lors du test de l'API</p>
+            <p>${error.message}</p>
+          `;
+        });
+    });
+
+    // Test de l'API Formations
+    document.getElementById('testFormationsApi').addEventListener('click', function() {
+      const resultElement = document.getElementById('formationsApiResult');
+      resultElement.innerHTML = '<p>Chargement...</p>';
+
+      fetch('/api/formations/test')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Erreur HTTP: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          resultElement.innerHTML = `
+            <p class="api-test-success">✓ L'API fonctionne correctement</p>
+            <pre>${JSON.stringify(data, null, 2)}</pre>
+          `;
+        })
+        .catch(error => {
+          resultElement.innerHTML = `
+            <p class="api-test-error">✗ Erreur lors du test de l'API</p>
+            <p>${error.message}</p>
+          `;
+        });
+    });
+
+    // Test de l'API Certificats
+    document.getElementById('testCertificatsApi').addEventListener('click', function() {
+      const resultElement = document.getElementById('certificatsApiResult');
+      resultElement.innerHTML = '<p>Chargement...</p>';
+
+      fetch('/api/certificats/test')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Erreur HTTP: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          resultElement.innerHTML = `
+            <p class="api-test-success">✓ L'API fonctionne correctement</p>
+            <pre>${JSON.stringify(data, null, 2)}</pre>
+          `;
+        })
+        .catch(error => {
+          resultElement.innerHTML = `
+            <p class="api-test-error">✗ Erreur lors du test de l'API</p>
+            <p>${error.message}</p>
+          `;
+        });
+    });
+
+    // Test de la liste des formations
+    document.getElementById('testFormationsList').addEventListener('click', function() {
+      const resultElement = document.getElementById('formationsListResult');
+      resultElement.innerHTML = '<p>Chargement...</p>';
+
+      fetch('/api/formations?page=1&limit=3')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Erreur HTTP: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          resultElement.innerHTML = `
+            <p class="api-test-success">✓ Liste récupérée avec succès</p>
+            <p>Total: ${data.total} formations</p>
+            <pre>${JSON.stringify(data.formations, null, 2)}</pre>
+          `;
+        })
+        .catch(error => {
+          resultElement.innerHTML = `
+            <p class="api-test-error">✗ Erreur lors de la récupération de la liste</p>
+            <p>${error.message}</p>
+          `;
+        });
+    });
+
+    // Test de la liste des certificats
+    document.getElementById('testCertificatsList').addEventListener('click', function() {
+      const resultElement = document.getElementById('certificatsListResult');
+      resultElement.innerHTML = '<p>Chargement...</p>';
+
+      fetch('/api/certificats?page=1&limit=3')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Erreur HTTP: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          resultElement.innerHTML = `
+            <p class="api-test-success">✓ Liste récupérée avec succès</p>
+            <p>Total: ${data.total} certificats</p>
+            <pre>${JSON.stringify(data.certificats, null, 2)}</pre>
+          `;
+        })
+        .catch(error => {
+          resultElement.innerHTML = `
+            <p class="api-test-error">✗ Erreur lors de la récupération de la liste</p>
+            <p>${error.message}</p>
+          `;
+        });
+    });
+  });
+</script>
+{% endblock %}

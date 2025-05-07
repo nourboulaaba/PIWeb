@@ -1,0 +1,441 @@
+{% extends 'indexback.html.twig' %}
+
+{% block title %}Liste des Utilisateurs{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  <style>
+    /* Styles généraux */
+    .dashboard-container {
+      background-color: #f8f9fc;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      padding: 1.5rem;
+    }
+    
+    .dashboard-header {
+      border-bottom: 1px solid #e3e6f0;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+    }
+    
+    /* Tableau des utilisateurs */
+    .users-table {
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
+    }
+    
+    .users-table thead th {
+      background: linear-gradient(to right, #4e73df, #224abe);
+      color: #fff;
+      font-weight: 500;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      letter-spacing: 0.03em;
+      padding: 1rem 0.75rem;
+      border-bottom: none;
+      white-space: nowrap;
+    }
+    
+    .users-table tbody tr {
+      transition: all 0.2s ease;
+    }
+    
+    .users-table tbody tr:hover {
+      background-color: rgba(78, 115, 223, 0.05);
+      transform: translateY(-1px);
+    }
+    
+    /* Images & Photos */
+    .user-photo {
+      width: 45px;
+      height: 45px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 2px solid #fff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease;
+    }
+    
+    .user-photo:hover {
+      transform: scale(1.1);
+    }
+    
+    .photo-placeholder {
+      width: 45px;
+      height: 45px;
+      border-radius: 8px;
+      background-color: #f2f2f2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #b0b0b0;
+      font-size: 1.2rem;
+    }
+    
+    /* Badges & Status */
+    .badge-role {
+      padding: 0.35em 0.8em;
+      font-size: 0.75em;
+      text-transform: uppercase;
+      border-radius: 30px;
+      letter-spacing: 0.03em;
+      font-weight: 600;
+    }
+    
+    .badge-role.rh {
+      background-color: #4e73df;
+      color: white;
+    }
+    
+    .badge-role.employe {
+      background-color: #1cc88a;
+      color: white;
+    }
+    
+    .badge-role.admin {
+      background-color: #f6c23e;
+      color: #333;
+    }
+    
+    .status-badge {
+      padding: 0.35em 0.8em;
+      font-size: 0.75em;
+      border-radius: 30px;
+      font-weight: 600;
+    }
+    
+    .status-badge.active {
+      background-color: #1cc88a;
+      color: white;
+    }
+    
+    .status-badge.inactive {
+      background-color: #e74a3b;
+      color: white;
+    }
+    
+    /* Boutons & Actions */
+    .action-btn {
+      padding: 0.4rem;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      margin-right: 5px;
+      font-size: 0.8rem;
+      transition: all 0.2s ease;
+      border: none;
+    }
+    
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .action-btn.view {
+      background-color: #4e73df;
+    }
+    
+    .action-btn.edit {
+      background-color: #f6c23e;
+    }
+    
+    .action-btn.delete {
+      background-color: #e74a3b;
+    }
+    
+    .cv-link {
+      padding: 0.35em 0.6em;
+      background: #f8f9fc;
+      border-radius: 4px;
+      color: #4e73df;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border: 1px solid #e3e6f0;
+      font-size: 0.8rem;
+    }
+    
+    .cv-link:hover {
+      background: #4e73df;
+      color: white;
+    }
+    
+    /* Recherche & Filtres */
+    .search-container {
+      background-color: white;
+      border-radius: 8px;
+      padding: 1rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+      margin-bottom: 1.5rem;
+    }
+    
+    .search-input {
+      border-radius: 50px;
+      padding-left: 1rem;
+      border: 1px solid #e3e6f0;
+      box-shadow: none;
+      transition: all 0.2s ease;
+    }
+    
+    .search-input:focus {
+      border-color: #4e73df;
+      box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+    }
+    
+    .search-btn {
+      border-radius: 50px;
+      padding: 0.375rem 1.2rem;
+    }
+    
+    .filter-select {
+      border-radius: 50px;
+      padding: 0.375rem 1.2rem;
+      border: 1px solid #e3e6f0;
+      background-color: white;
+      transition: all 0.2s ease;
+    }
+    
+    .filter-select:focus {
+      border-color: #4e73df;
+      box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+    }
+    
+    /* Pagination */
+    .pagination-container {
+      display: flex;
+      justify-content: center;
+      margin: 1.5rem 0;
+    }
+    
+    .pagination .page-link {
+      border-radius: 50px;
+      margin: 0 0.2rem;
+      min-width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 500;
+      color: #5a5c69;
+      border: none;
+    }
+    
+    .pagination .page-link:hover {
+      background-color: #eaecf4;
+      color: #3a3b45;
+    }
+    
+    .pagination .active .page-link {
+      background-color: #4e73df;
+      color: white;
+    }
+    
+    /* Styles pour les champs vides */
+    .empty-field {
+      color: #b7b9cc;
+      font-style: italic;
+      font-size: 0.85rem;
+    }
+    
+    /* Responsive design */
+    @media (max-width: 992px) {
+      .compact-column {
+        max-width: 120px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      
+      .dashboard-container {
+        padding: 1rem;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .users-table {
+        display: block;
+        overflow-x: auto;
+      }
+      
+      .search-container {
+        flex-direction: column;
+      }
+      
+      .filter-form {
+        margin-top: 1rem;
+      }
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+  <div class="container-fluid">
+    <div class="dashboard-container animate__animated animate__fadeIn">
+      <div class="dashboard-header d-flex justify-content-between align-items-center">
+        <div>
+          <h1 class="h3 mb-0 text-gray-800">Liste des Utilisateurs</h1>
+          <p class="text-muted small">Gestion complète des utilisateurs du système</p>
+        </div>
+        <a href="{{ path('app_register') }}" class="btn btn-primary d-flex align-items-center">
+          <i class="fas fa-user-plus me-2"></i> Ajouter un utilisateur
+        </a>
+      </div>
+
+      <div class="search-container d-flex justify-content-between">
+        <form class="d-flex col-md-5" method="get" action="{{ path('app_user_list') }}">
+          <div class="input-group">
+            <input type="text" name="search" class="form-control search-input" placeholder="Rechercher un utilisateur..." value="{{ app.request.get('search') }}">
+            <button class="btn btn-primary search-btn" type="submit">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+        </form>
+
+        <form class="filter-form" method="get" action="{{ path('app_user_list') }}">
+          <select name="role" class="form-select filter-select" onchange="this.form.submit()">
+            <option value="">Tous les rôles</option>
+            <option value="RH" {% if app.request.get('role') == 'RH' %}selected{% endif %}>RH</option>
+            <option value="EMPLOYE" {% if app.request.get('role') == 'EMPLOYE' %}selected{% endif %}>Employé</option>
+            <option value="ADMIN" {% if app.request.get('role') == 'ADMIN' %}selected{% endif %}>Admin</option>
+          </select>
+        </form>
+      </div>
+
+      <div class="card shadow-sm mb-4">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 users-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Photo</th>
+                  <th>Nom Complet</th>
+                  <th>Contact</th>
+                  <th>Rôle</th>
+                  <th>Statut</th>
+                  <th>Documents</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for user in users %}
+                  <tr>
+                    <td>#{{ user.id }}</td>
+                    <td>
+                      {% if user.profilePhoto %}
+                        <img src="{{ asset('uploads/profile_photos/' ~ user.profilePhoto) }}" class="user-photo" alt="Photo de profil">
+                      {% else %}
+                        <div class="photo-placeholder">
+                          <i class="fas fa-user"></i>
+                        </div>
+                      {% endif %}
+                    </td>
+                    <td>
+                      <div>
+                        <div class="fw-medium">{{ user.lastName|default('N/A') }} {{ user.firstName|default('') }}</div>
+                        <div class="text-muted small">{{ user.cin|default('CIN non renseigné') }}</div>
+                      </div>
+                    </td>
+                    <td>
+                      <div>
+                        <div class="compact-column">{{ user.email|default('Email non renseigné') }}</div>
+                        <div class="text-muted small">{{ user.phoneNumber|default('Tél. non renseigné') }}</div>
+                      </div>
+                    </td>
+                    <td>
+                      {% if user.role %}
+                        <span class="badge-role {% if user.role == 'RH' %}rh{% elseif user.role == 'EMPLOYE' %}employe{% else %}admin{% endif %}">
+                          {{ user.role }}
+                        </span>
+                      {% else %}
+                        <span class="empty-field">Non défini</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% if user.isVerified %}
+                        <span class="status-badge active">
+                          <i class="fas fa-check-circle me-1"></i> Actif
+                        </span>
+                      {% else %}
+                        <span class="status-badge inactive">
+                          <i class="fas fa-times-circle me-1"></i> Inactif
+                        </span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        {% if user.cv %}
+                          <a href="{{ asset('uploads/cvs/' ~ user.cv) }}" class="cv-link me-2" target="_blank">
+                            <i class="fas fa-file-pdf"></i> CV
+                          </a>
+                        {% else %}
+                          <span class="empty-field">Aucun CV</span>
+                        {% endif %}
+                      </div>
+                    </td>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <a href="{{ path('app_user_show', {'id': user.id}) }}" class="action-btn view" title="Voir">
+                          <i class="fas fa-eye"></i>
+                        </a>
+                        <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="action-btn edit" title="Modifier">
+                          <i class="fas fa-edit"></i>
+                        </a>
+          <a href="#" 
+   onclick="confirmDelete('{{ path('app_user_delete', {'id': user.id}) }}', '{{ csrf_token('delete' ~ user.id) }}')" 
+   class="action-btn delete" title="Supprimer">
+    <i class="fas fa-trash"></i>
+</a>
+
+
+                      </div>
+                    </td>
+                  </tr>
+                {% else %}
+                  <tr>
+                    <td colspan="8" class="text-center py-5">
+                      <div class="empty-state">
+                        <i class="fas fa-users text-muted fa-3x mb-3"></i>
+                        <h5>Aucun utilisateur trouvé</h5>
+                        <p class="text-muted">Aucun résultat ne correspond à votre recherche.</p>
+                      </div>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="pagination-container">
+        {{ knp_pagination_render(users, null, {}, {'align': 'center', 'size': 'medium', 'rounded': true}) }}
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Animation à l'entrée des lignes du tableau
+      const tableRows = document.querySelectorAll('.users-table tbody tr');
+      tableRows.forEach((row, index) => {
+        row.style.opacity = '0';
+        row.style.transform = 'translateY(10px)';
+        setTimeout(() => {
+          row.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+          row.style.opacity = '1';
+          row.style.transform = 'translateY(0)';
+        }, 100 + (index * 50));
+      });
+    });
+  </script>
+{% endblock %}

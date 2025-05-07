@@ -1,0 +1,22 @@
+{{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+
+{% for field in form %}
+    <div class="form-floating mb-3">
+        {{ form_widget(field, {
+            'attr': {
+                'class': 'form-control' ~ (field.vars.valid == false ? ' is-invalid' : ''),
+                'placeholder': form_label(field)
+            }
+        }) }}
+        {{ form_label(field) }}
+        {% if field.vars.valid == false %}
+            <div class="invalid-feedback">
+                {{ form_errors(field) }}
+            </div>
+        {% endif %}
+    </div>
+{% endfor %}
+
+<button class="btn btn-success w-100">{{ button_label|default('Enregistrer') }}</button>
+
+{{ form_end(form) }}
