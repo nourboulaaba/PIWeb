@@ -39,7 +39,7 @@ README.md
 ###  Gestion Utilisateur
 - CRUD complet
 - API : Auth Google, reset password , captcha, maile de verification  après connexion
-- Métier avancé : reconnaissance faciale (Face ID), recherche, filtres, export XML des employés
+- Métier avancé : recherche, filtres, export XML des employés
 
 ###  Gestion Emploi
 - CRUD + API Job List
